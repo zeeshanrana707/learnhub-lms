@@ -2,7 +2,7 @@
 <nav class="navbar navbar-expand-lg navbar-glass sticky-top py-2">
   <div class="container-fluid px-xl-5 px-lg-4 px-3">
     <!-- Brand Logo & Name -->
-    <a class="navbar-brand d-flex align-items-center gap-2 text-decoration-none me-2" href="{{ url_for('admin.dashboard') if is_admin_panel else url_for('catalog.home') }}">
+    <a class="navbar-brand d-flex align-items-center gap-2 text-decoration-none me-2" href="{{ url_for('admin.dashboard') if (is_admin_panel or (current_user.is_authenticated and current_user.is_admin)) else url_for('catalog.home') }}">
       <div class="brand-logo-squircle">
         <i class="bi bi-mortarboard-fill"></i>
       </div>
@@ -345,6 +345,10 @@
               <i class="bi bi-gear text-secondary"></i>
               <span>System Settings</span>
             </a>
+            <a href="{{ url_for('catalog.home', preview=1) }}" target="_blank" class="mobile-nav-link text-primary">
+              <i class="bi bi-box-arrow-up-right"></i>
+              <span>View Live Website</span>
+            </a>
           {% endif %}
 
           <!-- 6. Account & Preferences -->
@@ -487,7 +491,7 @@
 
             <!-- Live Site -->
             <li class="nav-item ms-1">
-              <a class="nav-link admin-nav-item text-secondary border" href="{{ url_for('catalog.index') }}" title="View Live Site">
+              <a class="nav-link admin-nav-item text-secondary border" href="{{ url_for('catalog.home', preview=1) }}" target="_blank" title="View Live Website">
                 <i class="bi bi-box-arrow-up-right"></i>
               </a>
             </li>

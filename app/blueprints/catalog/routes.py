@@ -82,6 +82,10 @@ def dashboard_shortcut():
 @catalog_bp.route('/')
 def home():
     """Home landing page with featured courses, roadmaps, and categories."""
+    # When admin is active, redirect to admin dashboard unless preview mode is explicitly requested via Live Site
+    if current_user.is_authenticated and current_user.is_admin and not request.args.get('preview'):
+        return redirect(url_for('admin.dashboard'))
+
     featured_courses = Course.query.filter_by(status='published', is_active=True).order_by(Course.created_at.desc()).limit(6).all()
     categories = Category.query.all()
     departments = Department.query.all()
