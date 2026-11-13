@@ -97,7 +97,7 @@
                               <i class="bi bi-play-fill me-1"></i> Watch
                             </a>
                           {% elif les_yt %}
-                            <button type="button" class="btn btn-sm btn-outline-danger" onclick="playDetailVideo('{{ les_yt }}', '{{ lesson.title|e }}')">
+                            <button type="button" class="btn btn-sm btn-outline-danger" onclick="playDetailVideo('{{ les_yt }}', '{{ lesson.title|e }}', '{{ lesson.duration_min | format_duration }}', this)">
                               <i class="bi bi-play-fill me-1"></i> Preview
                             </button>
                           {% endif %}
@@ -164,13 +164,13 @@
 
     <!-- Right Sidebar Action Card -->
     <div class="col-lg-4">
-      <div class="card p-4 shadow-sm border-0 sticky-top" style="top: 80px;">
+      <div class="card p-3 shadow-sm border-0 course-detail-sticky">
         <!-- Embedded YouTube Video Preview Trailer -->
         {% if preview_lesson %}
           {% set prev_yt = preview_lesson.content | youtube_embed %}
           {% if prev_yt %}
             <div class="mb-3">
-              <div class="ratio ratio-16x9 rounded overflow-hidden shadow border mb-2 bg-dark">
+              <div class="ratio ratio-16x9 rounded-3 overflow-hidden shadow-sm border mb-2 bg-dark">
                 <iframe id="detailPreviewPlayer"
                         src="{{ prev_yt }}?rel=0&modestbranding=1"
                         title="Course Preview"
@@ -178,42 +178,54 @@
                         allowfullscreen>
                 </iframe>
               </div>
-              <div class="text-center small">
-                <span class="badge bg-danger mb-1"><i class="bi bi-youtube me-1"></i>Video Preview</span>
-                <div class="text-muted text-truncate" id="previewTitle">{{ preview_lesson.title }}</div>
+              
+              <!-- Topic Preview Highlight Box -->
+              <div class="p-2.5 rounded-3 bg-light border d-flex align-items-center gap-2.5 preview-highlight-box" id="previewHighlightCard">
+                <div class="rounded-circle bg-danger text-white d-flex align-items-center justify-content-center flex-shrink-0 shadow-sm" style="width: 32px; height: 32px; font-size: 0.95rem;">
+                  <i class="bi bi-play-fill"></i>
+                </div>
+                <div class="min-w-0 flex-grow-1">
+                  <div class="d-flex align-items-center justify-content-between mb-0.5">
+                    <span class="badge bg-danger-subtle text-danger fw-semibold px-2 py-0.5" style="font-size: 0.68rem;">
+                      <i class="bi bi-play-circle me-1"></i>Free Preview
+                    </span>
+                    <span class="text-muted" style="font-size: 0.72rem;" id="previewDuration">
+                      <i class="bi bi-clock me-1"></i>{{ preview_lesson.duration_min | format_duration }}
+                    </span>
+                  </div>
+                  <div class="fw-semibold text-dark text-truncate small" id="previewTitle" title="{{ preview_lesson.title }}">
+                    {{ preview_lesson.title }}
+                  </div>
+                </div>
               </div>
             </div>
-            <hr class="my-3">
           {% endif %}
         {% endif %}
 
-        <div class="mb-3 text-center">
-          {% if course.is_free %}
-            <h2 class="fw-bold text-success mb-1">Free</h2>
-            <span class="badge bg-success-subtle text-success">Full Lifetime Access</span>
-          {% else %}
-            <h2 class="fw-bold text-primary mb-1">${{ "%.2f"|format(course.price) }}</h2>
-            <span class="badge bg-primary-subtle text-primary">One-time purchase</span>
-          {% endif %}
+        <!-- Free Access Badge -->
+        <div class="text-center mb-2.5">
+          <span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill px-3 py-1.5 fw-semibold small">
+            <i class="bi bi-patch-check-fill me-1"></i>100% Free Course • Verifiable Certificate
+          </span>
         </div>
 
         <div class="d-grid gap-2 mb-3">
           {% if is_enrolled %}
-            <a href="{{ url_for('learning.course_overview', course_id=course.id) }}" class="btn btn-success py-2 fw-semibold shadow-sm">
-              <i class="bi bi-play-circle-fill me-1"></i> Watch Course Videos
+            <a href="{{ url_for('learning.course_overview', course_id=course.id) }}" class="btn btn-success py-2.5 fw-bold shadow-sm rounded-3">
+              <i class="bi bi-play-circle-fill me-1.5"></i> Continue Watching
             </a>
           {% elif course.is_free %}
             <form action="{{ url_for('learning.enroll', course_id=course.id) }}" method="POST">
               <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-              <button type="submit" class="btn btn-primary w-100 py-2 fw-semibold shadow-sm" {% if missing_prereqs %}disabled{% endif %}>
-                <i class="bi bi-play-btn-fill me-1"></i> Enroll Free & Start Watching
+              <button type="submit" class="btn btn-primary w-100 py-2.5 fw-bold shadow-sm rounded-3" {% if missing_prereqs %}disabled{% endif %}>
+                <i class="bi bi-play-circle-fill me-1.5"></i> Start Course Now
               </button>
             </form>
           {% else %}
             <form action="{{ url_for('commerce.add_to_cart', course_id=course.id) }}" method="POST">
               <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-              <button type="submit" class="btn btn-primary w-100 py-2 fw-semibold">
-                <i class="bi bi-cart-plus me-1"></i> Add to Cart
+              <button type="submit" class="btn btn-primary w-100 py-2.5 fw-bold shadow-sm rounded-3">
+                <i class="bi bi-cart-plus me-1.5"></i> Add to Cart
               </button>
             </form>
           {% endif %}
@@ -221,7 +233,7 @@
           {% if current_user.is_authenticated and not is_preview %}
             <form action="{{ url_for('learning.toggle_wishlist', course_id=course.id) }}" method="POST">
               <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-              <button type="submit" class="btn btn-outline-secondary w-100">
+              <button type="submit" class="btn btn-outline-secondary btn-sm w-100 rounded-3 py-1.5">
                 <i class="bi {% if in_wishlist %}bi-heart-fill text-danger{% else %}bi-heart{% endif %} me-1"></i>
                 {% if in_wishlist %}In Wishlist{% else %}Add to Wishlist{% endif %}
               </button>
@@ -229,16 +241,31 @@
           {% endif %}
         </div>
 
-        <ul class="list-unstyled text-secondary small mb-0">
-          <li class="mb-2"><i class="bi bi-youtube text-danger me-2"></i>{{ all_lessons|length }} YouTube video lectures</li>
-          <li class="mb-2"><i class="bi bi-collection-play text-primary me-2"></i>{{ course.modules|length }} chapters with specific headings</li>
-          <li class="mb-2"><i class="bi bi-patch-question text-info me-2"></i>Auto-graded quizzes & assignments</li>
-          <li class="mb-2"><i class="bi bi-award text-success me-2"></i>Official verifiable certificate</li>
-          <li><i class="bi bi-chat-dots text-secondary me-2"></i>Course discussion forums</li>
-        </ul>
+        <!-- What's included checklist -->
+        <div class="p-2.5 rounded-3 bg-light border-0 small course-includes-box">
+          <div class="text-uppercase text-muted fw-bold mb-2" style="font-size: 0.68rem; letter-spacing: 0.5px;">This course includes:</div>
+          <div class="d-flex flex-column gap-1.5 text-secondary" style="font-size: 0.8rem;">
+            <div class="d-flex align-items-center gap-2">
+              <i class="bi bi-youtube text-danger flex-shrink-0"></i>
+              <span><strong>{{ all_lessons|length }}</strong> on-demand video lectures</span>
+            </div>
+            <div class="d-flex align-items-center gap-2">
+              <i class="bi bi-folder-check text-primary flex-shrink-0"></i>
+              <span><strong>{{ course.modules|length }}</strong> structured learning chapters</span>
+            </div>
+            <div class="d-flex align-items-center gap-2">
+              <i class="bi bi-patch-question text-info flex-shrink-0"></i>
+              <span>Auto-graded quizzes & assignments</span>
+            </div>
+            <div class="d-flex align-items-center gap-2">
+              <i class="bi bi-award text-success flex-shrink-0"></i>
+              <span>Official shareable certificate</span>
+            </div>
+          </div>
+        </div>
 
         {% if current_user.is_authenticated and not is_preview and (current_user.is_admin or course.is_instructor(current_user.id)) %}
-          <hr>
+          <hr class="my-2.5">
           <div class="text-center">
             <span class="badge bg-warning-subtle text-warning mb-2">Instructor Access</span>
             <div class="d-flex gap-2">
@@ -257,13 +284,26 @@
 </div>
 
 <script>
-function playDetailVideo(embedUrl, title) {
+function playDetailVideo(embedUrl, title, durationStr, btnEl) {
   const player = document.getElementById('detailPreviewPlayer');
   const titleEl = document.getElementById('previewTitle');
+  const durEl = document.getElementById('previewDuration');
+  const cardEl = document.getElementById('previewHighlightCard');
   if (player && embedUrl) {
     player.src = embedUrl + '?rel=0&modestbranding=1&autoplay=1';
-    if (titleEl) titleEl.innerText = title;
-    player.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    if (titleEl) {
+      titleEl.innerText = title;
+      titleEl.title = title;
+    }
+    if (durEl && durationStr) {
+      durEl.innerHTML = '<i class="bi bi-clock me-1"></i>' + durationStr;
+    }
+    if (cardEl) {
+      cardEl.classList.add('border-danger', 'shadow-sm');
+      setTimeout(() => {
+        cardEl.classList.remove('border-danger', 'shadow-sm');
+      }, 1500);
+    }
   }
 }
 </script>

@@ -1538,6 +1538,36 @@ main {
   box-sizing: border-box;
 }
 
+/* Course Detail Sticky Sidebar & Highlight Card */
+@media (min-width: 992px) {
+  .course-detail-sticky {
+    position: -webkit-sticky !important;
+    position: sticky !important;
+    top: 76px !important;
+    z-index: 10;
+  }
+}
+
+.preview-highlight-box {
+  transition: all 0.25s ease;
+}
+
+[data-bs-theme="dark"] .course-detail-sticky {
+  background-color: #131c31 !important;
+  border-color: #334155 !important;
+}
+
+[data-bs-theme="dark"] #previewHighlightCard,
+[data-bs-theme="dark"] .course-includes-box {
+  background-color: #1e293b !important;
+  border-color: #334155 !important;
+  color: #e2e8f0 !important;
+}
+
+[data-bs-theme="dark"] #previewTitle {
+  color: #f8fafc !important;
+}
+
 
 
 
