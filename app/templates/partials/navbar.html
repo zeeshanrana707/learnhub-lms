@@ -18,79 +18,49 @@
     {% endif %}
 
     {% if not is_admin_panel and not is_admin_user %}
-    <!-- Explore / Categories Dropdown Menu (Desktop) -->
+    <!-- Categories Dropdown Menu (Desktop) -->
     <div class="dropdown d-none d-md-block me-2">
       <button class="btn btn-outline-secondary btn-sm rounded-pill px-3 py-1.5 fw-semibold dropdown-toggle d-flex align-items-center gap-1.5" type="button" id="navExploreDropdown" data-bs-toggle="dropdown" aria-expanded="false" style="border-color: #cbd5e1; color: #334155;">
         <i class="bi bi-grid-3x3-gap-fill text-primary"></i>
-        <span>Explore</span>
+        <span>Categories</span>
       </button>
       <div class="dropdown-menu shadow-lg border-0 rounded-4 dropdown-menu-modern explore-dropdown-menu" aria-labelledby="navExploreDropdown">
-        <div class="px-2 py-1 mb-2 border-bottom">
-          <span class="text-uppercase fw-bold text-muted small" style="font-size: 0.72rem; letter-spacing: 0.05em;">Career Tracks & Specializations</span>
+        <div class="px-2 py-1 mb-2 border-bottom d-flex justify-content-between align-items-center">
+          <span class="text-uppercase fw-bold text-muted small" style="font-size: 0.72rem; letter-spacing: 0.05em;">Browse by Category</span>
+          <span class="badge bg-primary-subtle text-primary rounded-pill small" style="font-size: 0.68rem;">{{ navbar_categories|length }} Topics</span>
         </div>
         <div class="d-flex flex-column gap-1">
-          <a href="{{ url_for('catalog.roadmap_detail', slug='ai-engineer-roadmap') }}{{ preview_qs }}" class="explore-item">
-            <div class="explore-icon-box" style="background: rgba(99, 102, 241, 0.12); color: #6366f1;">
-              <i class="bi bi-cpu-fill"></i>
-            </div>
-            <div>
-              <div class="fw-semibold small text-dark">Artificial Intelligence</div>
-              <div class="text-muted" style="font-size: 0.75rem;">Machine Learning, PyTorch, LLMs & LangChain</div>
-            </div>
-          </a>
-          <a href="{{ url_for('catalog.roadmap_detail', slug='full-stack-web-roadmap') }}{{ preview_qs }}" class="explore-item">
-            <div class="explore-icon-box" style="background: rgba(14, 165, 233, 0.12); color: #0ea5e9;">
-              <i class="bi bi-code-slash"></i>
-            </div>
-            <div>
-              <div class="fw-semibold small text-dark">Web Development</div>
-              <div class="text-muted" style="font-size: 0.75rem;">Modern JS, Python Flask, React 18, APIs</div>
-            </div>
-          </a>
-          <a href="{{ url_for('catalog.roadmap_detail', slug='cloud-devops-roadmap') }}{{ preview_qs }}" class="explore-item">
-            <div class="explore-icon-box" style="background: rgba(5, 150, 105, 0.12); color: #059669;">
-              <i class="bi bi-cloud-check-fill"></i>
-            </div>
-            <div>
-              <div class="fw-semibold small text-dark">Cloud & DevOps</div>
-              <div class="text-muted" style="font-size: 0.75rem;">Linux Systems, Docker, CI/CD, Kubernetes</div>
-            </div>
-          </a>
-          <a href="{{ url_for('catalog.roadmap_detail', slug='cybersecurity-roadmap') }}{{ preview_qs }}" class="explore-item">
-            <div class="explore-icon-box" style="background: rgba(220, 38, 38, 0.12); color: #dc2626;">
-              <i class="bi bi-shield-lock-fill"></i>
-            </div>
-            <div>
-              <div class="fw-semibold small text-dark">Cybersecurity</div>
-              <div class="text-muted" style="font-size: 0.75rem;">Ethical Hacking, OWASP Top 10, PenTesting</div>
-            </div>
-          </a>
-          <a href="{{ url_for('catalog.roadmap_detail', slug='data-engineering-roadmap') }}{{ preview_qs }}" class="explore-item">
-            <div class="explore-icon-box" style="background: rgba(217, 119, 6, 0.12); color: #d97706;">
-              <i class="bi bi-database-fill-gear"></i>
-            </div>
-            <div>
-              <div class="fw-semibold small text-dark">Data Engineering</div>
-              <div class="text-muted" style="font-size: 0.75rem;">SQL Architecture, Redis Caching, Kafka</div>
-            </div>
-          </a>
-          <a href="{{ url_for('catalog.roadmap_detail', slug='cs-foundations-roadmap') }}{{ preview_qs }}" class="explore-item">
-            <div class="explore-icon-box" style="background: rgba(139, 92, 246, 0.12); color: #8b5cf6;">
-              <i class="bi bi-mortarboard-fill"></i>
-            </div>
-            <div>
-              <div class="fw-semibold small text-dark">Computer Science Foundations</div>
-              <div class="text-muted" style="font-size: 0.75rem;">Algorithms, Memory Pointers, Big-O, UI Design</div>
-            </div>
-          </a>
+          {% for cat in navbar_categories %}
+            {% set cat_icons = {
+              'ai-engineer-roadmap': ('bi-cpu-fill', '#6366f1', 'rgba(99, 102, 241, 0.12)', 'AI & Machine Learning', 'Machine Learning, PyTorch, LLMs'),
+              'full-stack-web-roadmap': ('bi-code-slash', '#0ea5e9', 'rgba(14, 165, 233, 0.12)', 'Web Development', 'Modern JS, Python Flask, React, APIs'),
+              'cloud-devops-roadmap': ('bi-cloud-check-fill', '#059669', 'rgba(5, 150, 105, 0.12)', 'Cloud & DevOps', 'Linux Systems, Docker, CI/CD, Kubernetes'),
+              'cybersecurity-roadmap': ('bi-shield-lock-fill', '#dc2626', 'rgba(220, 38, 38, 0.12)', 'Cybersecurity', 'Ethical Hacking, OWASP Top 10, PenTesting'),
+              'data-engineering-roadmap': ('bi-database-fill-gear', '#d97706', 'rgba(217, 119, 6, 0.12)', 'Data Engineering', 'SQL Architecture, Redis Caching, Kafka'),
+              'cs-foundations-roadmap': ('bi-mortarboard-fill', '#8b5cf6', 'rgba(139, 92, 246, 0.12)', 'CS Foundations', 'Algorithms, Data Structures, Big-O')
+            } %}
+            {% set c_info = cat_icons.get(cat.slug, ('bi-folder2-open', '#2563eb', 'rgba(37, 99, 235, 0.12)', cat.name, 'Explore all courses')) %}
+            <a href="{{ url_for('catalog.index', category=cat.id, preview=1 if is_preview else None) }}" class="explore-item">
+              <div class="explore-icon-box" style="background: {{ c_info[2] }}; color: {{ c_info[1] }};">
+                <i class="bi {{ c_info[0] }}"></i>
+              </div>
+              <div class="flex-grow-1 min-w-0">
+                <div class="d-flex align-items-center justify-content-between gap-1">
+                  <span class="fw-semibold small text-dark text-truncate">{{ c_info[3] }}</span>
+                  <span class="badge bg-light text-muted border rounded-pill" style="font-size: 0.68rem;">{{ cat.courses|length }} courses</span>
+                </div>
+                <div class="text-muted text-truncate" style="font-size: 0.74rem;">{{ c_info[4] }}</div>
+              </div>
+            </a>
+          {% endfor %}
         </div>
         <div class="dropdown-divider my-2"></div>
         <div class="d-flex justify-content-between align-items-center px-2 py-1">
-          <a href="{{ url_for('catalog.roadmaps') }}{{ preview_qs }}" class="text-primary text-decoration-none small fw-semibold">
-            <i class="bi bi-signpost-split me-1"></i>All 6 Roadmaps
-          </a>
           <a href="{{ url_for('catalog.index') }}{{ preview_qs }}" class="text-secondary text-decoration-none small">
-            Browse Full Catalog <i class="bi bi-arrow-right small ms-0.5"></i>
+            <i class="bi bi-grid me-1"></i>All Courses
+          </a>
+          <a href="{{ url_for('catalog.roadmaps') }}{{ preview_qs }}" class="text-primary text-decoration-none small fw-semibold">
+            <i class="bi bi-signpost-split me-1"></i>Career Roadmaps <i class="bi bi-arrow-right small ms-0.5"></i>
           </a>
         </div>
       </div>
@@ -266,32 +236,26 @@
             </a>
           {% endif %}
 
-          <!-- 3. Career Tracks Accordion (Mobile) -->
-          <div class="mobile-nav-heading mt-3">Career Pathways</div>
-          <a href="{{ url_for('catalog.roadmap_detail', slug='ai-engineer-roadmap') }}{{ preview_qs }}" class="mobile-nav-link">
-            <i class="bi bi-cpu-fill" style="color: #6366f1;"></i>
-            <span>Artificial Intelligence</span>
-          </a>
-          <a href="{{ url_for('catalog.roadmap_detail', slug='full-stack-web-roadmap') }}{{ preview_qs }}" class="mobile-nav-link">
-            <i class="bi bi-code-slash" style="color: #0ea5e9;"></i>
-            <span>Full-Stack Web Dev</span>
-          </a>
-          <a href="{{ url_for('catalog.roadmap_detail', slug='cloud-devops-roadmap') }}{{ preview_qs }}" class="mobile-nav-link">
-            <i class="bi bi-cloud-check-fill" style="color: #059669;"></i>
-            <span>Cloud & DevOps</span>
-          </a>
-          <a href="{{ url_for('catalog.roadmap_detail', slug='cybersecurity-roadmap') }}{{ preview_qs }}" class="mobile-nav-link">
-            <i class="bi bi-shield-lock-fill" style="color: #dc2626;"></i>
-            <span>Cybersecurity</span>
-          </a>
-          <a href="{{ url_for('catalog.roadmap_detail', slug='data-engineering-roadmap') }}{{ preview_qs }}" class="mobile-nav-link">
-            <i class="bi bi-database-fill-gear" style="color: #d97706;"></i>
-            <span>Data Engineering</span>
-          </a>
-          <a href="{{ url_for('catalog.roadmap_detail', slug='cs-foundations-roadmap') }}{{ preview_qs }}" class="mobile-nav-link">
-            <i class="bi bi-mortarboard-fill" style="color: #8b5cf6;"></i>
-            <span>CS Foundations</span>
-          </a>
+          <!-- 3. Course Categories (Mobile) -->
+          <div class="mobile-nav-heading mt-3">Browse Categories</div>
+          {% for cat in navbar_categories %}
+            {% set cat_icons = {
+              'ai-engineer-roadmap': ('bi-cpu-fill', '#6366f1', 'AI & Machine Learning'),
+              'full-stack-web-roadmap': ('bi-code-slash', '#0ea5e9', 'Web Development'),
+              'cloud-devops-roadmap': ('bi-cloud-check-fill', '#059669', 'Cloud & DevOps'),
+              'cybersecurity-roadmap': ('bi-shield-lock-fill', '#dc2626', 'Cybersecurity'),
+              'data-engineering-roadmap': ('bi-database-fill-gear', '#d97706', 'Data Engineering'),
+              'cs-foundations-roadmap': ('bi-mortarboard-fill', '#8b5cf6', 'CS Foundations')
+            } %}
+            {% set m_info = cat_icons.get(cat.slug, ('bi-folder2-open', '#2563eb', cat.name)) %}
+            <a href="{{ url_for('catalog.index', category=cat.id, preview=1 if is_preview else None) }}" class="mobile-nav-link d-flex align-items-center justify-content-between">
+              <div class="d-flex align-items-center gap-2">
+                <i class="bi {{ m_info[0] }}" style="color: {{ m_info[1] }};"></i>
+                <span>{{ m_info[2] }}</span>
+              </div>
+              <span class="badge bg-light text-muted border rounded-pill" style="font-size: 0.7rem;">{{ cat.courses|length }}</span>
+            </a>
+          {% endfor %}
           {% endif %}
 
           <!-- 4. Teaching Studio (If Instructor) -->
