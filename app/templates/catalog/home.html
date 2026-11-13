@@ -101,19 +101,8 @@
                 {% endfor %}
               </div>
             </div>
-            <div class="mb-3">
-              <span class="small text-muted fw-semibold d-block mb-1">Key Skills:</span>
-              <div class="d-flex flex-wrap gap-1">
-                {% for sk in meta.skills[:3] %}
-                  <span class="badge bg-primary-subtle text-primary border border-primary-subtle" style="font-size: 0.7rem;">{{ sk }}</span>
-                {% endfor %}
-                {% if meta.skills|length > 3 %}
-                  <span class="badge bg-light text-muted border" style="font-size: 0.7rem;">+{{ meta.skills|length - 3 }} more</span>
-                {% endif %}
-              </div>
-            </div>
-            <a href="{{ url_for('catalog.roadmap_detail', slug=cat.slug) }}{{ preview_qs }}" class="btn btn-outline-primary btn-sm w-100 mt-auto">
-              Explore Roadmap <i class="bi bi-arrow-right ms-1"></i>
+            <a href="{{ url_for('catalog.roadmap_detail', slug=cat.slug) }}{{ preview_qs }}" class="btn btn-roadmap-explore w-100 mt-auto">
+              <span>Explore Roadmap</span> <i class="bi bi-arrow-right"></i>
             </a>
           </div>
         </div>

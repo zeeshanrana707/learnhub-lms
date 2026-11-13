@@ -1443,6 +1443,76 @@ main {
   }
 }
 
+/* Modern Roadmap Card Styling */
+.roadmap-card {
+  border-radius: 1rem !important;
+  border: 1px solid #e3ded6 !important;
+  background: #ffffff;
+  transition: transform 0.35s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.35s ease, border-color 0.35s ease !important;
+  will-change: transform, box-shadow;
+}
+
+.roadmap-card:hover {
+  transform: translateY(-8px) scale(1.02) !important;
+  box-shadow: 0 20px 40px -12px rgba(15, 23, 42, 0.14) !important;
+  border-color: rgba(37, 99, 235, 0.45) !important;
+}
+
+/* Interactive Explore Roadmap Button */
+.btn-roadmap-explore {
+  display: flex !important;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.55rem 1rem !important;
+  font-size: 0.88rem !important;
+  font-weight: 600 !important;
+  border-radius: 0.65rem !important;
+  border: 1.5px solid #2563eb !important;
+  background-color: transparent !important;
+  color: #2563eb !important;
+  text-decoration: none !important;
+  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) !important;
+  will-change: transform, box-shadow;
+}
+
+.btn-roadmap-explore:hover {
+  transform: scale(1.04) translateY(-2px) !important;
+  background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%) !important;
+  color: #ffffff !important;
+  border-color: transparent !important;
+  box-shadow: 0 8px 22px -4px rgba(37, 99, 235, 0.45) !important;
+}
+
+.btn-roadmap-explore i {
+  transition: transform 0.25s ease !important;
+}
+
+.btn-roadmap-explore:hover i {
+  transform: translateX(4px) !important;
+}
+
+[data-bs-theme="dark"] .roadmap-card {
+  background-color: #131c31 !important;
+  border-color: #334155 !important;
+}
+
+[data-bs-theme="dark"] .roadmap-card:hover {
+  box-shadow: 0 20px 40px -12px rgba(0, 0, 0, 0.6) !important;
+  border-color: rgba(96, 165, 250, 0.5) !important;
+}
+
+[data-bs-theme="dark"] .btn-roadmap-explore {
+  border-color: #60a5fa !important;
+  color: #93c5fd !important;
+}
+
+[data-bs-theme="dark"] .btn-roadmap-explore:hover {
+  color: #ffffff !important;
+  border-color: transparent !important;
+  box-shadow: 0 8px 22px -4px rgba(59, 130, 246, 0.5) !important;
+}
+
 
 
 
