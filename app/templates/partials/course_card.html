@@ -1,9 +1,13 @@
 {# Reusable Modern Course Card Partial #}
+{% set is_preview = request.args.get('preview') %}
+{% set is_card_auth = current_user.is_authenticated and not is_preview %}
 {% set is_saved = false %}
-{% if user_wishlist_ids is defined %}
-  {% set is_saved = course.id in user_wishlist_ids %}
-{% elif current_user.is_authenticated %}
-  {% set is_saved = course.id in (current_user.wishlists | map(attribute='course_id') | list) %}
+{% if is_card_auth %}
+  {% if user_wishlist_ids is defined %}
+    {% set is_saved = course.id in user_wishlist_ids %}
+  {% else %}
+    {% set is_saved = course.id in (current_user.wishlists | map(attribute='course_id') | list) %}
+  {% endif %}
 {% endif %}
 
 <div class="card h-100 course-card shadow-sm border-0">
@@ -24,7 +28,7 @@
       </div>
     </a>
     <!-- Wishlist Quick Heart Button -->
-    {% if current_user.is_authenticated and not current_user.is_admin %}
+    {% if is_card_auth and not current_user.is_admin %}
       <button type="button" 
               class="course-card-wishlist-btn {% if is_saved %}active{% endif %}" 
               data-course-id="{{ course.id }}"
@@ -32,7 +36,7 @@
               aria-label="Wishlist">
         <i class="bi {% if is_saved %}bi-heart-fill text-danger{% else %}bi-heart{% endif %}"></i>
       </button>
-    {% elif not current_user.is_authenticated %}
+    {% else %}
       <a href="{{ url_for('auth.login', next=request.path) }}"
          class="course-card-wishlist-btn"
          title="Log in to save to Wishlist"

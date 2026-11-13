@@ -1,8 +1,28 @@
-{% set is_admin_panel = (request.blueprint == 'admin') %}
+{% set is_preview = request.args.get('preview') %}
+{% set is_admin_panel = (request.blueprint == 'admin') and not is_preview %}
+{% set is_user_logged_in = current_user.is_authenticated and not is_preview %}
+{% set is_admin_user = current_user.is_authenticated and current_user.is_admin and not is_preview %}
+
+{% if is_preview %}
+<!-- Guest Live Preview Banner -->
+<div class="guest-preview-banner py-2 px-3 text-white d-flex align-items-center justify-content-between" style="background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); border-bottom: 1px solid rgba(255,255,255,0.12); position: sticky; top: 0; z-index: 1040;">
+  <div class="container-fluid px-xl-5 px-lg-4 px-3 d-flex align-items-center justify-content-between">
+    <div class="d-flex align-items-center gap-2">
+      <span class="badge bg-primary text-white px-2 py-1 fw-bold"><i class="bi bi-eye-fill me-1"></i>Guest Live Preview</span>
+      <span class="small text-light d-none d-sm-inline">Viewing the live website as an external visitor (guest mode &mdash; no admin or student credentials).</span>
+    </div>
+    <a href="{{ url_for('admin.dashboard') }}" class="btn btn-outline-light btn-sm rounded-pill px-3 py-1 fw-semibold d-flex align-items-center gap-1.5" style="font-size: 0.78rem;">
+      <i class="bi bi-arrow-left"></i>
+      <span>Back to Admin Panel</span>
+    </a>
+  </div>
+</div>
+{% endif %}
+
 <nav class="navbar navbar-expand-lg navbar-glass sticky-top py-2">
   <div class="container-fluid px-xl-5 px-lg-4 px-3">
     <!-- Brand Logo & Name -->
-    <a class="navbar-brand d-flex align-items-center gap-2 text-decoration-none me-2" href="{{ url_for('admin.dashboard') if (is_admin_panel or (current_user.is_authenticated and current_user.is_admin)) else url_for('catalog.home') }}">
+    <a class="navbar-brand d-flex align-items-center gap-2 text-decoration-none me-2" href="{{ url_for('admin.dashboard') if (is_admin_panel or is_admin_user) else url_for('catalog.home') }}">
       <div class="brand-logo-squircle">
         <i class="bi bi-mortarboard-fill"></i>
       </div>
@@ -12,7 +32,7 @@
       <div class="d-none d-lg-block vr mx-2 my-auto" style="height: 22px; opacity: 0.18;"></div>
     {% endif %}
 
-    {% if not is_admin_panel and not (current_user.is_authenticated and current_user.is_admin) %}
+    {% if not is_admin_panel and not is_admin_user %}
     <!-- Explore / Categories Dropdown Menu (Desktop) -->
     <div class="dropdown d-none d-md-block me-2">
       <button class="btn btn-outline-secondary btn-sm rounded-pill px-3 py-1.5 fw-semibold dropdown-toggle d-flex align-items-center gap-1.5" type="button" id="navExploreDropdown" data-bs-toggle="dropdown" aria-expanded="false" style="border-color: #cbd5e1; color: #334155;">
@@ -120,7 +140,7 @@
       </button>
       {% endif %}
 
-      {% if is_admin_panel or (current_user.is_authenticated and current_user.is_admin) %}
+      {% if is_admin_panel or is_admin_user %}
       <!-- Direct Mobile Log Out Button for Admin -->
       <form action="{{ url_for('auth.logout') }}" method="POST" class="m-0 d-inline">
         <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
@@ -131,7 +151,7 @@
       </form>
       {% endif %}
 
-      {% if not is_admin_panel and not (current_user.is_authenticated and current_user.is_admin) %}
+      {% if not is_admin_panel and not is_admin_user %}
       <!-- Wishlist Quick Icon (Mobile) -->
       <a class="btn-nav-icon position-relative text-decoration-none" href="{{ url_for('learning.wishlist') }}" title="Wishlist">
         <i class="bi bi-heart fs-5"></i>
@@ -168,7 +188,7 @@
       
       <!-- Offcanvas Mobile Header (Visible only on mobile: d-lg-none) -->
       <div class="offcanvas-header border-bottom d-lg-none py-3 px-3 bg-light">
-        {% if current_user.is_authenticated %}
+        {% if is_user_logged_in %}
           <div class="d-flex align-items-center gap-2.5 flex-grow-1 min-w-0">
             <div class="avatar-nav-circle" style="width: 38px; height: 38px; font-size: 0.95rem;">
               {{ (current_user.username[0]|upper) if current_user.username else 'U' }}
@@ -196,7 +216,7 @@
       <div class="offcanvas-body d-flex flex-column flex-lg-row align-items-lg-center justify-content-between p-3 p-lg-0 w-100">
         
         <!-- Mobile Search Bar with Live Search (d-lg-none) -->
-        {% if not is_admin_panel and not (current_user.is_authenticated and current_user.is_admin) %}
+        {% if not is_admin_panel and not is_admin_user %}
         <div class="d-lg-none mb-3 w-100 nav-search-wrapper">
           <form action="{{ url_for('catalog.index') }}" method="GET" role="search" id="mobileSearchForm">
             <div class="position-relative">
@@ -219,7 +239,7 @@
         <!-- ============================================== -->
         <div class="d-lg-none w-100 pb-4">
           <!-- 1. Resume Learning Card (Mobile) -->
-          {% if resume_learning %}
+          {% if is_user_logged_in and resume_learning %}
             <div class="mobile-resume-card mb-3">
               <div class="d-flex align-items-center justify-content-between mb-1.5">
                 <span class="badge bg-primary-subtle text-primary fw-bold" style="font-size: 0.7rem;">In Progress</span>
@@ -239,7 +259,7 @@
           {% endif %}
 
           <!-- 2. Learning & Catalog Section (Students & Non-Admin) -->
-          {% if not is_admin_panel and not (current_user.is_authenticated and current_user.is_admin) %}
+          {% if not is_admin_panel and not is_admin_user %}
           <div class="mobile-nav-heading">Learning Hub</div>
           <a href="{{ url_for('catalog.index') }}" class="mobile-nav-link {% if request.endpoint == 'catalog.index' %}active{% endif %}">
             <i class="bi bi-grid-fill text-primary"></i>
@@ -249,7 +269,7 @@
             <i class="bi bi-signpost-split-fill text-info"></i>
             <span>Career Roadmaps</span>
           </a>
-          {% if current_user.is_authenticated and current_user.is_student %}
+          {% if is_user_logged_in and current_user.is_student %}
             <a href="{{ url_for('learning.my_learning') }}" class="mobile-nav-link {% if request.endpoint == 'learning.my_learning' %}active{% endif %}">
               <i class="bi bi-journal-bookmark-fill text-success"></i>
               <span>My Learning Dashboard</span>
@@ -289,7 +309,7 @@
           {% endif %}
 
           <!-- 4. Teaching Studio (If Instructor) -->
-          {% if current_user.is_authenticated and current_user.is_instructor %}
+          {% if is_user_logged_in and current_user.is_instructor %}
             <div class="mobile-nav-heading mt-3">Teaching Studio</div>
             <a href="{{ url_for('catalog.instructor_dashboard') }}" class="mobile-nav-link">
               <i class="bi bi-speedometer2 text-primary"></i>
@@ -315,7 +335,7 @@
           {% endif %}
 
           <!-- 5. Platform Administration (If Admin) -->
-          {% if current_user.is_authenticated and current_user.is_admin %}
+          {% if is_admin_user %}
             <div class="mobile-nav-heading mt-3 text-danger">Platform Administration</div>
             <a href="{{ url_for('admin.dashboard') }}" class="mobile-nav-link">
               <i class="bi bi-speedometer2 text-danger"></i>
@@ -353,7 +373,7 @@
 
           <!-- 6. Account & Preferences -->
           <div class="mobile-nav-heading mt-3">Account & Settings</div>
-          {% if current_user.is_authenticated %}
+          {% if is_user_logged_in %}
             <a href="{{ url_for('auth.profile') }}" class="mobile-nav-link">
               <i class="bi bi-person text-primary"></i>
               <span>My Profile</span>
@@ -376,7 +396,7 @@
                 <span class="badge bg-success rounded-pill">{{ unread_messages_count }}</span>
               {% endif %}
             </a>
-            {% if not (current_user.is_authenticated and current_user.is_admin) %}
+            {% if not is_admin_user %}
             <a href="{{ url_for('learning.wishlist') }}" class="mobile-nav-link">
               <i class="bi bi-heart text-danger"></i>
               <span>Saved Wishlist</span>
@@ -497,7 +517,7 @@
             </li>
           {% else %}
             <!-- Standard Catalog & Role Links (Non-Admin Panel) -->
-            {% if not (current_user.is_authenticated and current_user.is_admin) %}
+            {% if not is_admin_user %}
             <li class="nav-item">
               <a class="nav-link nav-pill-link {% if request.endpoint in ['catalog.roadmaps', 'catalog.roadmap_detail'] %}active{% endif %}" href="{{ url_for('catalog.roadmaps') }}">
                 <i class="bi bi-signpost-split-fill me-1.5 text-primary"></i>
@@ -512,7 +532,7 @@
             </li>
             {% endif %}
 
-            {% if current_user.is_authenticated %}
+            {% if is_user_logged_in %}
               {% if current_user.is_student %}
                 <li class="nav-item">
                   <a class="nav-link nav-pill-link {% if request.endpoint == 'learning.my_learning' %}active{% endif %}" href="{{ url_for('learning.my_learning') }}">
@@ -599,7 +619,7 @@
           </li>
           {% endif %}
 
-          {% if not is_admin_panel and not (current_user.is_authenticated and current_user.is_admin) %}
+          {% if not is_admin_panel and not is_admin_user %}
           <!-- Wishlist (Desktop) -->
           <li class="nav-item">
             <a class="btn-nav-icon position-relative text-decoration-none" href="{{ url_for('learning.wishlist') }}" title="Wishlist">
@@ -629,7 +649,7 @@
           </li>
           {% endif %}
 
-          {% if current_user.is_authenticated %}
+          {% if is_user_logged_in %}
             <!-- Interactive Notifications Dropdown -->
             <li class="nav-item dropdown">
               <a class="btn-nav-icon position-relative text-decoration-none dropdown-toggle border-0" href="#" id="navNotifDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false" title="Notifications">
@@ -795,7 +815,7 @@
             </li>
 
             <!-- Direct Standalone Log Out Button for Admin -->
-            {% if is_admin_panel or current_user.is_admin %}
+            {% if is_admin_panel or is_admin_user %}
               <li class="nav-item ms-1">
                 <form action="{{ url_for('auth.logout') }}" method="POST" class="m-0">
                   <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
