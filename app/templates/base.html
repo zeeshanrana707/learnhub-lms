@@ -26,12 +26,10 @@
   {% include 'partials/navbar.html' %}
 
   <!-- Flash Messages -->
-  <div class="container mt-3">
-    {% include 'partials/flash.html' %}
-  </div>
+  {% include 'partials/flash.html' %}
 
   <!-- Main Body Content -->
-  <main class="py-4">
+  <main class="flex-grow-1">
     {% block content %}{% endblock %}
   </main>
 
