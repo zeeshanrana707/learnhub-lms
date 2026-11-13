@@ -1,9 +1,8 @@
 {# Reusable Modern Course Card Partial #}
 {% set is_preview = is_preview if is_preview is defined else (True if (request.args.get('preview') == '1' or session.get('live_preview')) and request.blueprint != 'admin' else False) %}
 {% set preview_qs = preview_qs if preview_qs is defined else ('?preview=1' if is_preview else '') %}
-{% set is_card_auth = current_user.is_authenticated and not is_preview %}
 {% set is_saved = false %}
-{% if is_card_auth %}
+{% if current_user.is_authenticated %}
   {% if user_wishlist_ids is defined %}
     {% set is_saved = course.id in user_wishlist_ids %}
   {% else %}
@@ -29,7 +28,7 @@
       </div>
     </a>
     <!-- Wishlist Quick Heart Button -->
-    {% if is_card_auth and not current_user.is_admin %}
+    {% if current_user.is_authenticated %}
       <button type="button" 
               class="course-card-wishlist-btn {% if is_saved %}active{% endif %}" 
               data-course-id="{{ course.id }}"

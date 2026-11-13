@@ -66,6 +66,9 @@ def register():
 @auth_bp.route('/login', methods=['GET', 'POST'])
 def login():
     if current_user.is_authenticated:
+        next_url = request.args.get('next')
+        if next_url and next_url.startswith('/'):
+            return redirect(next_url)
         return redirect_by_role(current_user)
 
     form = LoginForm()

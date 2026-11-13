@@ -57,7 +57,7 @@ document.addEventListener('DOMContentLoaded', function () {
       const csrfToken = csrfMeta ? csrfMeta.getAttribute('content') : '';
       const icon = this.querySelector('i');
 
-      fetch(`/learning/wishlist/toggle/${courseId}`, {
+      fetch(`/learn/wishlist/toggle/${courseId}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
