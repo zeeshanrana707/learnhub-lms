@@ -1,6 +1,7 @@
 import os
 import re
 import unicodedata
+import difflib
 from datetime import datetime, timezone
 from flask import request, current_app
 from flask_login import current_user
@@ -263,4 +264,118 @@ def get_lesson_breakdown(lesson) -> dict:
         "takeaways": takeaways,
         "why_it_matters": why_it_matters
     }
+
+
+def tokenize_for_search(text: str) -> list[str]:
+    """Tokenize and split text into normalized words, including sub-stems."""
+    if not text:
+        return []
+    words = re.findall(r'[a-zA-Z0-9]+', text.lower())
+    extra = []
+    for w in words:
+        for sub in ('cyber', 'script', 'learn', 'net', 'stack', 'data', 'base', 'algo'):
+            if sub in w and w != sub:
+                extra.append(sub)
+    return words + extra
+
+
+def fuzzy_search_courses(courses, query: str, limit: int = 6):
+    """
+    Intelligent typo-tolerant fuzzy search engine.
+    Matches exact substrings first, then token-level sequence similarity.
+    Corrects typos like 'dep lenrig' -> 'Deep Learning', 'pyton' -> 'Python', 'doker' -> 'Docker'.
+    """
+    if not query or not courses:
+        return []
+
+    q_clean = query.strip().lower()
+    q_words = tokenize_for_search(q_clean)
+    if not q_words:
+        return []
+
+    exact_matches = []
+    fuzzy_matches = []
+
+    for c in courses:
+        title_lower = c.title.lower()
+        title_words = tokenize_for_search(c.title)
+        cat_name = c.category.name.lower() if c.category else ''
+        cat_words = tokenize_for_search(cat_name)
+        desc_words = tokenize_for_search(c.description[:250] if c.description else '')
+
+        # 1. Exact phrase match in title
+        if q_clean in title_lower:
+            exact_matches.append((1000.0, c))
+            continue
+
+        # 2. Exact phrase in category or description
+        if q_clean in cat_name or q_clean in (c.description or '').lower():
+            exact_matches.append((500.0, c))
+            continue
+
+        # 3. Word-by-word typo similarity
+        word_scores = []
+        for qw in q_words:
+            best_score = 0.0
+
+            # Match against title words (highest priority)
+            for tw in title_words:
+                if qw == tw:
+                    score = 1.0
+                elif qw in tw or tw in qw:
+                    ratio = len(qw) / len(tw) if len(qw) < len(tw) else len(tw) / len(qw)
+                    score = max(0.85, ratio)
+                else:
+                    score = difflib.SequenceMatcher(None, qw, tw).ratio()
+                if score > best_score:
+                    best_score = score
+
+            # Match against category words
+            for cw in cat_words:
+                if qw == cw:
+                    c_score = 0.95
+                else:
+                    c_score = difflib.SequenceMatcher(None, qw, cw).ratio() * 0.85
+                if c_score > best_score:
+                    best_score = c_score
+
+            # Match against description words
+            for dw in desc_words:
+                if qw == dw:
+                    d_score = 0.80
+                else:
+                    d_score = difflib.SequenceMatcher(None, qw, dw).ratio() * 0.70
+                if d_score > best_score:
+                    best_score = d_score
+
+            word_scores.append(best_score)
+
+        if not word_scores:
+            continue
+
+        min_w = min(word_scores)
+        avg_w = sum(word_scores) / len(word_scores)
+        full_ratio = difflib.SequenceMatcher(None, q_clean, title_lower).ratio()
+
+        # Typo threshold: each word in query must have at least ~60% match
+        threshold = 0.60 if len(q_words) > 1 else 0.68
+        if min_w >= threshold or (len(q_words) > 1 and avg_w >= 0.72):
+            final_score = (min_w * 40.0) + (avg_w * 40.0) + (full_ratio * 20.0)
+            fuzzy_matches.append((final_score, c))
+
+    exact_matches.sort(reverse=True, key=lambda x: x[0])
+    fuzzy_matches.sort(reverse=True, key=lambda x: x[0])
+
+    combined = [item[1] for item in (exact_matches + fuzzy_matches)]
+    seen = set()
+    deduped = []
+    for c in combined:
+        if c.id not in seen:
+            seen.add(c.id)
+            deduped.append(c)
+        if limit and len(deduped) >= limit:
+            break
+
+    return deduped
+
 

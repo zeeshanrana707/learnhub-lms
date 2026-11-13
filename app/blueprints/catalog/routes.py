@@ -7,7 +7,7 @@ from app.models.assessments import Submission, Quiz
 from app.models.community import ForumThread
 from app.forms.catalog import CourseForm
 from app.utils.decorators import instructor_or_admin_required, instructor_course_owner_required
-from app.utils.helpers import slugify, log_action
+from app.utils.helpers import slugify, log_action, fuzzy_search_courses
 
 catalog_bp = Blueprint('catalog', __name__)
 
@@ -237,8 +237,21 @@ def index():
 
     query = Course.query.filter_by(status='published', is_active=True)
 
+    fuzzy_used = False
     if search_q:
-        query = query.filter((Course.title.ilike(f'%{search_q}%')) | (Course.description.ilike(f'%{search_q}%')))
+        exact_check = query.filter((Course.title.ilike(f'%{search_q}%')) | (Course.description.ilike(f'%{search_q}%'))).count()
+        if exact_check > 0:
+            query = query.filter((Course.title.ilike(f'%{search_q}%')) | (Course.description.ilike(f'%{search_q}%')))
+        else:
+            # Smart typo tolerance
+            all_published = Course.query.filter_by(status='published', is_active=True).all()
+            fuzzy_matches = fuzzy_search_courses(all_published, search_q, limit=24)
+            if fuzzy_matches:
+                fuzzy_used = True
+                fuzzy_ids = [c.id for c in fuzzy_matches]
+                query = query.filter(Course.id.in_(fuzzy_ids))
+            else:
+                query = query.filter((Course.title.ilike(f'%{search_q}%')) | (Course.description.ilike(f'%{search_q}%')))
     if cat_id:
         query = query.filter(Course.category_id == cat_id)
     if dept_id:
@@ -268,7 +281,8 @@ def index():
         selected_department=dept_id,
         selected_tag=tag_id,
         selected_level=level,
-        selected_price=price_filter
+        selected_price=price_filter,
+        fuzzy_used=fuzzy_used
     )
 
 
@@ -352,11 +366,19 @@ def api_search():
     if len(q) < 2:
         return {'results': [], 'query': q}
 
-    matches = Course.query.filter(
+    exact_matches = Course.query.filter(
         Course.status == 'published',
         Course.is_active == True,
         (Course.title.ilike(f'%{q}%')) | (Course.description.ilike(f'%{q}%'))
     ).order_by(Course.created_at.desc()).limit(6).all()
+
+    if len(exact_matches) >= 3:
+        matches = exact_matches
+    else:
+        # Typo-tolerant search fallback
+        all_published = Course.query.filter_by(status='published', is_active=True).all()
+        fuzzy_matches = fuzzy_search_courses(all_published, q, limit=6)
+        matches = fuzzy_matches if fuzzy_matches else exact_matches
 
     results = []
     for c in matches:
