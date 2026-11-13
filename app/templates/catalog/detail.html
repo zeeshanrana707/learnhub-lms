@@ -180,22 +180,17 @@
               </div>
               
               <!-- Topic Preview Highlight Box -->
-              <div class="p-2.5 rounded-3 bg-light border d-flex align-items-center gap-2.5 preview-highlight-box" id="previewHighlightCard">
-                <div class="rounded-circle bg-danger text-white d-flex align-items-center justify-content-center flex-shrink-0 shadow-sm" style="width: 32px; height: 32px; font-size: 0.95rem;">
-                  <i class="bi bi-play-fill"></i>
+              <div class="card border rounded-3 p-2 bg-light shadow-xs preview-highlight-box" id="previewHighlightCard">
+                <div class="d-flex align-items-center justify-content-between mb-1">
+                  <span class="badge bg-danger-subtle text-danger fw-semibold px-2 py-0.5" style="font-size: 0.72rem;">
+                    <i class="bi bi-play-circle-fill me-1"></i>Free Preview
+                  </span>
+                  <span class="text-muted small fw-medium" id="previewDuration" style="font-size: 0.75rem;">
+                    <i class="bi bi-clock me-1"></i>{{ preview_lesson.duration_min | format_duration }}
+                  </span>
                 </div>
-                <div class="min-w-0 flex-grow-1">
-                  <div class="d-flex align-items-center justify-content-between mb-0.5">
-                    <span class="badge bg-danger-subtle text-danger fw-semibold px-2 py-0.5" style="font-size: 0.68rem;">
-                      <i class="bi bi-play-circle me-1"></i>Free Preview
-                    </span>
-                    <span class="text-muted" style="font-size: 0.72rem;" id="previewDuration">
-                      <i class="bi bi-clock me-1"></i>{{ preview_lesson.duration_min | format_duration }}
-                    </span>
-                  </div>
-                  <div class="fw-semibold text-dark text-truncate small" id="previewTitle" title="{{ preview_lesson.title }}">
-                    {{ preview_lesson.title }}
-                  </div>
+                <div class="fw-bold text-dark text-truncate small" id="previewTitle" title="{{ preview_lesson.title }}">
+                  {{ preview_lesson.title }}
                 </div>
               </div>
             </div>
@@ -203,8 +198,8 @@
         {% endif %}
 
         <!-- Free Access Badge -->
-        <div class="text-center mb-2.5">
-          <span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill px-3 py-1.5 fw-semibold small">
+        <div class="text-center mb-3">
+          <span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill px-3 py-1.5 fw-semibold small text-truncate" style="max-width: 100%;">
             <i class="bi bi-patch-check-fill me-1"></i>100% Free Course • Verifiable Certificate
           </span>
         </div>
@@ -242,23 +237,23 @@
         </div>
 
         <!-- What's included checklist -->
-        <div class="p-2.5 rounded-3 bg-light border-0 small course-includes-box">
-          <div class="text-uppercase text-muted fw-bold mb-2" style="font-size: 0.68rem; letter-spacing: 0.5px;">This course includes:</div>
-          <div class="d-flex flex-column gap-1.5 text-secondary" style="font-size: 0.8rem;">
+        <div class="card bg-light border-0 p-3 rounded-3 mb-0 course-includes-box">
+          <div class="text-uppercase text-muted fw-bold mb-2" style="font-size: 0.7rem; letter-spacing: 0.5px;">This course includes:</div>
+          <div class="d-flex flex-column gap-2 text-secondary" style="font-size: 0.82rem;">
             <div class="d-flex align-items-center gap-2">
-              <i class="bi bi-youtube text-danger flex-shrink-0"></i>
+              <i class="bi bi-youtube text-danger fs-6 flex-shrink-0"></i>
               <span><strong>{{ all_lessons|length }}</strong> on-demand video lectures</span>
             </div>
             <div class="d-flex align-items-center gap-2">
-              <i class="bi bi-folder-check text-primary flex-shrink-0"></i>
+              <i class="bi bi-folder-check text-primary fs-6 flex-shrink-0"></i>
               <span><strong>{{ course.modules|length }}</strong> structured learning chapters</span>
             </div>
             <div class="d-flex align-items-center gap-2">
-              <i class="bi bi-patch-question text-info flex-shrink-0"></i>
+              <i class="bi bi-patch-question text-info fs-6 flex-shrink-0"></i>
               <span>Auto-graded quizzes & assignments</span>
             </div>
             <div class="d-flex align-items-center gap-2">
-              <i class="bi bi-award text-success flex-shrink-0"></i>
+              <i class="bi bi-award text-success fs-6 flex-shrink-0"></i>
               <span>Official shareable certificate</span>
             </div>
           </div>

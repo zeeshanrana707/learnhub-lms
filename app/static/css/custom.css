@@ -1545,11 +1545,26 @@ main {
     position: sticky !important;
     top: 76px !important;
     z-index: 10;
+    max-width: 100%;
+    overflow: hidden;
   }
 }
 
 .preview-highlight-box {
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  overflow: hidden;
   transition: all 0.25s ease;
+}
+
+#previewTitle {
+  display: block !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  white-space: nowrap !important;
 }
 
 [data-bs-theme="dark"] .course-detail-sticky {
