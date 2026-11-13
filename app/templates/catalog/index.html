@@ -79,18 +79,6 @@
           </button>
         </form>
       </div>
-
-      <!-- Popular Tags -->
-      <div class="card p-3 shadow-sm border-0">
-        <h6 class="fw-bold mb-2">Popular Tags</h6>
-        <div class="d-flex flex-wrap gap-1">
-          {% for t in tags %}
-            <a href="{{ url_for('catalog.index', tag=t.id, preview=1 if is_preview else None) }}" class="badge {% if selected_tag == t.id %}bg-primary text-white{% else %}bg-light text-secondary border{% endif %} text-decoration-none py-1 px-2">
-              #{{ t.name }}
-            </a>
-          {% endfor %}
-        </div>
-      </div>
     </div>
 
     <!-- Course Grid -->
