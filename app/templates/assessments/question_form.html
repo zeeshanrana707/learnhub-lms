@@ -1,0 +1,101 @@
+{% extends 'base.html' %}
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+  <div class="row justify-content-center">
+    <div class="col-lg-8">
+      <div class="card shadow-sm border-0 mb-4">
+        <div class="card-header bg-white py-3 border-bottom d-flex justify-content-between align-items-center">
+          <h4 class="fw-bold mb-0">{{ title }}</h4>
+          <a href="{{ url_for('assessments.edit_quiz', quiz_id=quiz.id) }}" class="btn btn-outline-secondary btn-sm">
+            <i class="bi bi-arrow-left me-1"></i> Back to Quiz
+          </a>
+        </div>
+        <div class="card-body p-4">
+          <form method="POST">
+            {{ form.hidden_tag() }}
+
+            <div class="mb-3">
+              {{ form.text.label(class="form-label fw-semibold") }}
+              {{ form.text(class="form-control" + (" is-invalid" if form.text.errors else ""), rows="3", placeholder="Enter the question text...") }}
+              {% for error in form.text.errors %}
+                <div class="invalid-feedback">{{ error }}</div>
+              {% endfor %}
+            </div>
+
+            <div class="row">
+              <div class="col-md-6 mb-3">
+                {{ form.question_type.label(class="form-label fw-semibold") }}
+                {{ form.question_type(class="form-select") }}
+              </div>
+              <div class="col-md-3 mb-3">
+                {{ form.points.label(class="form-label fw-semibold") }}
+                {{ form.points(class="form-control") }}
+              </div>
+              <div class="col-md-3 mb-3">
+                {{ form.position.label(class="form-label fw-semibold") }}
+                {{ form.position(class="form-control") }}
+              </div>
+            </div>
+
+            <button type="submit" class="btn btn-primary px-4">Save Question</button>
+          </form>
+        </div>
+      </div>
+
+      <!-- Option Management If Editing Question -->
+      {% if question %}
+        <div class="card shadow-sm border-0">
+          <div class="card-header bg-white py-3 border-bottom">
+            <h5 class="fw-bold mb-0"><i class="bi bi-list-check text-primary me-2"></i>Answer Choices</h5>
+          </div>
+          <div class="card-body p-4">
+            {% if question.options %}
+              <ul class="list-group mb-4">
+                {% for opt in question.options %}
+                  <li class="list-group-item d-flex justify-content-between align-items-center">
+                    <div class="d-flex align-items-center gap-2">
+                      {% if opt.is_correct %}
+                        <i class="bi bi-check-circle-fill text-success fs-5"></i>
+                        <span class="fw-bold text-success">{{ opt.text }}</span>
+                        <span class="badge bg-success-subtle text-success small ms-2">Correct Answer</span>
+                      {% else %}
+                        <i class="bi bi-circle text-muted fs-5"></i>
+                        <span>{{ opt.text }}</span>
+                      {% endif %}
+                    </div>
+                    <form action="{{ url_for('assessments.delete_question_option', option_id=opt.id) }}" method="POST">
+                      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                      <button type="submit" class="btn btn-sm btn-outline-danger"><i class="bi bi-trash"></i></button>
+                    </form>
+                  </li>
+                {% endfor %}
+              </ul>
+            {% endif %}
+
+            <h6 class="fw-bold mb-3">Add Answer Option</h6>
+            <form action="{{ url_for('assessments.add_question_option', question_id=question.id) }}" method="POST">
+              {{ option_form.hidden_tag() }}
+              <div class="row g-2 align-items-center">
+                <div class="col-md-7">
+                  {{ option_form.text(class="form-control form-control-sm", placeholder="Option text...") }}
+                </div>
+                <div class="col-md-3">
+                  <div class="form-check">
+                    {{ option_form.is_correct(class="form-check-input") }}
+                    {{ option_form.is_correct.label(class="form-check-label small") }}
+                  </div>
+                </div>
+                <div class="col-md-2">
+                  <button type="submit" class="btn btn-outline-primary btn-sm w-100">Add</button>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}

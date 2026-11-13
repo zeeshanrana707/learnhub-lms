@@ -1,0 +1,65 @@
+{% extends 'base.html' %}
+{% block title %}Taking Quiz: {{ quiz.title }}{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+  <div class="row justify-content-center">
+    <div class="col-lg-8">
+      <!-- Sticky Timer & Progress -->
+      <div class="card p-3 shadow-sm border-0 mb-4 sticky-top bg-white" style="top: 80px; z-index: 1020;">
+        <div class="d-flex justify-content-between align-items-center">
+          <div>
+            <h5 class="fw-bold mb-0">{{ quiz.title }}</h5>
+            <span class="text-muted small">Pass mark: {{ quiz.pass_mark }}% • Attempt {{ attempts_count + 1 }} of {{ quiz.max_attempts }}</span>
+          </div>
+          <div class="d-flex align-items-center gap-2">
+            <span class="small fw-semibold text-muted">Time Remaining:</span>
+            <span id="quiz-timer" data-minutes="{{ quiz.time_limit_min }}" class="badge bg-primary fs-6 px-3 py-2 font-monospace">
+              {{ "%02d:00"|format(quiz.time_limit_min) }}
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Quiz Questions Form -->
+      <form id="quiz-form" method="POST" data-confirm="Are you sure you want to finish and submit your quiz attempt?">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+        {% for question in quiz.questions %}
+          <div class="card shadow-sm border-0 mb-4">
+            <div class="card-header bg-white py-3 border-bottom d-flex justify-content-between align-items-center">
+              <span class="fw-bold text-primary">Question {{ loop.index }}</span>
+              <span class="badge bg-light text-secondary border small">{{ question.points }} pts</span>
+            </div>
+            <div class="card-body p-4">
+              <h5 class="fw-semibold mb-4 text-dark">{{ question.text }}</h5>
+
+              <div class="d-flex flex-column gap-3">
+                {% for option in question.options %}
+                  <div class="form-check p-3 border rounded hover-card">
+                    <input class="form-check-input ms-0 me-3" type="radio" name="question_{{ question.id }}" id="opt_{{ option.id }}" value="{{ option.id }}">
+                    <label class="form-check-label w-100 fw-medium" for="opt_{{ option.id }}">
+                      {{ option.text }}
+                    </label>
+                  </div>
+                {% else %}
+                  <p class="text-muted small mb-0">No answer options configured for this question.</p>
+                {% endfor %}
+              </div>
+            </div>
+          </div>
+        {% endfor %}
+
+        <div class="d-flex justify-content-between align-items-center mt-4 mb-5">
+          <a href="{{ url_for('learning.course_overview', course_id=quiz.course_id) }}" class="btn btn-outline-secondary">
+            Cancel & Exit
+          </a>
+          <button type="submit" class="btn btn-primary btn-lg px-5 shadow">
+            <i class="bi bi-send-check me-2"></i> Submit Quiz Attempt
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

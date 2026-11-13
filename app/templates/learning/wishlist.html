@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+{% block title %}My Wishlist{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+  <h2 class="fw-bold mb-1">My Saved Wishlist</h2>
+  <p class="text-muted mb-4">Courses you are interested in exploring or enrolling in later</p>
+
+  {% if items %}
+    <div class="row g-4">
+      {% for item in items %}
+        <div class="col-md-4">
+          <div class="card h-100 course-card shadow-sm border-0">
+            <div class="card-body d-flex flex-column p-4">
+              <span class="badge bg-primary-subtle text-primary mb-2 align-self-start">{{ item.course.category.name if item.course.category else 'General' }}</span>
+              <h5 class="card-title fw-bold">
+                <a href="{{ url_for('catalog.detail', course_id=item.course.id) }}" class="text-dark text-decoration-none">
+                  {{ item.course.title }}
+                </a>
+              </h5>
+              <p class="card-text text-muted small flex-grow-1">{{ item.course.description[:100] }}...</p>
+
+              <div class="d-flex justify-content-between align-items-center pt-3 border-top mt-2">
+                <span class="fw-bold text-primary fs-5">
+                  {% if item.course.is_free %}Free{% else %}${{ "%.2f"|format(item.course.price) }}{% endif %}
+                </span>
+                <div class="d-flex gap-2">
+                  <a href="{{ url_for('catalog.detail', course_id=item.course.id) }}" class="btn btn-outline-primary btn-sm">View</a>
+                  <form action="{{ url_for('learning.toggle_wishlist', course_id=item.course.id) }}" method="POST">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                    <button type="submit" class="btn btn-outline-danger btn-sm" title="Remove"><i class="bi bi-trash"></i></button>
+                  </form>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  {% else %}
+    <div class="card p-5 text-center shadow-sm border-0">
+      <i class="bi bi-heart fs-1 text-muted mb-2"></i>
+      <h5>Your wishlist is empty</h5>
+      <p class="text-muted small">Browse courses and click "Add to Wishlist" to save them for later.</p>
+      <div><a href="{{ url_for('catalog.index') }}" class="btn btn-primary">Browse Catalog</a></div>
+    </div>
+  {% endif %}
+</div>
+{% endblock %}

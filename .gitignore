@@ -1,0 +1,41 @@
+# ==============================================================================
+# LearnHub Git Ignore Configuration
+# ==============================================================================
+
+# Python bytecode & cache
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Large Binaries & Executables (Prevents GitHub size warnings)
+*.exe
+cloudflared.exe
+
+# Virtual Environments
+venv/
+.venv/
+env/
+ENV/
+
+# Environment Variables & Local Secrets
+.env
+!.env.example
+
+# Testing & Coverage Caches
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Scratch & Temporary Notes
+scratch/
+
+# IDE & Editor Settings
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS Generated Files
+.DS_Store
+Thumbs.db
+desktop.ini

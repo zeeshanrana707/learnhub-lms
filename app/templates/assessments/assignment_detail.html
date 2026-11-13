@@ -1,0 +1,128 @@
+{% extends 'base.html' %}
+{% block title %}{{ assignment.title }} - Assignment{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+  <div class="row g-4">
+    <div class="col-lg-8">
+      <!-- Assignment Overview -->
+      <div class="card shadow-sm border-0 mb-4">
+        <div class="card-header bg-white py-3 border-bottom d-flex justify-content-between align-items-center">
+          <div>
+            <a href="{{ url_for('learning.course_overview', course_id=assignment.course_id) }}" class="text-muted small text-decoration-none">
+              <i class="bi bi-arrow-left me-1"></i> Back to {{ assignment.course.title }}
+            </a>
+            <h3 class="fw-bold mb-0 mt-1">{{ assignment.title }}</h3>
+          </div>
+          <span class="badge bg-primary fs-6">{{ assignment.max_points }} Points</span>
+        </div>
+        <div class="card-body p-4">
+          <div class="d-flex align-items-center gap-3 text-muted small mb-3 pb-3 border-bottom">
+            <span><i class="bi bi-calendar-event me-1"></i> <strong>Due Date:</strong> {{ assignment.due_date.strftime('%B %d, %Y at %I:%M %p') }}</span>
+            <span><i class="bi bi-clock-history me-1"></i> <strong>Late Policy:</strong> Flagged if submitted after deadline</span>
+          </div>
+
+          <h5 class="fw-bold mb-2">Instructions</h5>
+          <div class="text-secondary lh-lg mb-4" style="white-space: pre-line;">{{ assignment.instructions }}</div>
+
+          <!-- Evaluation Rubric Criteria -->
+          {% if assignment.rubric and assignment.rubric.criteria %}
+            <div class="card bg-light border-0 p-3 mb-3">
+              <h6 class="fw-bold mb-2"><i class="bi bi-table text-primary me-2"></i>Grading Rubric: {{ assignment.rubric.title }}</h6>
+              <div class="table-responsive">
+                <table class="table table-sm table-bordered bg-white mb-0 small">
+                  <thead class="table-light">
+                    <tr>
+                      <th>Criterion Description</th>
+                      <th style="width: 120px;" class="text-center">Max Points</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {% for crit in assignment.rubric.criteria %}
+                      <tr>
+                        <td>{{ crit.description }}</td>
+                        <td class="text-center fw-bold">{{ crit.max_points }}</td>
+                      </tr>
+                    {% endfor %}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          {% endif %}
+        </div>
+      </div>
+
+      <!-- Submission / Grade Section -->
+      {% if submission and submission.status == 'graded' and submission.grade %}
+        <div class="card shadow-sm border-0 border-success mb-4">
+          <div class="card-header bg-success-subtle text-success py-3 d-flex justify-content-between align-items-center">
+            <h5 class="fw-bold mb-0"><i class="bi bi-check-circle-fill me-2"></i>Graded by Instructor</h5>
+            <span class="fs-5 fw-bold">{{ submission.grade.score }} / {{ assignment.max_points }} pts</span>
+          </div>
+          <div class="card-body p-4">
+            <h6 class="fw-bold mb-1">Feedback from {{ submission.grade.grader.profile.full_name or submission.grade.grader.username }}:</h6>
+            <p class="text-secondary mb-0 bg-light p-3 rounded">{{ submission.grade.feedback or "Great work!" }}</p>
+          </div>
+        </div>
+      {% endif %}
+
+      <!-- Student Submission Form -->
+      <div class="card shadow-sm border-0">
+        <div class="card-header bg-white py-3 border-bottom">
+          <h5 class="fw-bold mb-0"><i class="bi bi-upload text-primary me-2"></i>Your Submission</h5>
+        </div>
+        <div class="card-body p-4">
+          {% if submission %}
+            <div class="alert alert-info py-2 small mb-3">
+              You submitted this assignment on <strong>{{ submission.submitted_at.strftime('%b %d, %Y at %I:%M %p') }}</strong>.
+              {% if submission.is_late %}<span class="badge bg-danger ms-2">Submitted Late</span>{% endif %}
+              Status: <span class="badge bg-secondary text-uppercase">{{ submission.status }}</span>
+            </div>
+
+            {% if submission.file_path %}
+              <div class="mb-3">
+                <span class="text-muted small">Uploaded Attachment:</span><br>
+                <a href="{{ url_for('static', filename=submission.file_path) }}" target="_blank" class="btn btn-outline-secondary btn-sm mt-1">
+                  <i class="bi bi-file-earmark-arrow-down me-1"></i> Download Submitted File
+                </a>
+              </div>
+            {% endif %}
+          {% endif %}
+
+          <form method="POST" enctype="multipart/form-data">
+            {{ form.hidden_tag() }}
+
+            <div class="mb-3">
+              {{ form.text.label(class="form-label fw-semibold") }}
+              {{ form.text(class="form-control", rows="5", placeholder="Paste your code link, essay response, or notes...") }}
+            </div>
+
+            <div class="mb-4">
+              {{ form.file.label(class="form-label fw-semibold") }}
+              {{ form.file(class="form-control") }}
+              <div class="form-text">Accepted formats: PDF, ZIP, DOC, DOCX, PY, TXT (Max 16MB)</div>
+            </div>
+
+            <button type="submit" class="btn btn-primary px-4">
+              <i class="bi bi-send me-1"></i> {% if submission %}Resubmit Assignment{% else %}Submit Assignment{% endif %}
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <!-- Instructor Grading Link Sidebar -->
+    {% if is_owner %}
+      <div class="col-lg-4">
+        <div class="card p-3 shadow-sm border-0 sticky-top" style="top: 80px;">
+          <h6 class="fw-bold mb-3"><i class="bi bi-person-workspace text-primary me-2"></i>Instructor Actions</h6>
+          <p class="text-muted small">View all submissions from enrolled students for this assignment.</p>
+          <a href="{{ url_for('assessments.grading_queue') }}" class="btn btn-outline-primary btn-sm w-100">
+            Open Grading Queue
+          </a>
+        </div>
+      </div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

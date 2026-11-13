@@ -1,0 +1,101 @@
+{% extends 'base.html' %}
+{% block title %}Instructor Grading Queue{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+  <h2 class="fw-bold mb-1">Grading Queue</h2>
+  <p class="text-muted mb-4">Review, score, and provide feedback on student assignment submissions</p>
+
+  <!-- Pending Submissions -->
+  <div class="card shadow-sm border-0 mb-4">
+    <div class="card-header bg-white py-3 border-bottom d-flex justify-content-between align-items-center">
+      <h5 class="fw-bold mb-0 text-warning"><i class="bi bi-clock-history me-2"></i>Pending Submissions ({{ pending|length }})</h5>
+    </div>
+    <div class="table-responsive">
+      <table class="table table-hover align-middle mb-0">
+        <thead class="table-light">
+          <tr>
+            <th>Student</th>
+            <th>Course & Assignment</th>
+            <th>Submitted At</th>
+            <th>Late Status</th>
+            <th class="text-end">Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for sub in pending %}
+            <tr>
+              <td>
+                <strong>{{ sub.user.profile.full_name or sub.user.username }}</strong>
+                <div class="text-muted small">@{{ sub.user.username }}</div>
+              </td>
+              <td>
+                <div class="fw-semibold">{{ sub.assignment.title }}</div>
+                <div class="text-muted small">{{ sub.assignment.course.title }}</div>
+              </td>
+              <td class="small">{{ sub.submitted_at.strftime('%b %d, %Y at %I:%M %p') }}</td>
+              <td>
+                {% if sub.is_late %}
+                  <span class="badge bg-danger">Late</span>
+                {% else %}
+                  <span class="badge bg-success">On Time</span>
+                {% endif %}
+              </td>
+              <td class="text-end">
+                <a href="{{ url_for('assessments.grade_single_submission', id=sub.id) }}" class="btn btn-sm btn-primary">
+                  <i class="bi bi-pencil-square me-1"></i> Grade
+                </a>
+              </td>
+            </tr>
+          {% else %}
+            <tr>
+              <td colspan="5" class="text-center py-4 text-muted">
+                No pending submissions waiting for review!
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Recently Graded -->
+  <div class="card shadow-sm border-0">
+    <div class="card-header bg-white py-3 border-bottom">
+      <h5 class="fw-bold mb-0 text-success"><i class="bi bi-check-all me-2"></i>Recently Graded</h5>
+    </div>
+    <div class="table-responsive">
+      <table class="table table-hover align-middle mb-0">
+        <thead class="table-light">
+          <tr>
+            <th>Student</th>
+            <th>Assignment</th>
+            <th>Score</th>
+            <th>Feedback</th>
+            <th class="text-end">Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for sub in graded %}
+            <tr>
+              <td><strong>{{ sub.user.username }}</strong></td>
+              <td>{{ sub.assignment.title }}</td>
+              <td><span class="badge bg-success-subtle text-success fs-6">{{ sub.grade.score if sub.grade else 'N/A' }} / {{ sub.assignment.max_points }}</span></td>
+              <td class="small text-muted">{{ sub.grade.feedback[:60] if sub.grade and sub.grade.feedback else 'None' }}...</td>
+              <td class="text-end">
+                <a href="{{ url_for('assessments.grade_single_submission', id=sub.id) }}" class="btn btn-sm btn-outline-secondary">
+                  Update Grade
+                </a>
+              </td>
+            </tr>
+          {% else %}
+            <tr>
+              <td colspan="5" class="text-center py-3 text-muted">No graded submissions yet.</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,324 @@
+{% extends 'base.html' %}
+{% block title %}{{ category.name }} - Step-by-Step Curriculum & Topic Videos{% endblock %}
+
+{% block content %}
+<!-- Roadmap Header Banner -->
+<div class="py-5 text-white mb-5 position-relative" style="background: {{ meta.bg_gradient }};">
+  <div class="container py-2">
+    <!-- Breadcrumb -->
+    <nav aria-label="breadcrumb" class="mb-3">
+      <ol class="breadcrumb small mb-0">
+        <li class="breadcrumb-item"><a href="{{ url_for('catalog.home') }}" class="text-white opacity-75 text-decoration-none">Home</a></li>
+        <li class="breadcrumb-item"><a href="{{ url_for('catalog.roadmaps') }}" class="text-white opacity-75 text-decoration-none">Career Roadmaps</a></li>
+        <li class="breadcrumb-item active text-white fw-bold" aria-current="page">{{ category.name }}</li>
+      </ol>
+    </nav>
+
+    <div class="row align-items-center">
+      <div class="col-lg-8">
+        <div class="d-flex align-items-center gap-2 mb-2">
+          <span class="badge bg-white text-dark px-3 py-1 rounded-pill fw-semibold">{{ meta.badge }}</span>
+          <span class="badge bg-black bg-opacity-30"><i class="bi bi-clock me-1"></i> {{ meta.estimated_duration }}</span>
+          <span class="badge bg-danger"><i class="bi bi-youtube me-1"></i> Topic-by-Topic Video Series</span>
+        </div>
+        <h1 class="display-4 fw-bold mb-3 text-white">{{ category.name }}</h1>
+        <p class="lead opacity-90 mb-4">{{ meta.tagline }}</p>
+
+        <div class="d-flex flex-wrap gap-3 align-items-center text-light small opacity-85 mb-3">
+          <span><i class="bi bi-layers-fill text-warning me-1"></i> <strong>{{ courses|length }}</strong> Sequential Stages (Beginner to Advanced)</span>
+          <span>•</span>
+          <span><i class="bi bi-play-circle-fill text-danger me-1"></i> <strong>{{ sum_lessons or courses|map(attribute='total_lessons')|sum }}</strong> Topic Video Lectures</span>
+          <span>•</span>
+          <span><i class="bi bi-clock-history text-info me-1"></i> ~<strong>{{ total_hours }}</strong> Video Study Hours</span>
+        </div>
+
+        <div class="d-flex flex-wrap gap-2 align-items-center mt-3">
+          <span class="badge px-3 py-2 rounded-pill text-white fw-bold shadow-sm" style="background: rgba(0, 0, 0, 0.4); border: 1px solid rgba(255, 255, 255, 0.3); font-size: 0.85rem;">
+            <i class="bi bi-tools text-warning me-1"></i>Key Skills:
+          </span>
+          {% for sk in meta.skills %}
+            <span class="skill-pill shadow-sm">
+              <i class="bi bi-patch-check-fill"></i>
+              <span style="color: #0f172a !important; font-weight: 600;">{{ sk }}</span>
+            </span>
+          {% endfor %}
+        </div>
+      </div>
+
+      <!-- Quick Summary Box -->
+      <div class="col-lg-4 text-center mt-4 mt-lg-0">
+        <div class="card p-4 rounded-4 shadow border-0 bg-white text-dark text-start">
+          <h6 class="fw-bold text-uppercase text-muted small mb-2">Target Job Outcomes</h6>
+          <div class="d-flex flex-column gap-2 mb-3">
+            {% for r in meta.target_roles %}
+              <div class="d-flex align-items-center gap-2 small">
+                <i class="bi bi-check-circle-fill text-success"></i>
+                <span class="fw-semibold">{{ r }}</span>
+              </div>
+            {% endfor %}
+          </div>
+          <hr class="my-2">
+          <h6 class="fw-bold text-uppercase text-muted small mb-2">Skills You'll Master</h6>
+          <div class="d-flex flex-wrap gap-1 mb-3">
+            {% for sk in meta.skills %}
+              <span class="badge bg-primary-subtle text-primary border border-primary-subtle small fw-semibold px-2 py-1">
+                <i class="bi bi-check2 me-1"></i>{{ sk }}
+              </span>
+            {% endfor %}
+          </div>
+          <hr class="my-2">
+          <div class="small text-muted mb-3">
+            Follow this roadmap in order. Complete each stage's topic videos and quizzes to unlock the next level!
+          </div>
+          {% if courses %}
+            <a href="{{ url_for('learning.start_course', course_id=courses[0].id) }}" class="btn btn-primary w-100 fw-semibold shadow-sm btn-tactile">
+              <i class="bi bi-play-fill me-1"></i> Start Stage 1
+            </a>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="container pb-5">
+  <!-- Interactive Visual Stepper -->
+  <div class="card shadow-sm border-0 p-4 mb-5 bg-light">
+    <h5 class="fw-bold mb-3"><i class="bi bi-signpost-2-fill text-primary me-2"></i>Roadmap Learning Path Stages</h5>
+    <div class="row g-3 text-center">
+      {% for course in courses %}
+        {% set st = student_status.get(course.id, {}) if student_status else {} %}
+        <div class="col-md-{{ 12 // courses|length if courses|length <= 4 else 3 }}">
+          <div class="card h-100 border p-3 bg-white shadow-sm position-relative stage-card-hover">
+            <span class="position-absolute top-0 start-50 translate-middle badge rounded-pill bg-dark text-white shadow-sm px-2.5 py-1">
+              Stage {{ loop.index }}
+            </span>
+
+            <!-- Star / Wishlist Toggle Button -->
+            {% if current_user.is_authenticated %}
+              <button type="button" 
+                      class="btn btn-sm btn-link p-1 position-absolute top-0 end-0 mt-1 me-2 text-decoration-none btn-star-course" 
+                      data-course-id="{{ course.id }}"
+                      onclick="toggleCourseStar(this, {{ course.id }})" 
+                      title="{% if st.get('is_wishlisted') %}Starred course (click to unstar){% else %}Star this course{% endif %}">
+                <i class="bi {% if st.get('is_wishlisted') %}bi-star-fill text-warning{% else %}bi-star text-secondary opacity-50{% endif %} fs-5"></i>
+              </button>
+            {% else %}
+              <a href="{{ url_for('auth.login', next=request.path) }}"
+                 class="btn btn-sm btn-link p-1 position-absolute top-0 end-0 mt-1 me-2 text-decoration-none" 
+                 title="Log in to star course">
+                <i class="bi bi-star text-secondary opacity-50 fs-5"></i>
+              </a>
+            {% endif %}
+
+            <div class="mt-2 mb-2">
+              <h6 class="fw-bold text-dark mb-1">{{ course.title }}</h6>
+              <div class="text-muted small"><i class="bi bi-person-fill text-primary me-1"></i>{{ course.instructor_name }}</div>
+              <div class="text-muted small"><i class="bi bi-people-fill text-info me-1"></i>{{ course.total_enrolled_students }} {{ 'student' if course.total_enrolled_students == 1 else 'students' }} • {{ course.total_lessons }} topics</div>
+            </div>
+            <div class="mt-auto">
+              {% if st.get('completed') %}
+                <a href="{{ url_for('learning.course_overview', course_id=course.id) }}" class="btn btn-sm btn-outline-success w-100 py-1.5 fw-semibold d-flex align-items-center justify-content-center gap-1 shadow-sm btn-tactile">
+                  <i class="bi bi-check-circle-fill"></i> Completed (100%)
+                </a>
+              {% elif st.get('enrolled') %}
+                <a href="{{ url_for('learning.course_overview', course_id=course.id) }}" class="btn btn-sm btn-primary w-100 py-1.5 fw-semibold d-flex align-items-center justify-content-center gap-1 shadow-sm btn-tactile">
+                  <i class="bi bi-play-circle-fill"></i> Continue ({{ st.progress_pct|int }}%)
+                </a>
+              {% elif st.get('prereqs_met') == False %}
+                <button type="button" class="btn btn-sm btn-secondary w-100 py-1.5 fw-semibold d-flex align-items-center justify-content-center gap-1 opacity-75" disabled title="Complete previous stages to unlock">
+                  <i class="bi bi-lock-fill"></i> Locked
+                </button>
+              {% else %}
+                <a href="{{ url_for('learning.start_course', course_id=course.id) }}" class="btn btn-sm btn-primary w-100 py-1.5 fw-semibold d-flex align-items-center justify-content-center gap-1 shadow-sm btn-tactile">
+                  <i class="bi bi-play-fill fs-6"></i> Ready to Start
+                </a>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+
+  <!-- Detailed Step-by-Step Course Breakdown with Topic Videos -->
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+      <h3 class="fw-bold mb-1">Course Progression & Topic-by-Topic Videos</h3>
+      <p class="text-muted mb-0">Follow the path from foundational basics to advanced specialization.</p>
+    </div>
+  </div>
+
+  <div class="d-flex flex-column gap-5 mb-5">
+    {% for course in courses %}
+      {% set stage_num = loop.index %}
+      {% set st = student_status.get(course.id, {}) if student_status else {} %}
+      {% set all_les = [] %}
+      {% for m in course.modules %}{% for l in m.lessons %}{% set _ = all_les.append(l) %}{% endfor %}{% endfor %}
+
+      <div class="card shadow-sm border-0 overflow-hidden" id="stage-{{ stage_num }}">
+        <!-- Stage Header Bar -->
+        <div class="card-header bg-white py-3 px-4 border-bottom d-flex flex-wrap justify-content-between align-items-center gap-2">
+          <div class="d-flex align-items-center gap-3">
+            <div class="rounded-circle bg-dark text-white fw-bold d-flex align-items-center justify-content-center" style="width: 42px; height: 42px;">
+              {{ stage_num }}
+            </div>
+            <div>
+              <div class="d-flex align-items-center gap-2">
+                <span class="badge bg-dark text-white">
+                  Stage {{ stage_num }}
+                </span>
+                {% if course.prerequisites %}
+                  <span class="badge bg-warning-subtle text-warning">
+                    <i class="bi bi-link-45deg me-1"></i> Requires: {{ course.prerequisites[0].title }}
+                  </span>
+                {% else %}
+                  <span class="badge bg-success-subtle text-success">
+                    <i class="bi bi-door-open me-1"></i> Entry Point
+                  </span>
+                {% endif %}
+              </div>
+              <h4 class="fw-bold text-dark mb-0 mt-1">{{ course.title }}</h4>
+              <div class="d-flex flex-wrap align-items-center gap-3 small text-muted mt-1">
+                <span><i class="bi bi-person-fill text-primary me-1"></i>Instructor: <strong class="text-dark">{{ course.instructor_name }}</strong></span>
+                <span>•</span>
+                <span><i class="bi bi-people-fill text-info me-1"></i><strong class="text-dark">{{ course.total_enrolled_students }}</strong> enrolled {{ 'student' if course.total_enrolled_students == 1 else 'students' }}</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="d-flex align-items-center gap-2">
+            <a href="{{ url_for('learning.start_course', course_id=course.id) }}" class="btn-modern-primary">
+              <i class="bi bi-play-circle-fill"></i>
+              <span>Watch in Video Player</span>
+            </a>
+            <a href="{{ url_for('catalog.detail', course_id=course.id) }}" class="btn-modern-secondary">
+              <i class="bi bi-info-circle"></i>
+              <span>Course Details</span>
+            </a>
+          </div>
+        </div>
+
+        <div class="card-body p-4">
+          <p class="text-secondary mb-4">{{ course.description }}</p>
+
+          <!-- Topic-by-Topic YouTube Video Curriculum -->
+          <div class="border rounded-3 p-3 bg-light mb-3">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+              <h6 class="fw-bold mb-0 text-dark">
+                <i class="bi bi-collection-play-fill text-danger me-2"></i>Topic-by-Topic Video Curriculum
+              </h6>
+              <span class="badge bg-white text-secondary border">
+                {{ course.modules|length }} Chapters • {{ course.total_lessons }} Video Topics
+              </span>
+            </div>
+
+            <!-- Topic Accordion -->
+            <div class="accordion" id="curriculumAccordion{{ course.id }}">
+              {% for mod in course.modules %}
+                <div class="accordion-item mb-2 border rounded overflow-hidden">
+                  <h2 class="accordion-header" id="headingMod{{ mod.id }}">
+                    <button class="accordion-button {% if not loop.first %}collapsed{% endif %} py-2 px-3 fw-semibold small bg-white" type="button" data-bs-toggle="collapse" data-bs-target="#collapseMod{{ mod.id }}">
+                      <i class="bi bi-folder-fill text-warning me-2"></i>
+                      <span>{{ mod.title }}</span>
+                      <span class="badge bg-light text-secondary border ms-auto me-2">{{ mod.lessons|length }} topics</span>
+                    </button>
+                  </h2>
+                  <div id="collapseMod{{ mod.id }}" class="accordion-collapse collapse {% if loop.first %}show{% endif %}" data-bs-parent="#curriculumAccordion{{ course.id }}">
+                    <div class="accordion-body p-0">
+                      <div class="list-group list-group-flush small">
+                        {% for les in mod.lessons %}
+                          {% set les_yt = les.content | youtube_embed %}
+                          <div class="list-group-item d-flex justify-content-between align-items-center py-2 px-3">
+                            <div class="d-flex align-items-center gap-2">
+                              <i class="bi bi-play-circle-fill text-danger fs-5"></i>
+                              <div>
+                                <span class="fw-semibold text-dark">{{ les.title }}</span>
+                                <div class="text-muted" style="font-size: 0.75rem;">
+                                  <i class="bi bi-clock me-1"></i>{{ les.duration_min | format_duration }}
+                                  {% if les_yt %}<span class="badge bg-danger-subtle text-danger ms-1">YouTube</span>{% endif %}
+                                </div>
+                              </div>
+                            </div>
+                            <div>
+                              <a href="{{ url_for('learning.lesson_player', lesson_id=les.id) }}" class="btn-topic-play">
+                                <i class="bi bi-play-fill"></i> Play Video
+                              </a>
+                            </div>
+                          </div>
+                        {% else %}
+                          <div class="p-2 text-muted text-center">No topics in this chapter.</div>
+                        {% endfor %}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              {% endfor %}
+            </div>
+          </div>
+
+          <!-- Bottom Action Bar -->
+          <div class="d-flex justify-content-between align-items-center pt-2">
+            <div class="small text-muted">
+              <i class="bi bi-award text-success me-1"></i> Earn certificate upon completing all {{ course.total_lessons }} topics & quizzes
+            </div>
+            <a href="{{ url_for('learning.start_course', course_id=course.id) }}" class="btn-modern-success">
+              <i class="bi bi-play-circle-fill"></i> Launch Video Hub
+            </a>
+          </div>
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+function toggleCourseStar(btn, courseId) {
+  const icon = btn.querySelector('i');
+  const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
+  
+  // Optimistic UI toggle & bounce animation
+  const wasWishlisted = icon.classList.contains('bi-star-fill');
+  if (wasWishlisted) {
+    icon.className = 'bi bi-star text-secondary opacity-50 fs-5';
+    btn.title = 'Star this course';
+  } else {
+    icon.className = 'bi bi-star-fill text-warning fs-5';
+    btn.title = 'Starred course (click to unstar)';
+    icon.style.transform = 'scale(1.35)';
+    setTimeout(() => { icon.style.transform = ''; }, 200);
+  }
+
+  fetch(`/learn/wishlist/toggle/${courseId}`, {
+    method: 'POST',
+    headers: {
+      'Accept': 'application/json',
+      'X-CSRFToken': csrfToken
+    }
+  })
+  .then(res => res.json())
+  .then(data => {
+    if (data && data.success) {
+      if (data.wishlisted) {
+        icon.className = 'bi bi-star-fill text-warning fs-5';
+        btn.title = 'Starred course (click to unstar)';
+      } else {
+        icon.className = 'bi bi-star text-secondary opacity-50 fs-5';
+        btn.title = 'Star this course';
+      }
+    }
+  })
+  .catch(err => {
+    console.error('Wishlist toggle error:', err);
+    // Revert on failure
+    if (wasWishlisted) {
+      icon.className = 'bi bi-star-fill text-warning fs-5';
+    } else {
+      icon.className = 'bi bi-star text-secondary opacity-50 fs-5';
+    }
+  });
+}
+</script>
+{% endblock %}

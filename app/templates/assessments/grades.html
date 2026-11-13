@@ -1,0 +1,170 @@
+{% extends 'base.html' %}
+{% block title %}My Grades & Academic Records{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+  <h2 class="fw-bold mb-1">Academic Gradebook</h2>
+  <p class="text-muted mb-4">Official record of your assessments, quizzes, and course completions</p>
+
+  <!-- Course Enrolled Progress -->
+  <div class="card shadow-sm border-0 mb-4">
+    <div class="card-header bg-white py-3 border-bottom">
+      <h5 class="fw-bold mb-0"><i class="bi bi-mortarboard text-primary me-2"></i>Course Completion & Final Grades</h5>
+    </div>
+    <div class="table-responsive">
+      <table class="table table-hover align-middle mb-0">
+        <thead class="table-light">
+          <tr>
+            <th>Course</th>
+            <th>Status</th>
+            <th>Progress</th>
+            <th>Final Grade</th>
+            <th class="text-end">Certificate</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for enroll in enrollments %}
+            <tr>
+              <td class="fw-bold">
+                <a href="{{ url_for('learning.course_overview', course_id=enroll.course_id) }}" class="text-dark text-decoration-none">
+                  {{ enroll.course.title }}
+                </a>
+              </td>
+              <td>
+                <span class="badge {% if enroll.status == 'completed' %}bg-success{% else %}bg-primary{% endif %} text-capitalize">
+                  {{ enroll.status }}
+                </span>
+              </td>
+              <td style="width: 200px;">
+                <div class="d-flex align-items-center gap-2">
+                  <div class="progress flex-grow-1" style="height: 6px;">
+                    <div class="progress-bar" style="width: {{ enroll.progress_pct }}%;"></div>
+                  </div>
+                  <span class="small text-muted">{{ enroll.progress_pct }}%</span>
+                </div>
+              </td>
+              <td>
+                {% set final_g = enroll.grades|selectattr('grade_type', 'equalto', 'final')|first %}
+                {% if final_g %}
+                  <span class="badge bg-success-subtle text-success fs-6">{{ final_g.score }}%</span>
+                {% else %}
+                  <span class="text-muted small">In Progress</span>
+                {% endif %}
+              </td>
+              <td class="text-end">
+                {% if enroll.certificate %}
+                  <a href="{{ url_for('learning.view_certificate', code=enroll.certificate.code) }}" class="btn btn-sm btn-success py-0">
+                    <i class="bi bi-award me-1"></i> View
+                  </a>
+                {% else %}
+                  <span class="text-muted small">Not earned yet</span>
+                {% endif %}
+              </td>
+            </tr>
+          {% else %}
+            <tr>
+              <td colspan="5" class="text-center py-4 text-muted">You are not enrolled in any courses yet.</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="row g-4">
+    <!-- Quiz Attempts -->
+    <div class="col-lg-6">
+      <div class="card shadow-sm border-0 h-100">
+        <div class="card-header bg-white py-3 border-bottom">
+          <h5 class="fw-bold mb-0"><i class="bi bi-patch-question text-info me-2"></i>Quiz Records</h5>
+        </div>
+        <div class="table-responsive">
+          <table class="table table-hover align-middle mb-0 small">
+            <thead class="table-light">
+              <tr>
+                <th>Quiz</th>
+                <th>Score</th>
+                <th>Result</th>
+                <th>Date</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for att in quiz_attempts %}
+                <tr>
+                  <td>
+                    <a href="{{ url_for('assessments.quiz_result', quiz_id=att.quiz_id, attempt_id=att.id) }}" class="fw-semibold text-dark text-decoration-none">
+                      {{ att.quiz.title }}
+                    </a>
+                  </td>
+                  <td class="fw-bold">{{ att.score }}%</td>
+                  <td>
+                    {% if att.passed %}
+                      <span class="badge bg-success">Passed</span>
+                    {% else %}
+                      <span class="badge bg-danger">Failed</span>
+                    {% endif %}
+                  </td>
+                  <td class="text-muted">{{ att.submitted_at.strftime('%b %d') }}</td>
+                </tr>
+              {% else %}
+                <tr>
+                  <td colspan="4" class="text-center py-3 text-muted">No quiz attempts recorded.</td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- Assignment Submissions -->
+    <div class="col-lg-6">
+      <div class="card shadow-sm border-0 h-100">
+        <div class="card-header bg-white py-3 border-bottom">
+          <h5 class="fw-bold mb-0"><i class="bi bi-file-earmark-check text-warning me-2"></i>Assignment Submissions</h5>
+        </div>
+        <div class="table-responsive">
+          <table class="table table-hover align-middle mb-0 small">
+            <thead class="table-light">
+              <tr>
+                <th>Assignment</th>
+                <th>Status</th>
+                <th>Grade</th>
+                <th>Submitted</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for sub in submissions %}
+                <tr>
+                  <td>
+                    <a href="{{ url_for('assessments.view_assignment', id=sub.assignment_id) }}" class="fw-semibold text-dark text-decoration-none">
+                      {{ sub.assignment.title }}
+                    </a>
+                  </td>
+                  <td>
+                    <span class="badge {% if sub.status == 'graded' %}bg-success{% else %}bg-secondary{% endif %} text-uppercase">
+                      {{ sub.status }}
+                    </span>
+                  </td>
+                  <td>
+                    {% if sub.grade %}
+                      <span class="fw-bold text-success">{{ sub.grade.score }} / {{ sub.assignment.max_points }}</span>
+                    {% else %}
+                      <span class="text-muted">Pending</span>
+                    {% endif %}
+                  </td>
+                  <td class="text-muted">{{ sub.submitted_at.strftime('%b %d') }}</td>
+                </tr>
+              {% else %}
+                <tr>
+                  <td colspan="4" class="text-center py-3 text-muted">No assignment submissions recorded.</td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

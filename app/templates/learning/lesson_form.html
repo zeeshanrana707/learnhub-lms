@@ -1,0 +1,129 @@
+{% extends 'base.html' %}
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+  <div class="row justify-content-center">
+    <div class="col-lg-8">
+      <div class="card shadow-sm border-0 mb-4">
+        <div class="card-header bg-white py-3 border-bottom d-flex justify-content-between align-items-center">
+          <h4 class="fw-bold mb-0">{{ title }}</h4>
+          <a href="{{ url_for('learning.manage_course_curriculum', course_id=course.id) }}" class="btn btn-outline-secondary btn-sm">
+            <i class="bi bi-arrow-left me-1"></i> Back to Curriculum
+          </a>
+        </div>
+        <div class="card-body p-4">
+          <form method="POST">
+            {{ form.hidden_tag() }}
+
+            <div class="mb-3">
+              {{ form.title.label(class="form-label fw-semibold") }}
+              {{ form.title(class="form-control" + (" is-invalid" if form.title.errors else "")) }}
+              {% for error in form.title.errors %}
+                <div class="invalid-feedback">{{ error }}</div>
+              {% endfor %}
+            </div>
+
+            <div class="row">
+              <div class="col-md-6 mb-3">
+                {{ form.content_type.label(class="form-label fw-semibold") }}
+                {{ form.content_type(class="form-select") }}
+              </div>
+              <div class="col-md-3 mb-3">
+                {{ form.duration_min.label(class="form-label fw-semibold") }}
+                {{ form.duration_min(class="form-control") }}
+              </div>
+              <div class="col-md-3 mb-3">
+                {{ form.position.label(class="form-label fw-semibold") }}
+                {{ form.position(class="form-control") }}
+              </div>
+            </div>
+
+            <div class="mb-4">
+              {{ form.content.label(class="form-label fw-semibold") }}
+              {{ form.content(class="form-control", rows="8", placeholder="Enter lecture markdown notes, code snippets, or video embed URL...") }}
+              {% for error in form.content.errors %}
+                <div class="invalid-feedback">{{ error }}</div>
+              {% endfor %}
+            </div>
+
+            <button type="submit" class="btn btn-primary px-4">
+              <i class="bi bi-check2 me-1"></i> Save Lesson
+            </button>
+          </form>
+        </div>
+      </div>
+
+      <!-- If editing, show Code Lab Challenges section -->
+      {% if lesson %}
+        <div class="card shadow-sm border-0 mb-4">
+          <div class="card-header bg-white py-3 border-bottom d-flex justify-content-between align-items-center">
+            <h5 class="fw-bold mb-0">
+              <i class="bi bi-code-square text-primary me-2"></i>Interactive Code Lab Challenges (3 Tiers)
+            </h5>
+            {% if lesson.custom_challenges %}
+              <span class="badge bg-success-subtle text-success border border-success"><i class="bi bi-check-circle me-1"></i>Custom Configured</span>
+            {% else %}
+              <span class="badge bg-secondary-subtle text-secondary border">Using Default Domain Generator</span>
+            {% endif %}
+          </div>
+          <div class="card-body p-4">
+            <p class="text-muted small mb-3">
+              Configure the 3 progressive difficulty levels (<strong>Basic</strong>, <strong>Intermediate</strong>, <strong>Advance</strong>) for student cloud sandbox practice, automated test execution, and scoring.
+            </p>
+            <a href="{{ url_for('learning.manage_lesson_challenges', lesson_id=lesson.id) }}" class="btn btn-primary btn-sm fw-semibold">
+              <i class="bi bi-sliders me-1"></i> Manage 3-Tier Code Lab Programs
+            </a>
+          </div>
+        </div>
+
+        <div class="card shadow-sm border-0">
+          <div class="card-header bg-white py-3 border-bottom">
+            <h5 class="fw-bold mb-0"><i class="bi bi-paperclip text-primary me-2"></i>Lesson Resources</h5>
+          </div>
+          <div class="card-body p-4">
+            <!-- Existing Resources -->
+            {% if lesson.resources %}
+              <ul class="list-group mb-4">
+                {% for res in lesson.resources %}
+                  <li class="list-group-item d-flex justify-content-between align-items-center">
+                    <div>
+                      <span class="badge bg-secondary me-2">{{ res.resource_type }}</span>
+                      <strong>{{ res.title }}</strong>
+                      <span class="text-muted small ms-2">{{ res.url_or_path }}</span>
+                    </div>
+                    <form action="{{ url_for('learning.delete_lesson_resource', resource_id=res.id) }}" method="POST">
+                      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                      <button type="submit" class="btn btn-sm btn-outline-danger"><i class="bi bi-trash"></i></button>
+                    </form>
+                  </li>
+                {% endfor %}
+              </ul>
+            {% endif %}
+
+            <!-- Add Resource Form -->
+            <h6 class="fw-bold mb-3">Attach New Resource</h6>
+            <form action="{{ url_for('learning.add_lesson_resource', lesson_id=lesson.id) }}" method="POST">
+              {{ resource_form.hidden_tag() }}
+              <div class="row g-2">
+                <div class="col-md-4">
+                  {{ resource_form.title(class="form-control form-control-sm", placeholder="Resource Title") }}
+                </div>
+                <div class="col-md-3">
+                  {{ resource_form.resource_type(class="form-select form-select-sm") }}
+                </div>
+                <div class="col-md-3">
+                  {{ resource_form.url_or_path(class="form-control form-control-sm", placeholder="URL or path") }}
+                </div>
+                <div class="col-md-2">
+                  <button type="submit" class="btn btn-outline-primary btn-sm w-100">Attach</button>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}

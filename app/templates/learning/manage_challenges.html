@@ -1,0 +1,537 @@
+{% extends 'base.html' %}
+{% block title %}Manage Interactive Code Lab Challenges - {{ lesson.title }}{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+  <!-- Top Navigation & Breadcrumbs -->
+  <div class="d-flex flex-wrap justify-content-between align-items-center mb-4 gap-2">
+    <div>
+      <nav aria-label="breadcrumb">
+        <ol class="breadcrumb mb-1 small">
+          <li class="breadcrumb-item"><a href="{{ url_for('catalog.instructor_dashboard') }}" class="text-decoration-none">Instructor Dashboard</a></li>
+          <li class="breadcrumb-item"><a href="{{ url_for('learning.manage_course_curriculum', course_id=course.id) }}" class="text-decoration-none">Curriculum</a></li>
+          <li class="breadcrumb-item active text-truncate" style="max-width: 250px;">{{ lesson.title }}</li>
+        </ol>
+      </nav>
+      <h3 class="fw-bold mb-1 text-dark">
+        <i class="bi bi-code-square text-primary me-2"></i>Interactive Code Lab Management
+      </h3>
+      <div class="d-flex flex-wrap gap-2 align-items-center">
+        <span class="badge bg-secondary-subtle text-secondary border">{{ course.title }}</span>
+        <span class="badge bg-light text-dark border">{{ lesson.module.title }}</span>
+        {% if has_custom %}
+          <span class="badge bg-success-subtle text-success border border-success"><i class="bi bi-check-circle me-1"></i> Custom Challenges Active</span>
+        {% else %}
+          <span class="badge bg-info-subtle text-info border border-info"><i class="bi bi-stars me-1"></i> Smart Domain Default Active</span>
+        {% endif %}
+      </div>
+    </div>
+
+    <!-- Quick Preview Buttons -->
+    <div class="d-flex gap-2">
+      <a href="{{ url_for('learning.manage_course_curriculum', course_id=course.id) }}" class="btn btn-outline-secondary btn-sm">
+        <i class="bi bi-arrow-left me-1"></i> Back to Curriculum
+      </a>
+      <a href="{{ url_for('learning.course_overview', course_id=course.id, lesson=lesson.id) }}" class="btn btn-outline-primary btn-sm" target="_blank">
+        <i class="bi bi-play-circle me-1"></i> View in Student Console
+      </a>
+    </div>
+  </div>
+
+  <!-- Information Alert Callout -->
+  <div class="alert alert-primary bg-primary-subtle border-primary d-flex align-items-start gap-3 py-3 mb-4 rounded-3 shadow-sm">
+    <i class="bi bi-info-circle-fill text-primary fs-4 mt-1 flex-shrink-0"></i>
+    <div class="flex-grow-1">
+      <div class="fw-bold mb-1">Interactive 3-Tier Multi-Paradigm Challenge Architecture</div>
+      <p class="small mb-0 text-muted">
+        Configure the <strong>3 progressive difficulty levels</strong> (Basic, Intermediate, Advance) for this specific video lecture.
+        Students can practice in the <strong>Interactive Cloud Code Lab</strong>, test their solutions against unit tests, and earn XP.
+        Use the <strong>"⚡ Auto-Generate Smart Template"</strong> button below to automatically generate topic-tailored code challenges based on this lesson's exact domain.
+      </p>
+    </div>
+  </div>
+
+  <!-- Main Management Card Form -->
+  <form id="challengesForm" method="POST" action="{{ url_for('learning.manage_lesson_challenges', lesson_id=lesson.id) }}">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+    <div class="card shadow-sm border-0 mb-4 rounded-3 overflow-hidden">
+      <!-- Toolbar Header -->
+      <div class="card-header bg-white py-3 px-4 border-bottom d-flex flex-wrap justify-content-between align-items-center gap-3">
+        <div class="d-flex align-items-center gap-3">
+          <label class="form-label fw-bold mb-0 text-dark small text-uppercase tracking-wider">Primary Language:</label>
+          <select name="language" id="challengeLanguage" class="form-select form-select-sm w-auto fw-semibold border-primary">
+            {% set cur_lang = quiz_data.get('language', 'python') %}
+            <option value="python" {% if cur_lang == 'python' %}selected{% endif %}>Python 3.12 (Standard)</option>
+            <option value="javascript" {% if cur_lang == 'javascript' %}selected{% endif %}>JavaScript / TypeScript</option>
+            <option value="sql" {% if cur_lang == 'sql' %}selected{% endif %}>SQL (Relational Engine)</option>
+            <option value="bash" {% if cur_lang == 'bash' %}selected{% endif %}>Bash / Linux Shell</option>
+            <option value="c" {% if cur_lang == 'c' %}selected{% endif %}>C / C++ (Foundations)</option>
+          </select>
+        </div>
+
+        <div class="d-flex gap-2">
+          <!-- 1-Click Smart Generator -->
+          <button type="button" class="btn btn-outline-primary btn-sm fw-semibold shadow-sm" onclick="autoGenerateTemplate();" title="Pre-populate with AI & Domain-aligned challenges for this lesson">
+            <i class="bi bi-lightning-charge-fill text-warning me-1"></i> Auto-Generate Smart Template
+          </button>
+          
+          <!-- Reset to Default Button -->
+          {% if has_custom %}
+            <button type="button" class="btn btn-outline-danger btn-sm" onclick="confirmReset();" title="Reset this lesson to system default challenges">
+              <i class="bi bi-arrow-counterclockwise me-1"></i> Reset to Default
+            </button>
+          {% endif %}
+
+          <!-- Primary Save Button -->
+          <button type="submit" class="btn btn-primary btn-sm fw-bold px-3 shadow-sm">
+            <i class="bi bi-check2-circle me-1"></i> Save All 3 Challenges
+          </button>
+        </div>
+      </div>
+
+      <!-- Difficulty Tier Nav Tabs -->
+      <div class="bg-light border-bottom px-4 pt-3">
+        <ul class="nav nav-tabs card-header-tabs" id="tierTabs" role="tablist">
+          <li class="nav-item" role="presentation">
+            <button class="nav-link active fw-bold text-success d-flex align-items-center gap-2" id="basic-tab" data-bs-toggle="tab" data-bs-target="#basicTier" type="button" role="tab">
+              <span class="badge bg-success rounded-pill px-2">Tier 1</span>
+              <span>Basic (Warm-Up)</span>
+            </button>
+          </li>
+          <li class="nav-item" role="presentation">
+            <button class="nav-link fw-bold text-primary d-flex align-items-center gap-2" id="intermediate-tab" data-bs-toggle="tab" data-bs-target="#intermediateTier" type="button" role="tab">
+              <span class="badge bg-primary rounded-pill px-2">Tier 2</span>
+              <span>Intermediate (Engineering)</span>
+            </button>
+          </li>
+          <li class="nav-item" role="presentation">
+            <button class="nav-link fw-bold text-purple d-flex align-items-center gap-2" id="advance-tab" data-bs-toggle="tab" data-bs-target="#advanceTier" type="button" role="tab">
+              <span class="badge bg-dark rounded-pill px-2" style="background-color: #6f42c1 !important;">Tier 3</span>
+              <span style="color: #6f42c1;">Advance (Algorithmic)</span>
+            </button>
+          </li>
+        </ul>
+      </div>
+
+      <!-- Tab Content Area -->
+      <div class="card-body p-4">
+        <div class="tab-content" id="tierTabsContent">
+          
+          <!-- =================== 1. BASIC TIER TAB =================== -->
+          {% set b = quiz_data.challenges.get('basic', {}) %}
+          <div class="tab-pane fade show active" id="basicTier" role="tabpanel">
+            <div class="d-flex align-items-center justify-between mb-3 pb-2 border-bottom">
+              <div>
+                <h5 class="fw-bold mb-0 text-success"><i class="bi bi-check-circle-fill me-2"></i>Basic Tier: Warm-Up Challenge</h5>
+                <span class="text-muted small">Focus on fundamental language syntax, expression evaluation, or simple verification function.</span>
+              </div>
+              <button type="button" class="btn btn-outline-success btn-sm" onclick="runSandboxTest('basic');">
+                <i class="bi bi-play-circle me-1"></i> Verify Solution in Sandbox
+              </button>
+            </div>
+
+            <div class="row g-3">
+              <div class="col-md-7">
+                <label class="form-label fw-semibold small">Challenge Title</label>
+                <input type="text" name="basic_title" id="basic_title" class="form-control" value="{{ b.get('title', '') }}" placeholder="e.g. Field Validation & Format Checker" required>
+              </div>
+              <div class="col-md-3">
+                <label class="form-label fw-semibold small">Function Name / Target</label>
+                <input type="text" name="basic_function_name" id="basic_function_name" class="form-control font-monospace" value="{{ b.get('function_name', b.get('target_variable', 'solution')) }}" placeholder="e.g. validate_field" required>
+              </div>
+              <div class="col-md-2">
+                <label class="form-label fw-semibold small">Approach</label>
+                <select name="basic_approach" id="basic_approach" class="form-select">
+                  <option value="function" {% if b.get('approach') == 'function' %}selected{% endif %}>Function</option>
+                  <option value="script" {% if b.get('approach') == 'script' %}selected{% endif %}>Script (No func)</option>
+                  <option value="class" {% if b.get('approach') == 'class' %}selected{% endif %}>Class / OOP</option>
+                </select>
+              </div>
+
+              <div class="col-12">
+                <label class="form-label fw-semibold small">Problem Prompt & Instructions (Markdown supported)</label>
+                <textarea name="basic_prompt" id="basic_prompt" class="form-control" rows="3" placeholder="Describe what the student needs to build, expected inputs, and return values...">{{ b.get('prompt', '') }}</textarea>
+              </div>
+
+              <div class="col-12">
+                <label class="form-label fw-semibold small">Constraints</label>
+                <input type="text" name="basic_constraints" id="basic_constraints" class="form-control" value="{{ b.get('constraints', '') }}" placeholder="e.g. 1 <= len(data) <= 1000">
+              </div>
+
+              <!-- Starter Code vs Solution Code -->
+              <div class="col-md-6">
+                <div class="d-flex justify-content-between align-items-center mb-1">
+                  <label class="form-label fw-semibold small mb-0"><i class="bi bi-pencil-square text-primary me-1"></i>Starter Code (Shown to Student)</label>
+                  <button type="button" class="btn btn-link btn-sm p-0 text-decoration-none small" onclick="copyStarterFromSolution('basic');">Copy from Solution</button>
+                </div>
+                <textarea name="basic_starter_code" id="basic_starter_code" class="form-control font-monospace text-light bg-dark code-editor-box" rows="8" spellcheck="false">{{ b.get('starter_code', '') }}</textarea>
+              </div>
+
+              <div class="col-md-6">
+                <label class="form-label fw-semibold small"><i class="bi bi-shield-check text-success me-1"></i>Reference Solution Code</label>
+                <textarea name="basic_solution_code" id="basic_solution_code" class="form-control font-monospace text-light bg-dark code-editor-box" rows="8" spellcheck="false">{{ b.get('solution_code', '') }}</textarea>
+              </div>
+
+              <div class="col-12">
+                <label class="form-label fw-semibold small"><i class="bi bi-lightbulb text-warning me-1"></i>Hint</label>
+                <input type="text" name="basic_hint" id="basic_hint" class="form-control" value="{{ b.get('hint', '') }}" placeholder="Helpful clue revealed when student is stuck...">
+              </div>
+
+              <div class="col-12">
+                <label class="form-label fw-semibold small d-flex justify-content-between">
+                  <span><i class="bi bi-check2-all text-info me-1"></i>Unit Test Cases (JSON Array)</span>
+                  <span class="text-muted fw-normal">Format: <code>[{"desc": "...", "input": [...], "expected": ...}]</code></span>
+                </label>
+                <textarea name="basic_test_cases" id="basic_test_cases" class="form-control font-monospace text-dark bg-light" rows="4" spellcheck="false">{{ b.get('test_cases', []) | tojson(indent=2) }}</textarea>
+              </div>
+            </div>
+          </div>
+
+
+          <!-- =================== 2. INTERMEDIATE TIER TAB =================== -->
+          {% set m = quiz_data.challenges.get('intermediate', {}) %}
+          <div class="tab-pane fade" id="intermediateTier" role="tabpanel">
+            <div class="d-flex align-items-center justify-between mb-3 pb-2 border-bottom">
+              <div>
+                <h5 class="fw-bold mb-0 text-primary"><i class="bi bi-gear-fill me-2"></i>Intermediate Tier: Production Engineering</h5>
+                <span class="text-muted small">Realistic production logic, data transformation, validation, or algorithm execution.</span>
+              </div>
+              <button type="button" class="btn btn-outline-primary btn-sm" onclick="runSandboxTest('intermediate');">
+                <i class="bi bi-play-circle me-1"></i> Verify Solution in Sandbox
+              </button>
+            </div>
+
+            <div class="row g-3">
+              <div class="col-md-7">
+                <label class="form-label fw-semibold small">Challenge Title</label>
+                <input type="text" name="intermediate_title" id="intermediate_title" class="form-control" value="{{ m.get('title', '') }}" placeholder="e.g. Data Transformation & Filter Pipeline" required>
+              </div>
+              <div class="col-md-3">
+                <label class="form-label fw-semibold small">Function Name / Target</label>
+                <input type="text" name="intermediate_function_name" id="intermediate_function_name" class="form-control font-monospace" value="{{ m.get('function_name', m.get('target_variable', 'solution')) }}" required>
+              </div>
+              <div class="col-md-2">
+                <label class="form-label fw-semibold small">Approach</label>
+                <select name="intermediate_approach" id="intermediate_approach" class="form-select">
+                  <option value="function" {% if m.get('approach') == 'function' %}selected{% endif %}>Function</option>
+                  <option value="script" {% if m.get('approach') == 'script' %}selected{% endif %}>Script (No func)</option>
+                  <option value="class" {% if m.get('approach') == 'class' %}selected{% endif %}>Class / OOP</option>
+                </select>
+              </div>
+
+              <div class="col-12">
+                <label class="form-label fw-semibold small">Problem Prompt & Instructions</label>
+                <textarea name="intermediate_prompt" id="intermediate_prompt" class="form-control" rows="3">{{ m.get('prompt', '') }}</textarea>
+              </div>
+
+              <div class="col-12">
+                <label class="form-label fw-semibold small">Constraints</label>
+                <input type="text" name="intermediate_constraints" id="intermediate_constraints" class="form-control" value="{{ m.get('constraints', '') }}">
+              </div>
+
+              <div class="col-md-6">
+                <div class="d-flex justify-content-between align-items-center mb-1">
+                  <label class="form-label fw-semibold small mb-0">Starter Code</label>
+                  <button type="button" class="btn btn-link btn-sm p-0 text-decoration-none small" onclick="copyStarterFromSolution('intermediate');">Copy from Solution</button>
+                </div>
+                <textarea name="intermediate_starter_code" id="intermediate_starter_code" class="form-control font-monospace text-light bg-dark code-editor-box" rows="8" spellcheck="false">{{ m.get('starter_code', '') }}</textarea>
+              </div>
+
+              <div class="col-md-6">
+                <label class="form-label fw-semibold small">Reference Solution Code</label>
+                <textarea name="intermediate_solution_code" id="intermediate_solution_code" class="form-control font-monospace text-light bg-dark code-editor-box" rows="8" spellcheck="false">{{ m.get('solution_code', '') }}</textarea>
+              </div>
+
+              <div class="col-12">
+                <label class="form-label fw-semibold small">Hint</label>
+                <input type="text" name="intermediate_hint" id="intermediate_hint" class="form-control" value="{{ m.get('hint', '') }}">
+              </div>
+
+              <div class="col-12">
+                <label class="form-label fw-semibold small d-flex justify-content-between">
+                  <span>Unit Test Cases (JSON Array)</span>
+                  <span class="text-muted fw-normal">Format: <code>[{"desc": "...", "input": [...], "expected": ...}]</code></span>
+                </label>
+                <textarea name="intermediate_test_cases" id="intermediate_test_cases" class="form-control font-monospace text-dark bg-light" rows="4" spellcheck="false">{{ m.get('test_cases', []) | tojson(indent=2) }}</textarea>
+              </div>
+            </div>
+          </div>
+
+
+          <!-- =================== 3. ADVANCE TIER TAB =================== -->
+          {% set a = quiz_data.challenges.get('advance', {}) %}
+          <div class="tab-pane fade" id="advanceTier" role="tabpanel">
+            <div class="d-flex align-items-center justify-between mb-3 pb-2 border-bottom">
+              <div>
+                <h5 class="fw-bold mb-0" style="color: #6f42c1;"><i class="bi bi-cpu-fill me-2"></i>Advance Tier: Complex Algorithmic System</h5>
+                <span class="text-muted small">Higher-order data structures, OOP classes, joins, search, or high-throughput batching.</span>
+              </div>
+              <button type="button" class="btn btn-outline-dark btn-sm" onclick="runSandboxTest('advance');">
+                <i class="bi bi-play-circle me-1"></i> Verify Solution in Sandbox
+              </button>
+            </div>
+
+            <div class="row g-3">
+              <div class="col-md-7">
+                <label class="form-label fw-semibold small">Challenge Title</label>
+                <input type="text" name="advance_title" id="advance_title" class="form-control" value="{{ a.get('title', '') }}" placeholder="e.g. Relational Join Engine & Constraint Solver" required>
+              </div>
+              <div class="col-md-3">
+                <label class="form-label fw-semibold small">Function / Class Name</label>
+                <input type="text" name="advance_function_name" id="advance_function_name" class="form-control font-monospace" value="{{ a.get('function_name', a.get('class_name', 'solution')) }}" required>
+              </div>
+              <div class="col-md-2">
+                <label class="form-label fw-semibold small">Approach</label>
+                <select name="advance_approach" id="advance_approach" class="form-select">
+                  <option value="function" {% if a.get('approach') == 'function' %}selected{% endif %}>Function</option>
+                  <option value="class" {% if a.get('approach') == 'class' %}selected{% endif %}>Class / OOP</option>
+                  <option value="script" {% if a.get('approach') == 'script' %}selected{% endif %}>Script</option>
+                </select>
+              </div>
+
+              <div class="col-12">
+                <label class="form-label fw-semibold small">Problem Prompt & Instructions</label>
+                <textarea name="advance_prompt" id="advance_prompt" class="form-control" rows="3">{{ a.get('prompt', '') }}</textarea>
+              </div>
+
+              <div class="col-12">
+                <label class="form-label fw-semibold small">Constraints</label>
+                <input type="text" name="advance_constraints" id="advance_constraints" class="form-control" value="{{ a.get('constraints', '') }}">
+              </div>
+
+              <div class="col-md-6">
+                <div class="d-flex justify-content-between align-items-center mb-1">
+                  <label class="form-label fw-semibold small mb-0">Starter Code</label>
+                  <button type="button" class="btn btn-link btn-sm p-0 text-decoration-none small" onclick="copyStarterFromSolution('advance');">Copy from Solution</button>
+                </div>
+                <textarea name="advance_starter_code" id="advance_starter_code" class="form-control font-monospace text-light bg-dark code-editor-box" rows="8" spellcheck="false">{{ a.get('starter_code', '') }}</textarea>
+              </div>
+
+              <div class="col-md-6">
+                <label class="form-label fw-semibold small">Reference Solution Code</label>
+                <textarea name="advance_solution_code" id="advance_solution_code" class="form-control font-monospace text-light bg-dark code-editor-box" rows="8" spellcheck="false">{{ a.get('solution_code', '') }}</textarea>
+              </div>
+
+              <div class="col-12">
+                <label class="form-label fw-semibold small">Hint</label>
+                <input type="text" name="advance_hint" id="advance_hint" class="form-control" value="{{ a.get('hint', '') }}">
+              </div>
+
+              <div class="col-12">
+                <label class="form-label fw-semibold small d-flex justify-content-between">
+                  <span>Unit Test Cases (JSON Array)</span>
+                  <span class="text-muted fw-normal">Format: <code>[{"desc": "...", "input": [...], "expected": ...}]</code></span>
+                </label>
+                <textarea name="advance_test_cases" id="advance_test_cases" class="form-control font-monospace text-dark bg-light" rows="4" spellcheck="false">{{ a.get('test_cases', []) | tojson(indent=2) }}</textarea>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Card Footer Actions -->
+      <div class="card-footer bg-white py-3 px-4 border-top d-flex justify-content-between align-items-center">
+        <span class="text-muted small"><i class="bi bi-shield-lock me-1"></i> Saved challenges automatically bind to the video player and evaluation engine.</span>
+        <div class="d-flex gap-2">
+          <a href="{{ url_for('learning.manage_course_curriculum', course_id=course.id) }}" class="btn btn-outline-secondary btn-sm">Cancel</a>
+          <button type="submit" class="btn btn-primary btn-sm fw-bold px-4">
+            <i class="bi bi-save me-1"></i> Save 3-Tier Challenges
+          </button>
+        </div>
+      </div>
+    </div>
+  </form>
+
+  <!-- Sandbox Verification Output Modal / Toast -->
+  <div class="modal fade" id="testResultModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header bg-dark text-white">
+          <h5 class="modal-title fw-bold" id="testModalTitle"><i class="bi bi-terminal me-2"></i>Sandbox Test Runner Results</h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body p-4 bg-light">
+          <div id="testModalContent">
+            <div class="text-center py-4">
+              <div class="spinner-border text-primary" role="status"></div>
+              <p class="mt-2 text-muted">Running unit tests in sandbox container...</p>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Hidden Reset Form -->
+  <form id="resetForm" method="POST" action="{{ url_for('learning.reset_lesson_challenges', lesson_id=lesson.id) }}" class="d-none">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+  </form>
+</div>
+
+<style>
+.code-editor-box {
+  font-family: 'Fira Code', 'Courier New', monospace;
+  font-size: 0.85rem;
+  line-height: 1.5;
+  tab-size: 4;
+}
+.text-purple {
+  color: #6f42c1 !important;
+}
+</style>
+
+<script>
+// === 1. Auto-Generate Smart Templates ===
+function autoGenerateTemplate() {
+  if (!confirm("This will replace current fields with auto-generated domain-aligned challenges for this lesson. Continue?")) {
+    return;
+  }
+
+  fetch("{{ url_for('learning.api_generate_challenges_template', lesson_id=lesson.id) }}", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "X-CSRFToken": "{{ csrf_token() }}"
+    }
+  })
+  .then(res => res.json())
+  .then(data => {
+    if (data.success && data.template) {
+      applyTemplateData(data.template);
+      alert("Smart templates successfully loaded for Basic, Intermediate, and Advance tiers!");
+    } else {
+      alert("Failed to generate template.");
+    }
+  })
+  .catch(err => {
+    console.error(err);
+    alert("Error communicating with server.");
+  });
+}
+
+function applyTemplateData(tmpl) {
+  if (tmpl.language) {
+    const sel = document.getElementById('challengeLanguage');
+    if (sel) sel.value = tmpl.language;
+  }
+  const chs = tmpl.challenges || {};
+  ['basic', 'intermediate', 'advance'].forEach(diff => {
+    const c = chs[diff];
+    if (c) {
+      const setVal = (id, val) => {
+        const el = document.getElementById(id);
+        if (el) el.value = val !== undefined ? val : '';
+      };
+      setVal(`${diff}_title`, c.title || '');
+      setVal(`${diff}_function_name`, c.function_name || c.class_name || c.target_variable || 'solution');
+      setVal(`${diff}_approach`, c.approach || 'function');
+      setVal(`${diff}_prompt`, c.prompt || '');
+      setVal(`${diff}_constraints`, c.constraints || '');
+      setVal(`${diff}_starter_code`, c.starter_code || '');
+      setVal(`${diff}_solution_code`, c.solution_code || '');
+      setVal(`${diff}_hint`, c.hint || '');
+      if (c.test_cases) {
+        setVal(`${diff}_test_cases`, JSON.stringify(c.test_cases, null, 2));
+      }
+    }
+  });
+}
+
+// === 2. Copy Starter from Solution Helper ===
+function copyStarterFromSolution(diff) {
+  const sol = document.getElementById(`${diff}_solution_code`);
+  const starter = document.getElementById(`${diff}_starter_code`);
+  const funcName = document.getElementById(`${diff}_function_name`).value.trim() || 'solution';
+  if (sol && starter) {
+    starter.value = `def ${funcName}():\n    # Implement solution below\n    pass\n`;
+    starter.focus();
+  }
+}
+
+// === 3. Confirm Reset ===
+function confirmReset() {
+  if (confirm("Reset these challenges to standard system default? All custom edits will be reverted.")) {
+    document.getElementById('resetForm').submit();
+  }
+}
+
+// === 4. Live Sandbox Test Runner ===
+function runSandboxTest(diff) {
+  const modalEl = document.getElementById('testResultModal');
+  const modal = new bootstrap.Modal(modalEl);
+  const content = document.getElementById('testModalContent');
+  const title = document.getElementById('testModalTitle');
+
+  title.innerText = `Testing ${diff.toUpperCase()} Tier in Sandbox...`;
+  content.innerHTML = `
+    <div class="text-center py-4">
+      <div class="spinner-border text-primary" role="status"></div>
+      <p class="mt-2 text-muted">Compiling and running against test cases...</p>
+    </div>
+  `;
+  modal.show();
+
+  const code = document.getElementById(`${diff}_solution_code`).value;
+  const tcRaw = document.getElementById(`${diff}_test_cases`).value;
+  
+  let testCases = [];
+  try {
+    testCases = JSON.parse(tcRaw);
+  } catch(e) {
+    content.innerHTML = `<div class="alert alert-danger"><strong>JSON Syntax Error in Test Cases:</strong><br>${e.message}</div>`;
+    return;
+  }
+
+  fetch("{{ url_for('learning.evaluate_code') }}", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "X-CSRFToken": "{{ csrf_token() }}"
+    },
+    body: JSON.stringify({
+      lesson_id: {{ lesson.id }},
+      difficulty: diff,
+      code: code
+    })
+  })
+  .then(res => res.json())
+  .then(resData => {
+    let html = '';
+    if (resData.passed) {
+      html += `<div class="alert alert-success d-flex align-items-center gap-2"><i class="bi bi-check-circle-fill fs-4"></i><div><strong>All Test Assertions Passed!</strong> Solution code compiled cleanly.</div></div>`;
+    } else {
+      html += `<div class="alert alert-danger d-flex align-items-center gap-2"><i class="bi bi-x-circle-fill fs-4"></i><div><strong>Tests Failed or Runtime Error:</strong> ${resData.message || ''}</div></div>`;
+    }
+
+    if (resData.error) {
+      html += `<div class="p-3 bg-dark text-danger font-monospace rounded mb-3 small"><pre class="mb-0 text-white">${resData.error}</pre></div>`;
+    }
+
+    if (resData.test_results && resData.test_results.length > 0) {
+      html += `<h6 class="fw-bold mt-3 mb-2">Test Assertions:</h6><ul class="list-group">`;
+      resData.test_results.forEach(tr => {
+        const bg = tr.passed ? 'list-group-item-success' : 'list-group-item-danger';
+        const icon = tr.passed ? 'bi-check-circle-fill text-success' : 'bi-x-circle-fill text-danger';
+        html += `
+          <li class="list-group-item ${bg} d-flex justify-content-between align-items-center">
+            <div><i class="bi ${icon} me-2"></i><strong>${tr.desc || 'Case'}</strong></div>
+            <span class="badge ${tr.passed ? 'bg-success' : 'bg-danger'}">${tr.passed ? 'PASSED' : 'FAILED'}</span>
+          </li>
+        `;
+      });
+      html += `</ul>`;
+    }
+
+    content.innerHTML = html;
+  })
+  .catch(err => {
+    content.innerHTML = `<div class="alert alert-danger">Error contacting test runner: ${err}</div>`;
+  });
+}
+</script>
+{% endblock %}

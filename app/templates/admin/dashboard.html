@@ -1,0 +1,193 @@
+{% extends 'base.html' %}
+{% block title %}Admin Control Center{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+      <h2 class="fw-bold mb-1"><i class="bi bi-shield-lock-fill text-danger me-2"></i>Admin Control Center</h2>
+      <p class="text-muted mb-0">Platform overview, user management, and system administration</p>
+    </div>
+    <div class="d-flex gap-2">
+      <a href="{{ url_for('admin.users_list') }}" class="btn btn-outline-dark btn-sm">
+        <i class="bi bi-people me-1"></i> Users
+      </a>
+      <a href="{{ url_for('admin.audit_logs') }}" class="btn btn-outline-danger btn-sm">
+        <i class="bi bi-journal-text me-1"></i> Audit Logs
+      </a>
+    </div>
+  </div>
+
+  <!-- KPI Cards -->
+  <div class="row g-3 mb-4">
+    <div class="col-md-3">
+      <div class="card p-3 shadow-sm border-0 border-start border-4 border-primary">
+        <div class="text-muted small fw-bold text-uppercase">Total Users</div>
+        <h3 class="fw-bold my-1">{{ total_users }}</h3>
+        <span class="small text-muted">{{ total_students }} Students • {{ total_instructors }} Instructors</span>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="card p-3 shadow-sm border-0 border-start border-4 border-success">
+        <div class="text-muted small fw-bold text-uppercase">Published Courses</div>
+        <h3 class="fw-bold my-1">{{ published_courses }}</h3>
+        <span class="small text-muted">Out of {{ total_courses }} total courses</span>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="card p-3 shadow-sm border-0 border-start border-4 border-info">
+        <div class="text-muted small fw-bold text-uppercase">Total Enrollments</div>
+        <h3 class="fw-bold my-1">{{ total_enrollments }}</h3>
+        <span class="small text-muted">{{ completed_enrollments }} completions</span>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="card p-3 shadow-sm border-0 border-start border-4 border-warning">
+        <div class="text-muted small fw-bold text-uppercase">Total Revenue</div>
+        <h3 class="fw-bold my-1 text-primary">${{ "%.2f"|format(revenue) }}</h3>
+        <span class="small text-muted">Simulated sales</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="row g-4">
+    <!-- Quick Admin Management Links -->
+    <div class="col-lg-7">
+      <div class="card shadow-sm border-0 mb-4">
+        <div class="card-header bg-white py-3 border-bottom">
+          <h5 class="fw-bold mb-0"><i class="bi bi-grid-fill text-primary me-2"></i>Platform Administration Modules</h5>
+        </div>
+        <div class="card-body p-4">
+          <div class="row g-3">
+            <div class="col-md-6">
+              <a href="{{ url_for('admin.roadmaps') }}" class="card text-decoration-none p-3 h-100 border border-primary border-opacity-25 bg-primary-subtle bg-opacity-25 hover-card">
+                <div class="d-flex align-items-center gap-3">
+                  <i class="bi bi-signpost-split-fill fs-2 text-primary"></i>
+                  <div>
+                    <h6 class="fw-bold text-dark mb-1">Career Roadmaps</h6>
+                    <span class="text-muted small">Sequential stages & pathways</span>
+                  </div>
+                </div>
+              </a>
+            </div>
+            <div class="col-md-6">
+              <a href="{{ url_for('admin.users_list') }}" class="card text-decoration-none p-3 h-100 border hover-card">
+                <div class="d-flex align-items-center gap-3">
+                  <i class="bi bi-people-fill fs-2 text-primary"></i>
+                  <div>
+                    <h6 class="fw-bold text-dark mb-1">Users & Accounts</h6>
+                    <span class="text-muted small">Manage accounts & roles</span>
+                  </div>
+                </div>
+              </a>
+            </div>
+            <div class="col-md-6">
+              <a href="{{ url_for('admin.roles_list') }}" class="card text-decoration-none p-3 h-100 border hover-card">
+                <div class="d-flex align-items-center gap-3">
+                  <i class="bi bi-person-badge-fill fs-2 text-info"></i>
+                  <div>
+                    <h6 class="fw-bold text-dark mb-1">Roles & Permissions</h6>
+                    <span class="text-muted small">Configure RBAC rules</span>
+                  </div>
+                </div>
+              </a>
+            </div>
+            <div class="col-md-6">
+              <a href="{{ url_for('admin.categories') }}" class="card text-decoration-none p-3 h-100 border hover-card">
+                <div class="d-flex align-items-center gap-3">
+                  <i class="bi bi-folder-fill fs-2 text-warning"></i>
+                  <div>
+                    <h6 class="fw-bold text-dark mb-1">Categories & Taxonomy</h6>
+                    <span class="text-muted small">Hierarchical categories</span>
+                  </div>
+                </div>
+              </a>
+            </div>
+            <div class="col-md-6">
+              <a href="{{ url_for('admin.departments') }}" class="card text-decoration-none p-3 h-100 border hover-card">
+                <div class="d-flex align-items-center gap-3">
+                  <i class="bi bi-building-fill fs-2 text-secondary"></i>
+                  <div>
+                    <h6 class="fw-bold text-dark mb-1">Departments</h6>
+                    <span class="text-muted small">Academic departments</span>
+                  </div>
+                </div>
+              </a>
+            </div>
+            <div class="col-md-6">
+              <a href="{{ url_for('admin.coupons') }}" class="card text-decoration-none p-3 h-100 border hover-card">
+                <div class="d-flex align-items-center gap-3">
+                  <i class="bi bi-ticket-perforated-fill fs-2 text-success"></i>
+                  <div>
+                    <h6 class="fw-bold text-dark mb-1">Discounts & Coupons</h6>
+                    <span class="text-muted small">Manage promo codes</span>
+                  </div>
+                </div>
+              </a>
+            </div>
+            <div class="col-md-6">
+              <a href="{{ url_for('admin.badges') }}" class="card text-decoration-none p-3 h-100 border hover-card">
+                <div class="d-flex align-items-center gap-3">
+                  <i class="bi bi-award-fill fs-2 text-danger"></i>
+                  <div>
+                    <h6 class="fw-bold text-dark mb-1">Badges & Rules</h6>
+                    <span class="text-muted small">Gamification badges</span>
+                  </div>
+                </div>
+              </a>
+            </div>
+            <div class="col-md-6">
+              <a href="{{ url_for('admin.tags') }}" class="card text-decoration-none p-3 h-100 border hover-card">
+                <div class="d-flex align-items-center gap-3">
+                  <i class="bi bi-tags-fill fs-2 text-primary"></i>
+                  <div>
+                    <h6 class="fw-bold text-dark mb-1">Course Tags</h6>
+                    <span class="text-muted small">Keywords & topics</span>
+                  </div>
+                </div>
+              </a>
+            </div>
+            <div class="col-md-6">
+              <a href="{{ url_for('admin.settings') }}" class="card text-decoration-none p-3 h-100 border hover-card">
+                <div class="d-flex align-items-center gap-3">
+                  <i class="bi bi-gear-fill fs-2 text-dark"></i>
+                  <div>
+                    <h6 class="fw-bold text-dark mb-1">System Settings</h6>
+                    <span class="text-muted small">Key-value configurations</span>
+                  </div>
+                </div>
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Recent Audit Logs -->
+    <div class="col-lg-5">
+      <div class="card shadow-sm border-0 mb-4">
+        <div class="card-header bg-white py-3 border-bottom d-flex justify-content-between align-items-center">
+          <h6 class="fw-bold mb-0"><i class="bi bi-clock-history text-danger me-2"></i>Recent System Activity</h6>
+          <a href="{{ url_for('admin.audit_logs') }}" class="small text-decoration-none">View All</a>
+        </div>
+        <div class="card-body p-0">
+          <ul class="list-group list-group-flush small">
+            {% for log in recent_logs %}
+              <li class="list-group-item py-2 px-3">
+                <div class="d-flex justify-content-between align-items-center">
+                  <span class="badge bg-secondary text-uppercase">{{ log.action }}</span>
+                  <span class="text-muted" style="font-size: 0.75rem;">{{ log.created_at.strftime('%H:%M:%S') }}</span>
+                </div>
+                <div class="fw-semibold mt-1">{{ log.entity_type }} #{{ log.entity_id or '' }}</div>
+                <div class="text-muted" style="font-size: 0.75rem;">By {{ log.user.username if log.user else 'System' }}: {{ log.details or '' }}</div>
+              </li>
+            {% else %}
+              <li class="list-group-item text-muted text-center py-3">No activity logged yet.</li>
+            {% endfor %}
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

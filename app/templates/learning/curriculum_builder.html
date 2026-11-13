@@ -1,0 +1,233 @@
+{% extends 'base.html' %}
+{% block title %}Curriculum Builder - {{ course.title }}{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+      <a href="{{ url_for('catalog.instructor_dashboard') }}" class="text-muted small text-decoration-none">
+        <i class="bi bi-arrow-left me-1"></i> Back to Dashboard
+      </a>
+      <h2 class="fw-bold mb-1">Curriculum Builder: {{ course.title }}</h2>
+      <div class="d-flex gap-2 align-items-center">
+        <span class="badge {% if course.status == 'published' %}bg-success{% else %}bg-secondary{% endif %}">Status: {{ course.status.capitalize() }}</span>
+        <span class="badge bg-danger"><i class="bi bi-youtube me-1"></i> YouTube Video Series</span>
+      </div>
+    </div>
+    <div class="d-flex gap-2">
+      <a href="{{ url_for('learning.course_overview', course_id=course.id) }}" class="btn btn-outline-primary btn-sm">
+        <i class="bi bi-play-circle me-1"></i> View Video Player
+      </a>
+      <a href="{{ url_for('assessments.create_quiz', course_id=course.id) }}" class="btn btn-outline-secondary btn-sm">
+        <i class="bi bi-patch-question me-1"></i> Add Quiz
+      </a>
+      <a href="{{ url_for('assessments.create_assignment', course_id=course.id) }}" class="btn btn-outline-secondary btn-sm">
+        <i class="bi bi-file-earmark-code me-1"></i> Add Assignment
+      </a>
+      {% if course.status != 'published' %}
+        <form action="{{ url_for('catalog.publish_course', course_id=course.id) }}" method="POST">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+          <button type="submit" class="btn btn-success btn-sm">
+            <i class="bi bi-check2-circle me-1"></i> Publish Course
+          </button>
+        </form>
+      {% endif %}
+    </div>
+  </div>
+
+  <div class="row g-4">
+    <!-- Modules & Lessons List -->
+    <div class="col-lg-7">
+      {% for module in course.modules %}
+        <div class="card shadow-sm border-0 mb-3">
+          <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center border-bottom">
+            <h5 class="fw-bold mb-0 text-primary">
+              <i class="bi bi-folder2-open me-2"></i>Module {{ loop.index }}: {{ module.title }}
+            </h5>
+            <div class="d-flex gap-2 align-items-center">
+              <a href="{{ url_for('learning.add_lesson', module_id=module.id) }}" class="btn btn-sm btn-outline-primary py-0">
+                <i class="bi bi-plus-lg me-1"></i> Add Lesson
+              </a>
+              <form action="{{ url_for('learning.delete_module', module_id=module.id) }}" method="POST" data-confirm="Delete this module and all its lessons?">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <button type="submit" class="btn btn-sm btn-outline-danger py-0"><i class="bi bi-trash"></i></button>
+              </form>
+            </div>
+          </div>
+          <div class="card-body p-0">
+            <ul class="list-group list-group-flush">
+              {% for lesson in module.lessons %}
+                {% set yt_embed = lesson.content | youtube_embed %}
+                <li class="list-group-item d-flex justify-content-between align-items-center py-2 px-3">
+                  <div>
+                    <i class="bi bi-play-circle-fill text-danger me-1"></i>
+                    <span class="fw-semibold text-dark">{{ lesson.title }}</span>
+                    <span class="text-muted small ms-2">({{ lesson.duration_min | format_duration }})</span>
+                    {% if yt_embed %}
+                      <span class="badge bg-danger-subtle text-danger ms-2">YouTube Video</span>
+                    {% endif %}
+                    {% if lesson.custom_challenges %}
+                      <span class="badge bg-success-subtle text-success ms-1"><i class="bi bi-code-slash me-1"></i>Custom Lab</span>
+                    {% endif %}
+                  </div>
+                  <div class="btn-group btn-group-sm">
+                    <a href="{{ url_for('learning.manage_lesson_challenges', lesson_id=lesson.id) }}" class="btn btn-outline-primary" title="Manage 3-Tier Code Lab Programs (Basic, Intermediate, Advance)">
+                      <i class="bi bi-code-slash me-1"></i> Code Lab
+                    </a>
+                    <a href="{{ url_for('learning.lesson_player', lesson_id=lesson.id) }}" class="btn btn-outline-secondary" title="Preview Video">
+                      <i class="bi bi-play"></i>
+                    </a>
+                    <a href="{{ url_for('learning.edit_lesson', lesson_id=lesson.id) }}" class="btn btn-outline-secondary" title="Edit Lesson">
+                      <i class="bi bi-pencil"></i>
+                    </a>
+                    <form action="{{ url_for('learning.delete_lesson', lesson_id=lesson.id) }}" method="POST" data-confirm="Delete lesson '{{ lesson.title }}'?" class="d-inline">
+                      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                      <button type="submit" class="btn btn-outline-danger btn-sm rounded-0 rounded-end">
+                        <i class="bi bi-trash"></i>
+                      </button>
+                    </form>
+                  </div>
+                </li>
+              {% else %}
+                <li class="list-group-item text-muted small py-3 text-center">
+                  No lessons in this module. Use the tool on the right to add video lessons.
+                </li>
+              {% endfor %}
+            </ul>
+          </div>
+        </div>
+      {% else %}
+        <div class="card p-5 text-center shadow-sm border-0">
+          <i class="bi bi-youtube fs-1 text-danger mb-2"></i>
+          <h5>No Video Modules Yet</h5>
+          <p class="text-muted small">Begin structuring your course by adding video lessons under specific headings in the sidebar.</p>
+        </div>
+      {% endfor %}
+    </div>
+
+    <!-- Instructor Tools Sidebar -->
+    <div class="col-lg-5">
+      <div class="card shadow-sm border-0 sticky-top" style="top: 80px;">
+        <div class="card-header bg-white border-bottom p-0">
+          <ul class="nav nav-tabs nav-fill" id="curriculumTabs" role="tablist">
+            <li class="nav-item" role="presentation">
+              <button class="nav-link active fw-semibold small py-3" id="single-video-tab" data-bs-toggle="tab" data-bs-target="#single-video" type="button" role="tab">
+                <i class="bi bi-youtube text-danger me-1"></i> Add Video with Heading
+              </button>
+            </li>
+            <li class="nav-item" role="presentation">
+              <button class="nav-link fw-semibold small py-3" id="batch-playlist-tab" data-bs-toggle="tab" data-bs-target="#batch-playlist" type="button" role="tab">
+                <i class="bi bi-collection-play me-1"></i> Batch Playlist
+              </button>
+            </li>
+            <li class="nav-item" role="presentation">
+              <button class="nav-link fw-semibold small py-3" id="empty-mod-tab" data-bs-toggle="tab" data-bs-target="#empty-mod" type="button" role="tab">
+                <i class="bi bi-folder-plus me-1"></i> Module
+              </button>
+            </li>
+          </ul>
+        </div>
+
+        <div class="card-body p-4">
+          <div class="tab-content" id="curriculumTabsContent">
+            <!-- 1. Quick Add Video with Specific Heading -->
+            <div class="tab-pane fade show active" id="single-video" role="tabpanel">
+              <h6 class="fw-bold mb-3"><i class="bi bi-plus-circle text-primary me-2"></i>Add YouTube Video with Heading</h6>
+              <form action="{{ url_for('learning.quick_add_video', course_id=course.id) }}" method="POST">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+                <div class="mb-3">
+                  <label class="form-label small fw-semibold">Specific Heading / Module Name</label>
+                  <input type="text" name="module_heading" class="form-control form-control-sm" list="existingModules" placeholder="e.g. Module 1: Introduction & Environment Setup" required>
+                  <datalist id="existingModules">
+                    {% for m in course.modules %}
+                      <option value="{{ m.title }}"></option>
+                    {% endfor %}
+                  </datalist>
+                  <div class="form-text" style="font-size: 0.75rem;">Type a new heading or pick an existing module from the list.</div>
+                </div>
+
+                <div class="mb-3">
+                  <label class="form-label small fw-semibold">Video Lecture Title</label>
+                  <input type="text" name="lesson_title" class="form-control form-control-sm" placeholder="e.g. Lecture 1.1: Installation & Architecture" required>
+                </div>
+
+                <div class="mb-3">
+                  <label class="form-label small fw-semibold">YouTube Video URL</label>
+                  <input type="url" name="video_url" class="form-control form-control-sm" placeholder="https://www.youtube.com/watch?v=..." required>
+                </div>
+
+                <div class="row">
+                  <div class="col-6 mb-3">
+                    <label class="form-label small fw-semibold">Duration (Minutes)</label>
+                    <input type="number" name="duration_min" class="form-control form-control-sm" value="30">
+                  </div>
+                </div>
+
+                <div class="mb-3">
+                  <label class="form-label small fw-semibold">Lecture Notes / Summary (Optional)</label>
+                  <textarea name="notes" class="form-control form-control-sm" rows="3" placeholder="Key topics covered in this video lecture..."></textarea>
+                </div>
+
+                <button type="submit" class="btn btn-danger btn-sm w-100 fw-semibold">
+                  <i class="bi bi-youtube me-1"></i> Add Video to Course
+                </button>
+              </form>
+            </div>
+
+            <!-- 2. Batch Playlist Importer -->
+            <div class="tab-pane fade" id="batch-playlist" role="tabpanel">
+              <h6 class="fw-bold mb-2"><i class="bi bi-collection-play-fill text-danger me-2"></i>Import Playlist with Specific Heading</h6>
+              <p class="text-muted small mb-3">Add multiple YouTube videos under a single chapter heading at once.</p>
+
+              <form action="{{ url_for('learning.batch_add_playlist', course_id=course.id) }}" method="POST">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+                <div class="mb-3">
+                  <label class="form-label small fw-semibold">Module Chapter Heading</label>
+                  <input type="text" name="module_heading" class="form-control form-control-sm" placeholder="e.g. Chapter 3: Advanced Relational Queries" required>
+                </div>
+
+                <div class="mb-3">
+                  <label class="form-label small fw-semibold">Playlist Video Items (One per line)</label>
+                  <textarea name="raw_playlist" class="form-control form-control-sm font-monospace" rows="6" placeholder="Lesson Title | YouTube URL | DurationMins
+Example:
+Intro to SQL | https://www.youtube.com/watch?v=HXV3zeRR3h4 | 45
+JOIN Queries | https://www.youtube.com/watch?v=0rB_UPoo6JM | 35" required></textarea>
+                  <div class="form-text" style="font-size: 0.75rem;">Format: <code>Title | URL | Duration</code> (or paste YouTube URLs one per line)</div>
+                </div>
+
+                <button type="submit" class="btn btn-primary btn-sm w-100 fw-semibold">
+                  <i class="bi bi-cloud-arrow-up me-1"></i> Import Playlist Videos
+                </button>
+              </form>
+            </div>
+
+            <!-- 3. Add Empty Module -->
+            <div class="tab-pane fade" id="empty-mod" role="tabpanel">
+              <h6 class="fw-bold mb-3"><i class="bi bi-folder-plus text-primary me-2"></i>Add Custom Module Heading</h6>
+              <form action="{{ url_for('learning.add_module', course_id=course.id) }}" method="POST">
+                {{ module_form.hidden_tag() }}
+
+                <div class="mb-3">
+                  {{ module_form.title.label(class="form-label small fw-semibold") }}
+                  {{ module_form.title(class="form-control form-control-sm", placeholder="e.g. Chapter 5: Security & Optimization") }}
+                </div>
+
+                <div class="mb-3">
+                  {{ module_form.position.label(class="form-label small fw-semibold") }}
+                  {{ module_form.position(class="form-control form-control-sm") }}
+                </div>
+
+                <button type="submit" class="btn btn-secondary btn-sm w-100">
+                  <i class="bi bi-check2 me-1"></i> Create Module
+                </button>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

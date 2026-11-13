@@ -1,0 +1,1156 @@
+{% extends 'base.html' %}
+{% block title %}{{ course.title }} - Learning Hub & Video Player{% endblock %}
+
+{% block content %}
+<div class="container-fluid px-lg-5 py-4">
+  <!-- Top Course Status Bar -->
+  <div class="card shadow-sm border-0 mb-4 p-4 bg-light">
+    <div class="row align-items-center">
+      <div class="col-md-8">
+        <div class="d-flex align-items-center gap-2 mb-2">
+          <span class="badge bg-primary">{{ course.category.name if course.category else 'Course' }}</span>
+          <span class="badge bg-secondary">{{ course.department.name if course.department else 'Engineering' }}</span>
+          <span class="badge bg-danger"><i class="bi bi-youtube me-1"></i> YouTube Video Series</span>
+        </div>
+        <h2 class="fw-bold mb-2">{{ course.title }}</h2>
+        <div class="d-flex flex-wrap align-items-center gap-3 text-muted small">
+          <span><i class="bi bi-person-fill text-primary me-1"></i> Instructor: <strong>{{ course.instructor_name }}</strong></span>
+          <span><i class="bi bi-people-fill text-info me-1"></i> <strong>{{ course.total_enrolled_students }}</strong> enrolled {{ 'student' if course.total_enrolled_students == 1 else 'students' }}</span>
+          <span><i class="bi bi-collection-play text-danger me-1"></i> {{ course.modules|length }} modules • {{ all_lessons|length }} video lectures</span>
+          <a href="{{ url_for('learning.course_announcements', course_id=course.id) }}" class="text-decoration-none">
+            <i class="bi bi-megaphone me-1"></i> Announcements ({{ course.announcements|length }})
+          </a>
+          <a href="{{ url_for('community.course_forum', course_id=course.id) }}" class="text-decoration-none">
+            <i class="bi bi-chat-dots me-1"></i> Discussion Forum
+          </a>
+          {% if is_owner %}
+            <a href="{{ url_for('learning.manage_course_curriculum', course_id=course.id) }}" class="badge bg-dark text-white text-decoration-none p-2">
+              <i class="bi bi-gear-fill me-1"></i> Manage Curriculum / Add Videos
+            </a>
+          {% endif %}
+        </div>
+      </div>
+      <div class="col-md-4 text-md-end mt-3 mt-md-0">
+        {% if enrollment %}
+          <div class="d-inline-block text-start w-100" style="max-width: 250px;">
+            <div class="d-flex justify-content-between small text-muted mb-1">
+              <span>Overall Progress</span>
+              <span class="fw-bold text-primary">{{ enrollment.progress_pct }}%</span>
+            </div>
+            <div class="progress mb-2" style="height: 10px;">
+              <div class="progress-bar {% if enrollment.progress_pct >= 100 %}bg-success{% else %}bg-primary{% endif %}" role="progressbar" style="width: {{ enrollment.progress_pct }}%;"></div>
+            </div>
+            {% if enrollment.certificate %}
+              <a href="{{ url_for('learning.view_certificate', code=enrollment.certificate.code) }}" class="btn btn-sm btn-success w-100 shadow-sm">
+                <i class="bi bi-award-fill me-1"></i> View Certificate
+              </a>
+            {% endif %}
+          </div>
+        {% elif is_owner %}
+          <span class="badge bg-warning text-dark p-2 fs-6">Instructor Preview Mode</span>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+
+  <!-- Interactive Cinema Video Hub & Playlist -->
+  <div class="row g-4 mb-5">
+    <!-- Left: Cinema Video Player -->
+    <div class="col-lg-8">
+      <div class="card shadow border-0 overflow-hidden mb-4">
+        {% if active_lesson %}
+          {% set yt_embed = active_lesson.content | youtube_embed %}
+          <!-- Video Iframe Container -->
+          <div class="ratio ratio-16x9 bg-black position-relative shadow">
+            <iframe id="mainCourseVideoPlayer"
+                    src="{% if yt_embed %}{{ yt_embed }}?enablejsapi=1&rel=0&modestbranding=1&autoplay=0&origin={{ request.host_url.rstrip('/') | urlencode }}{% else %}https://www.youtube.com/embed/LfaMVlDaQ24?enablejsapi=1{% endif %}"
+                    title="{{ active_lesson.title }}"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                    allowfullscreen>
+            </iframe>
+          </div>
+
+          <div class="card-body p-4">
+            <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 pb-3 border-bottom mb-3">
+              <div>
+                <span class="badge bg-info-subtle text-info mb-1" id="activeLessonHeading">
+                  {{ active_lesson.module.title }}
+                </span>
+                <h4 class="fw-bold mb-0" id="activeLessonTitle">{{ active_lesson.title }}</h4>
+              </div>
+
+              <div class="d-flex flex-wrap align-items-center gap-2">
+                <button type="button" id="btnPrevLecture" onclick="playPreviousVideo()" class="btn btn-outline-secondary btn-sm" title="Previous Lecture">
+                  <i class="bi bi-chevron-left me-1"></i> Previous
+                </button>
+                <button type="button" id="btnNextLecture" onclick="playNextVideo()" class="btn btn-primary btn-sm" title="Next Lecture">
+                  Next <i class="bi bi-chevron-right ms-1"></i>
+                </button>
+
+                {% if enrollment %}
+                  <form id="toggleCompleteForm" action="{{ url_for('learning.toggle_complete', lesson_id=active_lesson.id) }}" method="POST">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                    <button type="submit" id="toggleCompleteBtn" class="btn {% if active_lesson.id in completed_lesson_ids %}btn-success{% else %}btn-outline-success{% endif %} btn-sm">
+                      <i class="bi {% if active_lesson.id in completed_lesson_ids %}bi-check-circle-fill{% else %}bi-check-circle{% endif %} me-1"></i>
+                      <span id="completeText">{% if active_lesson.id in completed_lesson_ids %}Completed{% else %}Mark Complete{% endif %}</span>
+                    </button>
+                  </form>
+                {% endif %}
+
+                <a id="theaterModeLink" href="{{ url_for('learning.lesson_player', lesson_id=active_lesson.id) }}" class="btn btn-outline-primary btn-sm">
+                  <i class="bi bi-arrows-fullscreen me-1"></i> Theater Mode
+                </a>
+              </div>
+            </div>
+
+            <!-- Dual Navigation Tabs: Lecture Breakdown & Interactive Programming Quiz -->
+            <ul class="nav nav-pills mb-4 border-bottom pb-3 gap-2" id="lessonTabs" role="tablist">
+              <li class="nav-item" role="presentation">
+                <button class="nav-link active fw-semibold" id="tab-breakdown-btn" data-bs-toggle="pill" data-bs-target="#tab-breakdown" type="button" role="tab">
+                  <i class="bi bi-collection-play me-1"></i> Key Components & Explanation
+                </button>
+              </li>
+              <li class="nav-item" role="presentation">
+                <button class="nav-link fw-semibold position-relative" id="tab-codequiz-btn" data-bs-toggle="pill" data-bs-target="#tab-codequiz" type="button" role="tab">
+                  <i class="bi bi-terminal-fill text-warning me-1"></i> Programming Quiz (Solve Problem)
+                  <span class="badge bg-danger rounded-pill ms-1" style="font-size: 0.65rem;">3 Tiers</span>
+                </button>
+              </li>
+            </ul>
+
+            <div class="tab-content" id="lessonTabsContent">
+              <!-- Tab 1: Key Components & Breakdown -->
+              <div class="tab-pane fade show active" id="tab-breakdown" role="tabpanel">
+                {% set bd = active_lesson.breakdown %}
+                <div class="p-3 bg-light rounded-3 border mb-4">
+                  <div class="d-flex justify-content-between align-items-center mb-2">
+                    <span class="badge bg-primary-subtle text-primary fw-bold px-2 py-1">
+                      <i class="bi bi-info-circle me-1"></i> Lecture Overview & Explanation
+                    </span>
+                    <span class="badge bg-white text-muted border small" id="activeLessonDurationBadge">
+                      <i class="bi bi-clock me-1"></i> {{ active_lesson.duration_min | format_duration }}
+                    </span>
+                  </div>
+                  <p class="text-secondary small mb-0 lh-base" id="activeLessonOverview">
+                    {{ bd.overview }}
+                  </p>
+                </div>
+
+                <!-- Key Components of the Video -->
+                <div class="mb-4">
+                  <div class="d-flex align-items-center justify-content-between mb-3">
+                    <h6 class="fw-bold text-dark mb-0">
+                      <i class="bi bi-grid-fill text-primary me-2"></i>Key Components of This Video
+                    </h6>
+                    <span class="badge bg-light text-secondary border small">Core Architecture</span>
+                  </div>
+
+                  <div class="row g-3" id="activeComponentsGrid">
+                    {% for comp in bd.components %}
+                      <div class="col-md-6">
+                        <div class="card h-100 border shadow-none bg-white p-3 rounded-3 component-card">
+                          <div class="d-flex align-items-start gap-2 mb-2">
+                            <div class="rounded p-2 bg-primary-subtle text-primary d-flex align-items-center justify-content-center" style="width: 34px; height: 34px;">
+                              <i class="bi {{ comp.icon }} fs-6"></i>
+                            </div>
+                            <div>
+                              <span class="badge bg-secondary-subtle text-secondary small px-1.5 py-0.5" style="font-size: 0.65rem;">{{ comp.badge }}</span>
+                              <h6 class="fw-bold text-dark mb-0 mt-0.5 small">{{ comp.title }}</h6>
+                            </div>
+                          </div>
+                          <p class="text-muted small mb-0 lh-sm" style="font-size: 0.8rem;">
+                            {{ comp.desc }}
+                          </p>
+                        </div>
+                      </div>
+                    {% endfor %}
+                  </div>
+                </div>
+
+                <!-- What You'll Learn / Key Takeaways -->
+                <div class="p-3 rounded-3 border border-success-subtle bg-success-subtle bg-opacity-25 mb-4">
+                  <h6 class="fw-bold text-success mb-2 small text-uppercase">
+                    <i class="bi bi-check2-circle me-1"></i> What You'll Master in This Lecture
+                  </h6>
+                  <ul class="mb-0 ps-3 small text-secondary" id="activeTakeawaysList">
+                    {% for t in bd.takeaways %}
+                      <li class="mb-1">{{ t }}</li>
+                    {% endfor %}
+                  </ul>
+                </div>
+
+                <!-- Why This Matters in Your Career Roadmap -->
+                <div class="small text-muted p-2.5 rounded bg-light border mb-4" id="activeWhyItMatters">
+                  <strong class="text-dark"><i class="bi bi-compass text-warning me-1"></i>Roadmap Context:</strong>
+                  <span id="activeWhyItMattersText">{{ bd.why_it_matters }}</span>
+                </div>
+              </div>
+
+              <!-- Tab 2: Interactive Programming Quiz (Solve Problem: Basic / Intermediate / Advance) -->
+              <div class="tab-pane fade" id="tab-codequiz" role="tabpanel">
+                {% set pq = active_lesson.programming_quiz %}
+                {% set basic_ch = pq.challenges.get('basic', {}) %}
+
+                <!-- Difficulty Tiers Selector -->
+                <div class="d-flex flex-wrap justify-content-between align-items-center bg-light p-3 rounded-3 border mb-3">
+                  <div>
+                    <span class="small fw-bold text-uppercase text-muted d-block mb-1">Select Difficulty Tier:</span>
+                    <div class="btn-group btn-group-sm" role="group" id="difficultyGroup">
+                      <button type="button" class="btn btn-outline-success active fw-semibold" id="btnDiffBasic" onclick="selectDifficulty('basic');">
+                        <i class="bi bi-check-circle me-1"></i> Basic (Warm-Up)
+                      </button>
+                      <button type="button" class="btn btn-outline-primary fw-semibold" id="btnDiffIntermediate" onclick="selectDifficulty('intermediate');">
+                        <i class="bi bi-layers me-1"></i> Intermediate (Engineering)
+                      </button>
+                      <button type="button" class="btn btn-outline-purple text-dark fw-semibold" id="btnDiffAdvance" onclick="selectDifficulty('advance');" style="border-color: #7c3aed;">
+                        <i class="bi bi-lightning-fill text-warning me-1"></i> Advance (Algorithmic)
+                      </button>
+                    </div>
+                  </div>
+                  <div class="text-end mt-2 mt-md-0">
+                    <span class="badge bg-dark px-3 py-2" id="challengeLanguageBadge">
+                      <i class="bi bi-code-slash text-warning me-1"></i> <span id="challengeLanguageText">{{ pq.language|upper }}</span>
+                    </span>
+                  </div>
+                </div>
+
+                <!-- Problem Statement Card -->
+                <div class="card border-0 shadow-sm p-3 rounded-3 mb-3" style="background: #f8fafc;">
+                  <div class="d-flex justify-content-between align-items-start mb-2">
+                    <div class="d-flex align-items-center gap-2">
+                      <span class="badge bg-success fw-bold" id="challengeDifficultyBadge">Basic</span>
+                      <span class="badge bg-secondary-subtle text-secondary small fw-semibold" id="challengeApproachBadge">
+                        <i class="bi bi-code-slash me-1"></i>{{ basic_ch.approach|default('function')|capitalize }}
+                      </span>
+                      <h5 class="fw-bold mb-0 text-dark" id="challengeTitle">{{ basic_ch.title }}</h5>
+                    </div>
+                    <button class="btn btn-sm btn-outline-secondary" onclick="resetStarterCode();" title="Reset code to starter boilerplate">
+                      <i class="bi bi-arrow-counterclockwise me-1"></i> Reset Starter
+                    </button>
+                  </div>
+                  <p class="text-secondary small mb-2 lh-base" id="challengePrompt">{{ basic_ch.prompt }}</p>
+                  <div class="small text-muted mb-0">
+                    <strong>Constraints:</strong> <code class="text-dark bg-white px-2 py-0.5 rounded border" id="challengeConstraints">{{ basic_ch.constraints }}</code>
+                  </div>
+                </div>
+
+                <!-- Interactive Code Editor -->
+                <div class="card border-0 shadow-sm overflow-hidden mb-3">
+                  <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center py-2 px-3">
+                    <span class="small font-monospace"><i class="bi bi-terminal me-2 text-info"></i>solution.{{ 'js' if pq.language == 'javascript' else 'py' }}</span>
+                    <span class="small text-light opacity-75">Implement your solution below</span>
+                  </div>
+                  <div class="card-body p-0 position-relative">
+                    <textarea id="codeEditorArea" class="form-control font-monospace border-0 p-3" rows="8" style="background: #1e1e2e; color: #f8f8f2; font-size: 0.92rem; line-height: 1.5; tab-size: 4; border-radius: 0; outline: none; resize: vertical;" spellcheck="false">{{ basic_ch.starter_code }}</textarea>
+                  </div>
+                  <div class="card-footer bg-light d-flex flex-wrap justify-content-between align-items-center py-2 px-3 gap-2">
+                    <div class="d-flex flex-wrap gap-2">
+                      <button class="btn btn-primary btn-sm px-3 fw-semibold shadow-sm" id="runCodeBtn" onclick="runAndCheckCode();">
+                        <i class="bi bi-play-fill me-1"></i> Run & Test Code
+                      </button>
+                      <button class="btn btn-outline-secondary btn-sm" id="hintToggleBtn" onclick="toggleHint();">
+                        <i class="bi bi-lightbulb text-warning me-1"></i> Hint
+                      </button>
+                      <button class="btn btn-outline-info btn-sm" id="solutionToggleBtn" onclick="toggleSolution();">
+                        <i class="bi bi-eye me-1"></i> Reveal Solution
+                      </button>
+                    </div>
+                    <div id="evalLoadingIndicator" class="spinner-border spinner-border-sm text-primary d-none" role="status"></div>
+                  </div>
+                </div>
+
+                <!-- Collapsible Hint Box -->
+                <div class="alert alert-warning d-none py-2 px-3 mb-3 small" id="hintBox">
+                  <strong><i class="bi bi-lightbulb-fill me-1"></i> Hint:</strong> <span id="hintText">{{ basic_ch.hint }}</span>
+                </div>
+
+                <!-- Collapsible Solution & Explanation Box -->
+                <div class="card border border-info-subtle bg-info-subtle bg-opacity-25 p-3 rounded-3 mb-3 d-none shadow-sm" id="solutionBox" style="transition: all 0.3s ease;">
+                  <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-2">
+                    <h6 class="fw-bold text-info-emphasis mb-0"><i class="bi bi-check2-all me-1"></i> Reference Solution & Explanation</h6>
+                    <div class="d-flex align-items-center gap-2">
+                      <button type="button" class="btn btn-sm btn-success fw-semibold" id="btnApplySolution" onclick="applySolutionToEditor();" title="Load solution code into solution.py">
+                        <i class="bi bi-arrow-up-circle-fill me-1"></i> Insert into Editor
+                      </button>
+                      <button type="button" class="btn btn-sm btn-outline-secondary" onclick="copySolutionCode();" title="Copy code to clipboard">
+                        <i class="bi bi-clipboard me-1"></i> Copy
+                      </button>
+                      <button type="button" class="btn-close btn-sm ms-1" onclick="toggleSolution();" title="Close solution box"></button>
+                    </div>
+                  </div>
+                  <pre class="bg-dark text-light p-3 rounded small font-monospace mb-2 overflow-auto" id="solutionPre"><code>{{ basic_ch.solution_code }}</code></pre>
+                  <p class="text-secondary small mb-0" id="explanationText">{{ basic_ch.explanation }}</p>
+                </div>
+
+                <!-- Real-Time Test Results Panel -->
+                <div class="card border-0 shadow-sm p-3 rounded-3" id="testResultsCard" style="background: #fdfdfd;">
+                  <div class="d-flex justify-content-between align-items-center mb-2">
+                    <h6 class="fw-bold mb-0 text-dark small text-uppercase">
+                      <i class="bi bi-clipboard-check text-primary me-1"></i> Test Suite Validation
+                    </h6>
+                    <span class="badge bg-secondary" id="testSummaryBadge">Ready to Test ({{ basic_ch.test_cases|length }} test cases)</span>
+                  </div>
+                  <div id="testCasesContainer" class="d-flex flex-column gap-2 small">
+                    {% for tc in basic_ch.test_cases %}
+                      <div class="p-2 rounded border bg-white d-flex justify-content-between align-items-center">
+                        <div>
+                          <strong>Test {{ loop.index }}:</strong> <span class="text-secondary">{{ tc.desc }}</span>
+                          <div class="text-muted" style="font-size: 0.75rem;">Input: <code>{{ tc.input }}</code> | Expected: <code>{{ tc.expected }}</code></div>
+                        </div>
+                        <span class="badge bg-light text-muted border">Untested</span>
+                      </div>
+                    {% endfor %}
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {% if active_lesson.resources %}
+              <div class="pt-3 border-top">
+                <h6 class="fw-bold small text-muted text-uppercase mb-2"><i class="bi bi-paperclip me-1"></i>Attached Resources</h6>
+                <div class="d-flex flex-wrap gap-2">
+                  {% for r in active_lesson.resources %}
+                    <a href="{{ r.url_or_path }}" target="_blank" class="btn btn-sm btn-outline-secondary">
+                      <i class="bi bi-link-45deg"></i> {{ r.title }}
+                    </a>
+                  {% endfor %}
+                </div>
+              </div>
+            {% endif %}
+            <!-- Bottom Lesson Navigation Controls -->
+            <div class="d-flex justify-content-between align-items-center pt-3 border-top mt-4">
+              <button type="button" id="btnPrevLectureBottom" onclick="playPreviousVideo()" class="btn btn-outline-secondary btn-sm">
+                <i class="bi bi-chevron-left me-1"></i> Previous Lecture
+              </button>
+              <button type="button" id="btnNextLectureBottom" onclick="playNextVideo()" class="btn btn-primary btn-sm">
+                Next Lecture <i class="bi bi-chevron-right ms-1"></i>
+              </button>
+            </div>
+          </div>
+        {% else %}
+          <div class="card-body p-5 text-center text-muted">
+            <i class="bi bi-camera-video-off fs-1 d-block mb-3"></i>
+            <h5>No Video Lectures Added Yet</h5>
+            <p>The instructor has not added video lessons to this course yet.</p>
+          </div>
+        {% endif %}
+      </div>
+    </div>
+
+    <!-- Right: Structured Playlist with Specific Headings -->
+    <div class="col-lg-4">
+      <div class="card shadow-sm border-0 sticky-top" style="top: 80px;">
+        <div class="card-header bg-dark text-white py-3 d-flex justify-content-between align-items-center">
+          <div>
+            <h6 class="fw-bold mb-0"><i class="bi bi-play-btn-fill text-danger me-2"></i>Course Playlist</h6>
+            <span class="small text-light opacity-75">{{ all_lessons|length }} Video Lectures</span>
+          </div>
+          <span class="badge bg-primary">{{ course.modules|length }} Chapters</span>
+        </div>
+
+        <div class="card-body p-0" style="max-height: 600px; overflow-y: auto;">
+          <div class="accordion accordion-flush" id="playlistAccordion">
+            {% for module in course.modules %}
+              {% set mod_has_active = active_lesson and active_lesson.module_id == module.id %}
+              <div class="accordion-item">
+                <h2 class="accordion-header" id="headingMod{{ module.id }}">
+                  <button class="accordion-button {% if not mod_has_active and not loop.first %}collapsed{% endif %} py-2 px-3 fw-semibold small bg-light" type="button" data-bs-toggle="collapse" data-bs-target="#collapseMod{{ module.id }}">
+                    <i class="bi bi-folder-fill text-warning me-2"></i>
+                    <span>{{ module.title }}</span>
+                    <span class="badge bg-secondary-subtle text-secondary ms-auto me-2">{{ module.lessons|length }}</span>
+                  </button>
+                </h2>
+                <div id="collapseMod{{ module.id }}" class="accordion-collapse collapse {% if mod_has_active or loop.first %}show{% endif %}" data-bs-parent="#playlistAccordion">
+                  <div class="accordion-body p-0">
+                    <div class="list-group list-group-flush">
+                      {% for lesson in module.lessons %}
+                        {% set is_active = active_lesson and active_lesson.id == lesson.id %}
+                        {% set is_comp = lesson.id in completed_lesson_ids %}
+                        {% set les_yt = lesson.content | youtube_embed %}
+
+                        <a href="javascript:void(0);"
+                           class="list-group-item list-group-item-action py-3 px-3 playlist-item {% if is_active %}active-playlist-item bg-primary-subtle text-primary fw-bold{% endif %}"
+                           data-lesson-id="{{ lesson.id }}"
+                           data-video-id="{{ lesson.content | youtube_id }}"
+                           data-embed-url="{{ les_yt or '' }}"
+                           data-title="{{ lesson.title }}"
+                           data-module="{{ module.title }}"
+                           data-content="{{ lesson.content|e }}"
+                           data-theater-url="{{ url_for('learning.lesson_player', lesson_id=lesson.id) }}"
+                           data-toggle-url="{{ url_for('learning.toggle_complete', lesson_id=lesson.id) }}"
+                           data-completed="{{ 'true' if is_comp else 'false' }}"
+                           data-duration="{{ lesson.duration_min | format_duration }}"
+                           data-breakdown='{{ lesson.breakdown | tojson | forceescape }}'
+                           data-quiz='{{ lesson.programming_quiz | tojson | forceescape }}'
+                           onclick="switchCourseVideo(this);">
+                          <div class="d-flex align-items-start gap-2">
+                            <div class="mt-1">
+                              {% if is_comp %}
+                                <i class="bi bi-check-circle-fill text-success"></i>
+                              {% else %}
+                                <i class="bi bi-play-circle text-danger"></i>
+                              {% endif %}
+                            </div>
+                            <div class="flex-grow-1">
+                              <div class="small fw-semibold title-text">{{ lesson.title }}</div>
+                              <div class="text-muted playlist-duration-text" style="font-size: 0.75rem;">
+                                <i class="bi bi-clock me-1"></i>{{ lesson.duration_min | format_duration }}
+                                {% if les_yt %}• <span class="text-danger fw-semibold">YouTube</span>{% endif %}
+                              </div>
+                            </div>
+                            {% if is_active %}
+                              <span class="badge bg-primary text-white small badge-playing">Playing</span>
+                            {% endif %}
+                          </div>
+                        </a>
+                      {% else %}
+                        <div class="p-3 text-muted small text-center">No lessons in this chapter.</div>
+                      {% endfor %}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            {% else %}
+              <div class="p-4 text-center text-muted">No modules available yet.</div>
+            {% endfor %}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bottom Section: Quizzes, Assignments & Reviews -->
+  <div class="row g-4">
+    <!-- Course Quizzes -->
+    <div class="col-lg-4">
+      <div class="card shadow-sm border-0 h-100">
+        <div class="card-header bg-white py-3 border-bottom">
+          <h6 class="fw-bold mb-0"><i class="bi bi-patch-question-fill text-primary me-2"></i>Course Quizzes</h6>
+        </div>
+        <div class="card-body p-3">
+          {% if course.quizzes %}
+            <ul class="list-group list-group-flush">
+              {% for quiz in course.quizzes %}
+                <li class="list-group-item px-0 py-2 d-flex justify-content-between align-items-center">
+                  <div>
+                    <div class="fw-semibold small">{{ quiz.title }}</div>
+                    <span class="text-muted" style="font-size: 0.75rem;">{{ quiz.questions|length }} questions • {{ quiz.time_limit_min }}m limit</span>
+                  </div>
+                  <a href="{{ url_for('assessments.take_quiz', quiz_id=quiz.id) }}" class="btn btn-sm btn-primary py-0">Take Quiz</a>
+                </li>
+              {% endfor %}
+            </ul>
+          {% else %}
+            <p class="text-muted small mb-0">No quizzes scheduled for this course.</p>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+
+    <!-- Course Assignments -->
+    <div class="col-lg-4">
+      <div class="card shadow-sm border-0 h-100">
+        <div class="card-header bg-white py-3 border-bottom">
+          <h6 class="fw-bold mb-0"><i class="bi bi-file-earmark-code-fill text-info me-2"></i>Course Assignments</h6>
+        </div>
+        <div class="card-body p-3">
+          {% if course.assignments %}
+            <ul class="list-group list-group-flush">
+              {% for assign in course.assignments %}
+                <li class="list-group-item px-0 py-2 d-flex justify-content-between align-items-center">
+                  <div>
+                    <div class="fw-semibold small">{{ assign.title }}</div>
+                    <span class="text-muted" style="font-size: 0.75rem;">Due: {{ assign.due_date.strftime('%b %d') }} • Max {{ assign.max_points }} pts</span>
+                  </div>
+                  <a href="{{ url_for('assessments.view_assignment', id=assign.id) }}" class="btn btn-sm btn-outline-info py-0">View</a>
+                </li>
+              {% endfor %}
+            </ul>
+          {% else %}
+            <p class="text-muted small mb-0">No assignments posted for this course.</p>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+
+    <!-- Rate & Review Form -->
+    <div class="col-lg-4">
+      <div class="card shadow-sm border-0 h-100 p-3">
+        {% if enrollment %}
+          <h6 class="fw-bold mb-2"><i class="bi bi-star-half text-warning me-2"></i>Rate & Review</h6>
+          <p class="text-muted small mb-3">Share your learning feedback with future students.</p>
+
+          <form action="{{ url_for('learning.submit_review', course_id=course.id) }}" method="POST">
+            {{ review_form.hidden_tag() }}
+
+            <div class="mb-2">
+              {{ review_form.rating.label(class="form-label small fw-semibold") }}
+              {{ review_form.rating(class="form-select form-select-sm") }}
+            </div>
+
+            <div class="mb-3">
+              {{ review_form.comment.label(class="form-label small fw-semibold") }}
+              {{ review_form.comment(class="form-control form-control-sm", rows="3", placeholder="What did you like most about this course?") }}
+            </div>
+
+            <button type="submit" class="btn btn-sm btn-warning w-100 fw-semibold">
+              {% if user_review %}Update Review{% else %}Submit Review{% endif %}
+            </button>
+          </form>
+        {% else %}
+          <h6 class="fw-bold mb-2"><i class="bi bi-info-circle text-primary me-2"></i>Course Details</h6>
+          <p class="text-muted small mb-0">{{ course.description[:250] }}</p>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- JavaScript for Interactive Video Switching & Real-Time YouTube Duration Sync -->
+<script src="https://www.youtube.com/iframe_api"></script>
+<script>
+let currentLessonId = {{ active_lesson.id if active_lesson else 'null' }};
+let activeLessonId = currentLessonId || 1;
+const csrfToken = "{{ csrf_token() }}";
+let ytCinemaPlayer = null;
+
+function onYouTubeIframeAPIReady() {
+  attachYtPlayer();
+}
+
+function attachYtPlayer() {
+  const iframe = document.getElementById('mainCourseVideoPlayer');
+  if (iframe && window.YT && window.YT.Player) {
+    try {
+      if (ytCinemaPlayer && typeof ytCinemaPlayer.destroy === 'function') {
+        ytCinemaPlayer.destroy();
+      }
+    } catch(e) {}
+    try {
+      ytCinemaPlayer = new YT.Player('mainCourseVideoPlayer', {
+        events: {
+          'onReady': onYtPlayerReadyOrChange,
+          'onStateChange': onYtPlayerStateChange
+        }
+      });
+    } catch(e) {}
+  }
+}
+
+// Attach player if YouTube API is already available in the browser
+if (window.YT && window.YT.Player) {
+  attachYtPlayer();
+}
+
+function onYtPlayerStateChange(event) {
+  onYtPlayerReadyOrChange(event);
+  // When current lecture finishes, auto play next lecture
+  if (window.YT && event.data === window.YT.PlayerState.ENDED) {
+    playNextVideo();
+  }
+}
+
+// Window message listener for real-time YouTube duration sync across origins
+window.addEventListener('message', function(event) {
+  try {
+    if (typeof event.data === 'string' && event.data.includes('infoDelivery')) {
+      const data = JSON.parse(event.data);
+      if (data && data.info && data.info.duration) {
+        const sec = Math.round(data.info.duration);
+        if (sec > 0 && currentLessonId) {
+          const mins = Math.max(1, Math.round(sec / 60));
+          syncUiAndBackendDuration(currentLessonId, mins, sec);
+        }
+      }
+    }
+  } catch(e) {}
+});
+
+function onYtPlayerReadyOrChange(event) {
+  if (!ytCinemaPlayer || typeof ytCinemaPlayer.getDuration !== 'function') return;
+  const sec = Math.round(ytCinemaPlayer.getDuration());
+  if (!sec || sec <= 0) return;
+  const mins = Math.max(1, Math.round(sec / 60));
+  syncUiAndBackendDuration(currentLessonId, mins, sec);
+}
+
+function syncUiAndBackendDuration(lessonId, mins, sec) {
+  if (!lessonId) return;
+  const formatted = formatMinutesJs(mins);
+
+  // 1. Update active lesson duration badge
+  const badge = document.getElementById('activeLessonDurationBadge');
+  if (badge) {
+    badge.innerHTML = `<i class="bi bi-clock me-1"></i> ${formatted}`;
+  }
+
+  // 2. Update playlist sidebar item
+  const item = document.querySelector(`.playlist-item[data-lesson-id="${lessonId}"]`);
+  if (item) {
+    item.setAttribute('data-duration', formatted);
+    const durEl = item.querySelector('.playlist-duration-text');
+    if (durEl) {
+      durEl.innerHTML = `<i class="bi bi-clock me-1"></i>${formatted} • <span class="text-danger fw-semibold">YouTube</span>`;
+    }
+  }
+
+  // 3. Persist to server in background
+  fetch(`/learn/api/sync_lesson_duration/${lessonId}`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'X-CSRFToken': csrfToken
+    },
+    body: JSON.stringify({ duration_min: mins, duration_sec: sec })
+  }).catch(() => {});
+}
+
+function formatMinutesJs(mins) {
+  if (!mins || mins <= 0) return '0 mins';
+  if (mins < 60) return `${mins} mins`;
+  const h = Math.floor(mins / 60);
+  const rem = mins % 60;
+  return rem > 0 ? `${h} hr ${rem} mins` : `${h} hr`;
+}
+
+function switchCourseVideo(element) {
+  if (!element) return;
+  const videoId = element.getAttribute('data-video-id') || '';
+  const embedUrl = element.getAttribute('data-embed-url') || '';
+  const title = element.getAttribute('data-title') || '';
+  const moduleHeading = element.getAttribute('data-module') || '';
+  const content = element.getAttribute('data-content') || '';
+  const theaterUrl = element.getAttribute('data-theater-url') || '';
+  const toggleUrl = element.getAttribute('data-toggle-url') || '';
+  const isCompleted = element.getAttribute('data-completed') === 'true';
+  const lessonIdStr = element.getAttribute('data-lesson-id');
+  currentLessonId = parseInt(lessonIdStr, 10);
+  activeLessonId = currentLessonId;
+
+  // 1. Immediately switch and play the clicked video
+  const iframe = document.getElementById('mainCourseVideoPlayer');
+  let targetId = videoId;
+  if (!targetId && embedUrl) {
+    const m = embedUrl.match(/(?:embed\/|watch\?v=)([a-zA-Z0-9_-]{11})/);
+    if (m) targetId = m[1];
+  }
+
+  if (targetId && iframe) {
+    // If YouTube iframe API player is ready, call loadVideoById
+    let loadedViaApi = false;
+    if (ytCinemaPlayer && typeof ytCinemaPlayer.loadVideoById === 'function') {
+      try {
+        ytCinemaPlayer.loadVideoById(targetId);
+        loadedViaApi = true;
+      } catch (err) {
+        loadedViaApi = false;
+      }
+    }
+
+    if (!loadedViaApi) {
+      iframe.src = `https://www.youtube.com/embed/${targetId}?autoplay=1&enablejsapi=1&rel=0&modestbranding=1`;
+      iframe.onload = function() {
+        attachYtPlayer();
+      };
+    }
+
+    if (window.history && window.history.replaceState) {
+      const url = new URL(window.location.href);
+      url.searchParams.set('lesson', currentLessonId);
+      window.history.replaceState(null, '', url.toString());
+    }
+  }
+
+  // 2. Update Titles & Descriptions
+  const titleEl = document.getElementById('activeLessonTitle');
+  if (titleEl) titleEl.innerText = title;
+
+  const headingEl = document.getElementById('activeLessonHeading');
+  if (headingEl) headingEl.innerText = moduleHeading;
+
+  const durBadge = document.getElementById('activeLessonDurationBadge');
+  const durVal = element.getAttribute('data-duration');
+  if (durBadge && durVal) {
+    durBadge.innerHTML = `<i class="bi bi-clock me-1"></i> ${durVal}`;
+  }
+
+  // 3. Update Dynamic Breakdown (Overview, Key Components Grid, Takeaways, Roadmap Context)
+  const breakdownRaw = element.getAttribute('data-breakdown');
+  if (breakdownRaw) {
+    try {
+      const bd = JSON.parse(breakdownRaw);
+      if (bd && typeof bd === 'object') {
+        const overviewEl = document.getElementById('activeLessonOverview');
+        if (overviewEl && bd.overview) overviewEl.innerText = bd.overview;
+
+        const gridEl = document.getElementById('activeComponentsGrid');
+        if (gridEl && Array.isArray(bd.components)) {
+          gridEl.innerHTML = '';
+          bd.components.forEach(comp => {
+            const col = document.createElement('div');
+            col.className = 'col-md-6';
+            col.innerHTML = `
+              <div class="card h-100 border shadow-none bg-white p-3 rounded-3 component-card">
+                <div class="d-flex align-items-start gap-2 mb-2">
+                  <div class="rounded p-2 bg-primary-subtle text-primary d-flex align-items-center justify-content-center" style="width: 34px; height: 34px;">
+                    <i class="bi ${comp.icon || 'bi-check-circle'} fs-6"></i>
+                  </div>
+                  <div>
+                    <span class="badge bg-secondary-subtle text-secondary small px-1.5 py-0.5" style="font-size: 0.65rem;">${comp.badge || 'Component'}</span>
+                    <h6 class="fw-bold text-dark mb-0 mt-0.5 small">${comp.title}</h6>
+                  </div>
+                </div>
+                <p class="text-muted small mb-0 lh-sm" style="font-size: 0.8rem;">
+                  ${comp.desc}
+                </p>
+              </div>
+            `;
+            gridEl.appendChild(col);
+          });
+        }
+
+        const takeawaysEl = document.getElementById('activeTakeawaysList');
+        if (takeawaysEl && Array.isArray(bd.takeaways)) {
+          takeawaysEl.innerHTML = '';
+          bd.takeaways.forEach(t => {
+            const li = document.createElement('li');
+            li.className = 'mb-1';
+            li.innerText = t;
+            takeawaysEl.appendChild(li);
+          });
+        }
+
+        const whyEl = document.getElementById('activeWhyItMattersText');
+        if (whyEl && bd.why_it_matters) whyEl.innerText = bd.why_it_matters;
+      }
+    } catch (err) {
+      console.warn('Breakdown parse error:', err);
+    }
+  }
+
+  // 4. Update Programming Quiz Data for newly selected lesson
+  const quizRaw = element.getAttribute('data-quiz');
+  if (quizRaw) {
+    try {
+      const qd = JSON.parse(quizRaw);
+      if (qd && typeof qd === 'object') {
+        currentQuizData = qd;
+        selectDifficulty('basic');
+      }
+    } catch (err) {
+      console.warn('Quiz parse error:', err);
+    }
+  }
+
+  // 5. Update Theater Mode Link
+  const theaterEl = document.getElementById('theaterModeLink');
+  if (theaterEl && theaterUrl) theaterEl.href = theaterUrl;
+
+  // 6. Update Toggle Complete Form
+  const toggleForm = document.getElementById('toggleCompleteForm');
+  if (toggleForm && toggleUrl) toggleForm.action = toggleUrl;
+
+  const toggleBtn = document.getElementById('toggleCompleteBtn');
+  const completeText = document.getElementById('completeText');
+  if (toggleBtn && completeText) {
+    if (isCompleted) {
+      toggleBtn.className = 'btn btn-success btn-sm';
+      completeText.innerText = 'Completed';
+    } else {
+      toggleBtn.className = 'btn btn-outline-success btn-sm';
+      completeText.innerText = 'Mark Complete';
+    }
+  }
+
+  // 7. Update Active Styling in Playlist
+  document.querySelectorAll('.playlist-item').forEach(el => {
+    el.classList.remove('active-playlist-item', 'bg-primary-subtle', 'text-primary', 'fw-bold');
+    const badge = el.querySelector('.badge-playing');
+    if (badge) badge.remove();
+  });
+
+  element.classList.add('active-playlist-item', 'bg-primary-subtle', 'text-primary', 'fw-bold');
+  const targetRow = element.querySelector('.d-flex');
+  if (targetRow && !targetRow.querySelector('.badge-playing')) {
+    const tagSpan = document.createElement('span');
+    tagSpan.className = 'badge bg-primary text-white small badge-playing';
+    tagSpan.innerText = 'Playing';
+    targetRow.appendChild(tagSpan);
+  }
+
+  // 8. Auto-expand parent module accordion if collapsed
+  const parentCollapse = element.closest('.accordion-collapse');
+  if (parentCollapse && !parentCollapse.classList.contains('show')) {
+    const bsCollapse = bootstrap.Collapse.getOrCreateInstance(parentCollapse);
+    bsCollapse.show();
+  }
+
+  // 9. Update Prev / Next buttons state
+  updatePrevNextButtons();
+
+  // 10. Smooth scroll item into view in playlist
+  element.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+
+  // 11. On mobile, scroll up to player
+  if (window.innerWidth < 992 && iframe) {
+    iframe.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }
+}
+
+// === Previous / Next Video Navigation Handlers ===
+function playPreviousVideo() {
+  const items = Array.from(document.querySelectorAll('.playlist-item'));
+  const currentIdx = items.findIndex(el => el.getAttribute('data-lesson-id') == currentLessonId);
+  if (currentIdx > 0) {
+    switchCourseVideo(items[currentIdx - 1]);
+  }
+}
+
+function playNextVideo() {
+  const items = Array.from(document.querySelectorAll('.playlist-item'));
+  const currentIdx = items.findIndex(el => el.getAttribute('data-lesson-id') == currentLessonId);
+  if (currentIdx >= 0 && currentIdx < items.length - 1) {
+    switchCourseVideo(items[currentIdx + 1]);
+  }
+}
+
+function updatePrevNextButtons() {
+  const items = Array.from(document.querySelectorAll('.playlist-item'));
+  const currentIdx = items.findIndex(el => el.getAttribute('data-lesson-id') == currentLessonId);
+
+  const prevButtons = [
+    document.getElementById('btnPrevLecture'),
+    document.getElementById('btnPrevLectureBottom')
+  ];
+  const nextButtons = [
+    document.getElementById('btnNextLecture'),
+    document.getElementById('btnNextLectureBottom')
+  ];
+
+  prevButtons.forEach(btn => {
+    if (btn) {
+      btn.disabled = (currentIdx <= 0);
+      if (currentIdx > 0) {
+        const prevTitle = items[currentIdx - 1].getAttribute('data-title') || 'Previous';
+        btn.setAttribute('title', `Previous: ${prevTitle}`);
+      } else {
+        btn.setAttribute('title', 'First lecture in course');
+      }
+    }
+  });
+
+  nextButtons.forEach(btn => {
+    if (btn) {
+      btn.disabled = (currentIdx < 0 || currentIdx >= items.length - 1);
+      if (currentIdx >= 0 && currentIdx < items.length - 1) {
+        const nextTitle = items[currentIdx + 1].getAttribute('data-title') || 'Next';
+        btn.setAttribute('title', `Next: ${nextTitle}`);
+      } else {
+        btn.setAttribute('title', 'Last lecture in course');
+      }
+    }
+  });
+}
+
+// Initialize buttons on DOM load
+document.addEventListener('DOMContentLoaded', function() {
+  updatePrevNextButtons();
+});
+
+// Global Keyboard Navigation: Left / Right arrow keys to switch lectures (when not in editor)
+document.addEventListener('keydown', function(e) {
+  const tag = (document.activeElement && document.activeElement.tagName) || '';
+  if (tag === 'INPUT' || tag === 'TEXTAREA') return;
+  if (e.key === 'ArrowLeft') {
+    playPreviousVideo();
+  } else if (e.key === 'ArrowRight') {
+    playNextVideo();
+  }
+});
+
+// === Interactive Programming Quiz Engine ===
+let currentQuizData = {{ active_lesson.programming_quiz | tojson if active_lesson else '{}' }};
+let currentDifficulty = 'basic';
+
+function selectDifficulty(diff) {
+  currentDifficulty = diff;
+  const challenges = currentQuizData.challenges || {};
+  const ch = challenges[diff] || {};
+
+  // 1. Update Buttons
+  ['basic', 'intermediate', 'advance'].forEach(d => {
+    const btn = document.getElementById('btnDiff' + d.charAt(0).toUpperCase() + d.slice(1));
+    if (btn) {
+      if (d === diff) {
+        btn.classList.add('active', 'shadow-sm');
+      } else {
+        btn.classList.remove('active', 'shadow-sm');
+      }
+    }
+  });
+
+  // 2. Update Statement & Metadata
+  const badgeEl = document.getElementById('challengeDifficultyBadge');
+  if (badgeEl) {
+    badgeEl.innerText = diff.charAt(0).toUpperCase() + diff.slice(1);
+    badgeEl.className = 'badge fw-bold ' + (diff === 'basic' ? 'bg-success' : (diff === 'intermediate' ? 'bg-primary' : 'bg-purple text-white'));
+    if (diff === 'advance') badgeEl.style.backgroundColor = '#7c3aed';
+    else badgeEl.style.backgroundColor = '';
+  }
+
+  const titleEl = document.getElementById('challengeTitle');
+  if (titleEl) titleEl.innerText = ch.title || 'Coding Challenge';
+
+  const apprEl = document.getElementById('challengeApproachBadge');
+  if (apprEl) {
+    const appr = (ch.approach || 'function').toLowerCase();
+    const icon = appr === 'class' ? 'bi-diagram-3' : (appr === 'script' ? 'bi-file-earmark-code' : 'bi-code-slash');
+    apprEl.innerHTML = `<i class="bi ${icon} me-1"></i>${appr.toUpperCase()}`;
+  }
+
+  const promptEl = document.getElementById('challengePrompt');
+  if (promptEl) promptEl.innerText = ch.prompt || 'Solve the problem according to video principles.';
+
+  const constrEl = document.getElementById('challengeConstraints');
+  if (constrEl) constrEl.innerText = ch.constraints || 'Standard execution';
+
+  // 3. Update Code Editor
+  const editor = document.getElementById('codeEditorArea');
+  if (editor) editor.value = ch.starter_code || '';
+
+  // 4. Update Hint & Solution
+  const hintText = document.getElementById('hintText');
+  if (hintText) hintText.innerText = ch.hint || 'Review the video lecture for syntax cues.';
+
+  const solPre = document.getElementById('solutionPre');
+  if (solPre) solPre.innerHTML = `<code>${escapeHtml(ch.solution_code || '')}</code>`;
+
+  const expText = document.getElementById('explanationText');
+  if (expText) expText.innerText = ch.explanation || '';
+
+  // Hide hint & solution boxes on tab switch
+  document.getElementById('hintBox')?.classList.add('d-none');
+  const solBox = document.getElementById('solutionBox');
+  if (solBox) solBox.classList.add('d-none');
+  const solBtn = document.getElementById('solutionToggleBtn');
+  if (solBtn) {
+    solBtn.innerHTML = '<i class="bi bi-eye me-1"></i> Reveal Solution';
+    solBtn.classList.remove('active', 'btn-info', 'text-white');
+    solBtn.classList.add('btn-outline-info');
+  }
+
+  // 5. Render Test Cases List
+  renderInitialTestCases(ch.test_cases || []);
+}
+
+function renderInitialTestCases(testCases) {
+  const container = document.getElementById('testCasesContainer');
+  const summary = document.getElementById('testSummaryBadge');
+  if (summary) {
+    summary.className = 'badge bg-secondary';
+    summary.innerText = `Ready to Test (${testCases.length} test cases)`;
+  }
+  if (!container) return;
+  container.innerHTML = '';
+  testCases.forEach((tc, idx) => {
+    const div = document.createElement('div');
+    div.className = 'p-2 rounded border bg-white d-flex justify-content-between align-items-center';
+    div.innerHTML = `
+      <div>
+        <strong>Test ${idx + 1}:</strong> <span class="text-secondary">${tc.desc || 'Unit test'}</span>
+        <div class="text-muted" style="font-size: 0.75rem;">Input: <code>${JSON.stringify(tc.input)}</code> | Expected: <code>${JSON.stringify(tc.expected)}</code></div>
+      </div>
+      <span class="badge bg-light text-muted border">Untested</span>
+    `;
+    container.appendChild(div);
+  });
+}
+
+function resetStarterCode() {
+  const challenges = currentQuizData.challenges || {};
+  const ch = challenges[currentDifficulty] || {};
+  const editor = document.getElementById('codeEditorArea');
+  if (editor && ch.starter_code) {
+    editor.value = ch.starter_code;
+  }
+}
+
+function toggleHint() {
+  const box = document.getElementById('hintBox');
+  if (box) box.classList.toggle('d-none');
+}
+
+function toggleSolution() {
+  const box = document.getElementById('solutionBox');
+  const btn = document.getElementById('solutionToggleBtn');
+  if (!box) return;
+
+  const isHidden = box.classList.contains('d-none');
+  if (isHidden) {
+    // Ensure the latest solution code for current difficulty is rendered
+    const ch = (currentQuizData.challenges || {})[currentDifficulty] || {};
+    const solCode = ch.solution_code || '';
+    const solPre = document.getElementById('solutionPre');
+    if (solPre && solCode) {
+      solPre.innerHTML = `<code>${escapeHtml(solCode)}</code>`;
+    }
+    const expText = document.getElementById('explanationText');
+    if (expText && ch.explanation) {
+      expText.innerText = ch.explanation;
+    }
+
+    box.classList.remove('d-none');
+    if (btn) {
+      btn.innerHTML = '<i class="bi bi-eye-slash me-1"></i> Hide Solution';
+      btn.classList.add('active', 'btn-info', 'text-white');
+      btn.classList.remove('btn-outline-info');
+    }
+    // Smoothly scroll the solution box into view so the student sees it immediately!
+    box.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  } else {
+    box.classList.add('d-none');
+    if (btn) {
+      btn.innerHTML = '<i class="bi bi-eye me-1"></i> Reveal Solution';
+      btn.classList.remove('active', 'btn-info', 'text-white');
+      btn.classList.add('btn-outline-info');
+    }
+  }
+}
+
+function applySolutionToEditor() {
+  const ch = (currentQuizData.challenges || {})[currentDifficulty] || {};
+  const solCode = ch.solution_code || '';
+  const editor = document.getElementById('codeEditorArea');
+  if (editor && solCode) {
+    editor.value = solCode;
+    editor.focus();
+    editor.scrollIntoView({ behavior: 'smooth', block: 'center' });
+
+    const applyBtn = document.getElementById('btnApplySolution');
+    if (applyBtn) {
+      const orig = applyBtn.innerHTML;
+      applyBtn.innerHTML = '<i class="bi bi-check2-circle me-1"></i> Inserted!';
+      applyBtn.classList.replace('btn-success', 'btn-dark');
+      setTimeout(() => {
+        applyBtn.innerHTML = orig;
+        applyBtn.classList.replace('btn-dark', 'btn-success');
+      }, 2000);
+    }
+  }
+}
+
+function copySolutionCode() {
+  const ch = (currentQuizData.challenges || {})[currentDifficulty] || {};
+  const solCode = ch.solution_code || '';
+  if (solCode) {
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(solCode).then(() => {
+        alert('Solution code copied to clipboard!');
+      }).catch(() => fallbackCopy(solCode));
+    } else {
+      fallbackCopy(solCode);
+    }
+  }
+}
+
+function fallbackCopy(text) {
+  const ta = document.createElement('textarea');
+  ta.value = text;
+  document.body.appendChild(ta);
+  ta.select();
+  document.execCommand('copy');
+  document.body.removeChild(ta);
+  alert('Solution code copied to clipboard!');
+}
+
+function runAndCheckCode() {
+  const editor = document.getElementById('codeEditorArea');
+  const code = editor ? editor.value : '';
+  const spinner = document.getElementById('evalLoadingIndicator');
+  const runBtn = document.getElementById('runCodeBtn');
+
+  if (spinner) spinner.classList.remove('d-none');
+  if (runBtn) runBtn.disabled = true;
+
+  fetch('/learn/api/evaluate_code', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'X-CSRFToken': csrfToken
+    },
+    body: JSON.stringify({
+      lesson_id: activeLessonId,
+      difficulty: currentDifficulty,
+      code: code
+    })
+  })
+  .then(res => res.json())
+  .then(data => {
+    if (spinner) spinner.classList.add('d-none');
+    if (runBtn) runBtn.disabled = false;
+
+    // Update Summary Badge
+    const summary = document.getElementById('testSummaryBadge');
+    if (summary) {
+      if (data.passed) {
+        summary.className = 'badge bg-success';
+        summary.innerHTML = `<i class="bi bi-check-circle-fill me-1"></i> Passed (${data.passed_count}/${data.total_count})`;
+      } else {
+        summary.className = 'badge bg-danger';
+        summary.innerHTML = `<i class="bi bi-x-circle-fill me-1"></i> Failed (${data.passed_count}/${data.total_count})`;
+      }
+    }
+
+    // Render Test Results
+    const container = document.getElementById('testCasesContainer');
+    if (container && Array.isArray(data.test_results)) {
+      container.innerHTML = '';
+      data.test_results.forEach(tr => {
+        const div = document.createElement('div');
+        div.className = `p-2.5 rounded border ${tr.passed ? 'border-success-subtle bg-success-subtle bg-opacity-25' : 'border-danger-subtle bg-danger-subtle bg-opacity-25'}`;
+        div.innerHTML = `
+          <div class="d-flex justify-content-between align-items-start">
+            <div>
+              <strong class="${tr.passed ? 'text-success' : 'text-danger'}">
+                <i class="bi ${tr.passed ? 'bi-check-circle-fill' : 'bi-x-circle-fill'} me-1"></i>Test ${tr.test_num}:
+              </strong>
+              <span class="text-dark fw-semibold">${tr.desc}</span>
+              <div class="text-muted mt-1" style="font-size: 0.75rem;">
+                <span>Input: <code>${tr.input}</code></span> | 
+                <span>Expected: <code>${tr.expected}</code></span>
+              </div>
+              <div class="mt-1" style="font-size: 0.75rem;">
+                <span class="${tr.passed ? 'text-success' : 'text-danger'} fw-semibold">Actual Output: <code>${tr.actual}</code></span>
+              </div>
+            </div>
+            <span class="badge ${tr.passed ? 'bg-success' : 'bg-danger'}">${tr.passed ? 'Passed' : 'Failed'}</span>
+          </div>
+        `;
+        container.appendChild(div);
+      });
+    }
+
+    // If passed, auto update completion button
+    if (data.passed) {
+      const toggleBtn = document.getElementById('toggleCompleteBtn');
+      const completeText = document.getElementById('completeText');
+      if (toggleBtn && completeText) {
+        toggleBtn.className = 'btn btn-success btn-sm';
+        completeText.innerText = 'Completed';
+      }
+    }
+  })
+  .catch(err => {
+    if (spinner) spinner.classList.add('d-none');
+    if (runBtn) runBtn.disabled = false;
+    alert('Evaluation request error: ' + err.message);
+  });
+}
+
+function escapeHtml(text) {
+  if (!text) return '';
+  const map = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' };
+  return text.replace(/[&<>"']/g, m => map[m]);
+}
+</script>
+{% endblock %}

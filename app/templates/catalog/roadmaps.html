@@ -1,0 +1,133 @@
+{% extends 'base.html' %}
+{% block title %}Career Field Roadmaps - Step-by-Step Learning Paths{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<div class="bg-dark text-white py-5 mb-5" style="background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #0f172a 100%);">
+  <div class="container py-3">
+    <div class="row align-items-center">
+      <div class="col-lg-8">
+        <h1 class="display-4 fw-bold mb-3">Step-by-Step Roadmaps for Modern Tech Careers</h1>
+        <p class="lead opacity-80 mb-4">
+          Master in-demand fields with curated courses arranged sequentially from <strong>Beginner to Advanced</strong>.
+          Every course features <strong>topic-by-topic YouTube video lectures</strong>, hands-on modules, and verifiable certificates.
+        </p>
+        <div class="d-flex flex-wrap gap-2 text-light small opacity-75">
+          <span><i class="bi bi-check2-circle text-success me-1"></i> Curated progression</span>
+          <span>•</span>
+          <span><i class="bi bi-youtube text-danger me-1"></i> Topic-by-topic YouTube video lessons</span>
+          <span>•</span>
+          <span><i class="bi bi-mortarboard text-info me-1"></i> Prerequisite tracking</span>
+        </div>
+      </div>
+      <div class="col-lg-4 text-center mt-4 mt-lg-0">
+        <div class="p-4 rounded-4 bg-white bg-opacity-10 backdrop-blur border border-white border-opacity-10 shadow">
+          <i class="bi bi-compass fs-1 text-primary mb-2 d-block"></i>
+          <h5 class="fw-bold mb-1">{{ roadmaps|length }} Career Roadmaps</h5>
+          <p class="small text-light opacity-75 mb-0">Follow progressive pathways designed by industry educators</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="container pb-5">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+      <h2 class="fw-bold mb-1">Explore Career Learning Paths</h2>
+      <p class="text-muted mb-0">Select a career track below to view its sequential course progression and topic-by-topic video curriculums.</p>
+    </div>
+    <a href="{{ url_for('catalog.index') }}" class="btn btn-outline-secondary btn-sm">
+      <i class="bi bi-grid me-1"></i> View All Courses
+    </a>
+  </div>
+
+  <div class="row g-4 mb-5">
+    {% for rm in roadmaps %}
+      {% set cat = rm.category %}
+      {% set meta = rm.meta %}
+      <div class="col-lg-6">
+        <div class="card h-100 shadow-sm border-0 overflow-hidden roadmap-card">
+          <!-- Card Header Banner -->
+          <div class="p-4 text-white position-relative" style="background: {{ meta.bg_gradient }};">
+            <div class="d-flex justify-content-between align-items-start mb-2">
+              <span class="badge bg-white text-dark px-3 py-1 rounded-pill fw-semibold small shadow-sm">
+                {{ meta.badge }}
+              </span>
+              <span class="badge bg-black bg-opacity-40 text-light small">
+                <i class="bi bi-clock me-1"></i> {{ meta.estimated_duration }}
+              </span>
+            </div>
+            <div class="d-flex align-items-center gap-3 mt-3">
+              <div class="rounded-circle p-3 d-flex align-items-center justify-content-center text-white" style="background: rgba(255, 255, 255, 0.2); width: 54px; height: 54px;">
+                <i class="bi {{ meta.icon }} fs-3"></i>
+              </div>
+              <div>
+                <h3 class="fw-bold mb-0 text-white">{{ cat.name }}</h3>
+                <span class="small text-light opacity-80">{{ rm.courses|length }} Sequential Stages • {{ rm.total_lessons }} Topic Videos</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Card Body -->
+          <div class="card-body p-4 d-flex flex-column">
+            <p class="text-secondary small mb-3">
+              {{ meta.tagline }}
+            </p>
+
+            <!-- Stages Progression Pipeline -->
+            <div class="mb-3">
+              <h6 class="fw-bold small text-uppercase text-muted mb-2">Roadmap Stages (Beginner to Advanced)</h6>
+              <div class="d-flex flex-column gap-2">
+                {% for course in rm.courses %}
+                  <div class="d-flex align-items-center justify-content-between p-2 rounded border bg-light small">
+                    <div class="d-flex align-items-center gap-2">
+                      <span class="badge {% if course.level == 'Beginner' %}bg-success{% elif course.level == 'Intermediate' %}bg-primary{% else %}bg-purple text-white{% endif %}" style="{% if course.level == 'Advanced' %}background-color: #7c3aed;{% endif %}">
+                        Stage {{ loop.index }}: {{ course.level }}
+                      </span>
+                      <span class="fw-semibold text-dark text-truncate" style="max-width: 250px;">{{ course.title }}</span>
+                    </div>
+                    <span class="text-muted" style="font-size: 0.75rem;">
+                      <i class="bi bi-youtube text-danger me-1"></i>{{ course.total_lessons }} topics
+                    </span>
+                  </div>
+                {% endfor %}
+              </div>
+            </div>
+
+            <!-- Target Roles & Skills -->
+            <div class="mt-auto pt-3 border-top">
+              <div class="mb-2">
+                <span class="small text-muted fw-semibold d-block mb-1">Key Skills Mastered:</span>
+                <div class="d-flex flex-wrap gap-1">
+                  {% for sk in meta.skills %}
+                    <span class="badge bg-primary-subtle text-primary border border-primary-subtle small fw-semibold px-2 py-1">
+                      <i class="bi bi-patch-check-fill me-1" style="font-size: 0.7rem;"></i>{{ sk }}
+                    </span>
+                  {% endfor %}
+                </div>
+              </div>
+
+              <div class="mb-3">
+                <span class="small text-muted fw-semibold d-block mb-1">Target Roles:</span>
+                <div class="d-flex flex-wrap gap-1">
+                  {% for role in meta.target_roles %}
+                    <span class="badge bg-secondary-subtle text-secondary small">{{ role }}</span>
+                  {% endfor %}
+                </div>
+              </div>
+
+              <div class="d-flex justify-content-between align-items-center pt-2">
+                <span class="small text-muted"><i class="bi bi-hourglass-split me-1"></i> ~{{ rm.total_hours }} total video hours</span>
+                <a href="{{ url_for('catalog.roadmap_detail', slug=cat.slug) }}" class="btn btn-primary btn-sm px-3 fw-semibold shadow-sm">
+                  Explore Roadmap & Videos <i class="bi bi-arrow-right ms-1"></i>
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}

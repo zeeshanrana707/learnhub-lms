@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+{% block title %}Compose Message{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+  <div class="row justify-content-center">
+    <div class="col-lg-7">
+      <div class="card shadow-sm border-0">
+        <div class="card-header bg-white py-3 border-bottom d-flex justify-content-between align-items-center">
+          <h4 class="fw-bold mb-0">Compose Direct Message</h4>
+          <a href="{{ url_for('community.inbox') }}" class="btn btn-outline-secondary btn-sm">
+            <i class="bi bi-arrow-left me-1"></i> Back to Inbox
+          </a>
+        </div>
+        <div class="card-body p-4">
+          <form method="POST">
+            {{ form.hidden_tag() }}
+
+            <div class="mb-3">
+              {{ form.recipient_id.label(class="form-label fw-semibold") }}
+              {{ form.recipient_id(class="form-select") }}
+            </div>
+
+            <div class="mb-3">
+              {{ form.subject.label(class="form-label fw-semibold") }}
+              {{ form.subject(class="form-control" + (" is-invalid" if form.subject.errors else ""), placeholder="Subject title...") }}
+              {% for error in form.subject.errors %}
+                <div class="invalid-feedback">{{ error }}</div>
+              {% endfor %}
+            </div>
+
+            <div class="mb-4">
+              {{ form.body.label(class="form-label fw-semibold") }}
+              {{ form.body(class="form-control" + (" is-invalid" if form.body.errors else ""), rows="5", placeholder="Type your private message...") }}
+              {% for error in form.body.errors %}
+                <div class="invalid-feedback">{{ error }}</div>
+              {% endfor %}
+            </div>
+
+            <button type="submit" class="btn btn-primary px-4">
+              <i class="bi bi-send me-1"></i> Send Message
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

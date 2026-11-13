@@ -1,0 +1,97 @@
+{% extends 'base.html' %}
+{% block title %}Audit Logs{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+      <a href="{{ url_for('admin.dashboard') }}" class="text-muted small text-decoration-none">
+        <i class="bi bi-arrow-left me-1"></i> Back to Dashboard
+      </a>
+      <h2 class="fw-bold mb-1"><i class="bi bi-journal-text text-danger me-2"></i>Security & Audit Logs</h2>
+      <p class="text-muted mb-0">Immutable tracking of user logins, creations, updates, and destructive actions</p>
+    </div>
+  </div>
+
+  <!-- Filters -->
+  <div class="card shadow-sm border-0 mb-4 p-3">
+    <form method="GET" class="row g-2 align-items-center">
+      <div class="col-md-5">
+        <select name="action" class="form-select form-select-sm" onchange="this.form.submit()">
+          <option value="">All Actions</option>
+          {% for a in actions %}
+            <option value="{{ a }}" {% if selected_action == a %}selected{% endif %}>{{ a|upper }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="col-md-5">
+        <select name="entity" class="form-select form-select-sm" onchange="this.form.submit()">
+          <option value="">All Entities</option>
+          {% for ent in entities %}
+            <option value="{{ ent }}" {% if selected_entity == ent %}selected{% endif %}>{{ ent }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="col-md-2">
+        <a href="{{ url_for('admin.audit_logs') }}" class="btn btn-outline-secondary btn-sm w-100">Reset</a>
+      </div>
+    </form>
+  </div>
+
+  <div class="card shadow-sm border-0">
+    <div class="table-responsive">
+      <table class="table table-hover align-middle mb-0 small">
+        <thead class="table-light">
+          <tr>
+            <th>Timestamp (UTC)</th>
+            <th>User</th>
+            <th>Action</th>
+            <th>Target Entity</th>
+            <th>IP Address</th>
+            <th>Details</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for log in logs.items %}
+            <tr>
+              <td class="text-muted font-monospace">{{ log.created_at.strftime('%Y-%m-%d %H:%M:%S') }}</td>
+              <td>
+                {% if log.user %}
+                  <strong>{{ log.user.username }}</strong>
+                {% else %}
+                  <span class="text-muted">System / Anonymous</span>
+                {% endif %}
+              </td>
+              <td>
+                <span class="badge {% if log.action in ('delete', 'toggle_active') %}bg-danger{% elif log.action in ('login', 'register') %}bg-primary{% else %}bg-secondary{% endif %} text-uppercase">
+                  {{ log.action }}
+                </span>
+              </td>
+              <td><code>{{ log.entity_type }}{% if log.entity_id %}:{{ log.entity_id }}{% endif %}</code></td>
+              <td class="font-monospace text-muted">{{ log.ip_address or '127.0.0.1' }}</td>
+              <td class="text-secondary">{{ log.details or '-' }}</td>
+            </tr>
+          {% else %}
+            <tr><td colspan="6" class="text-center py-4 text-muted">No audit logs matching criteria.</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Pagination -->
+    {% if logs.pages > 1 %}
+      <div class="card-footer bg-white border-0 py-3">
+        <ul class="pagination pagination-sm justify-content-center mb-0">
+          {% for p in logs.iter_pages() %}
+            {% if p %}
+              <li class="page-item {% if p == logs.page %}active{% endif %}">
+                <a class="page-link" href="{{ url_for('admin.audit_logs', page=p, action=selected_action, entity=selected_entity) }}">{{ p }}</a>
+              </li>
+            {% endif %}
+          {% endfor %}
+        </ul>
+      </div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

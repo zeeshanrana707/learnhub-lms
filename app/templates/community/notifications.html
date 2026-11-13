@@ -1,0 +1,56 @@
+{% extends 'base.html' %}
+{% block title %}My Notifications{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+      <h2 class="fw-bold mb-1">Notifications</h2>
+      <p class="text-muted mb-0">System updates, quiz grades, announcements, and discussion replies</p>
+    </div>
+    {% if notifications %}
+      <form action="{{ url_for('community.mark_all_notifications_read') }}" method="POST">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <button type="submit" class="btn btn-outline-secondary btn-sm">
+          <i class="bi bi-check2-all me-1"></i> Mark All as Read
+        </button>
+      </form>
+    {% endif %}
+  </div>
+
+  <div class="card shadow-sm border-0">
+    <div class="list-group list-group-flush">
+      {% for notif in notifications %}
+        <div class="list-group-item p-3 d-flex justify-content-between align-items-center {% if not notif.is_read %}bg-light border-start border-4 border-primary{% endif %}">
+          <div class="d-flex align-items-start gap-3">
+            <i class="bi bi-bell-fill fs-4 {% if not notif.is_read %}text-primary{% else %}text-muted{% endif %} mt-1"></i>
+            <div>
+              <h6 class="fw-bold mb-1">
+                {% if notif.link %}
+                  <a href="{{ notif.link }}" class="text-dark text-decoration-none">{{ notif.title }}</a>
+                {% else %}
+                  {{ notif.title }}
+                {% endif %}
+                {% if not notif.is_read %}
+                  <span class="badge bg-primary ms-1" style="font-size: 0.65rem;">New</span>
+                {% endif %}
+              </h6>
+              <p class="text-secondary small mb-1">{{ notif.message }}</p>
+              <div class="text-muted" style="font-size: 0.75rem;">{{ notif.created_at.strftime('%B %d, %Y at %I:%M %p') }}</div>
+            </div>
+          </div>
+          {% if notif.link %}
+            <a href="{{ notif.link }}" class="btn btn-sm btn-outline-primary">View</a>
+          {% endif %}
+        </div>
+      {% else %}
+        <div class="p-5 text-center text-muted">
+          <i class="bi bi-bell-slash fs-1 mb-2 d-block"></i>
+          <h5>No Notifications</h5>
+          <p class="small">You're all caught up with your alerts and course announcements!</p>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+</div>
+{% endblock %}

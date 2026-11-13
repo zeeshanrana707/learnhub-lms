@@ -1,0 +1,84 @@
+{% extends 'base.html' %}
+{% block title %}Edit Roadmap: {{ roadmap.title }} - Admin Control Panel{% endblock %}
+
+{% block content %}
+<div class="container py-4" style="max-width: 800px;">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+      <a href="{{ url_for('admin.roadmaps') }}" class="text-muted small text-decoration-none">
+        <i class="bi bi-arrow-left me-1"></i> Back to All Roadmaps
+      </a>
+      <h2 class="fw-bold mb-1"><i class="bi bi-pencil-square text-primary me-2"></i>Edit Career Roadmap</h2>
+    </div>
+    <a href="{{ url_for('admin.roadmap_manage', roadmap_id=roadmap.id) }}" class="btn btn-outline-primary btn-sm">
+      <i class="bi bi-diagram-3-fill me-1"></i> Manage Stages
+    </a>
+  </div>
+
+  <div class="card shadow-sm border-0">
+    <div class="card-body p-4">
+      <form method="POST">
+        {{ form.hidden_tag() }}
+
+        <div class="row g-3">
+          <div class="col-md-7">
+            {{ form.title.label(class="form-label small fw-semibold") }}
+            {{ form.title(class="form-control") }}
+          </div>
+          <div class="col-md-5">
+            {{ form.slug.label(class="form-label small fw-semibold") }}
+            {{ form.slug(class="form-control") }}
+          </div>
+
+          <div class="col-md-4">
+            {{ form.badge.label(class="form-label small fw-semibold") }}
+            {{ form.badge(class="form-control") }}
+          </div>
+          <div class="col-md-4">
+            {{ form.icon.label(class="form-label small fw-semibold") }}
+            {{ form.icon(class="form-control") }}
+          </div>
+          <div class="col-md-4">
+            {{ form.estimated_duration.label(class="form-label small fw-semibold") }}
+            {{ form.estimated_duration(class="form-control") }}
+          </div>
+
+          <div class="col-12">
+            {{ form.tagline.label(class="form-label small fw-semibold") }}
+            {{ form.tagline(class="form-control", rows="2") }}
+          </div>
+
+          <div class="col-12">
+            {{ form.skills_csv.label(class="form-label small fw-semibold") }}
+            {{ form.skills_csv(class="form-control") }}
+            <div class="form-text small">Enter skills separated by commas.</div>
+          </div>
+
+          <div class="col-12">
+            {{ form.target_roles_csv.label(class="form-label small fw-semibold") }}
+            {{ form.target_roles_csv(class="form-control") }}
+            <div class="form-text small">Enter job roles separated by commas.</div>
+          </div>
+
+          <div class="col-12">
+            {{ form.bg_gradient.label(class="form-label small fw-semibold") }}
+            {{ form.bg_gradient(class="form-control font-monospace small") }}
+          </div>
+
+          <div class="col-12">
+            {{ form.description.label(class="form-label small fw-semibold") }}
+            {{ form.description(class="form-control", rows="4") }}
+          </div>
+        </div>
+
+        <div class="d-flex justify-content-end gap-2 mt-4 pt-3 border-top">
+          <a href="{{ url_for('admin.roadmaps') }}" class="btn btn-secondary btn-sm">Cancel</a>
+          <button type="submit" class="btn btn-primary btn-sm px-4 fw-semibold">
+            <i class="bi bi-check2 me-1"></i> Save Changes
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,161 @@
+{% extends 'base.html' %}
+{% block title %}Learn Without Limits{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="hero-banner text-center">
+  <div class="container py-4">
+    <div class="row justify-content-center">
+      <div class="col-lg-8">
+        <div class="mb-3">
+          <a href="{{ url_for('catalog.roadmaps') }}" class="hero-badge text-decoration-none d-inline-flex align-items-center gap-2 rounded-pill">
+            <span class="hero-badge-tag"><i class="bi bi-stars me-1"></i>Career Roadmaps</span>
+            <span class="hero-badge-text">Extend the Possibilities & Limits of Learning</span>
+            <i class="bi bi-arrow-right-short hero-badge-arrow fs-5"></i>
+          </a>
+        </div>
+        <h1 class="display-4 fw-bold mb-3">Master New Skills with World-Class Courses</h1>
+        <p class="lead text-light opacity-75 mb-4">
+          Explore structured modules, hands-on assignments, timed quizzes, interactive forums, and verifiable certificates.
+        </p>
+        <div class="d-flex justify-content-center gap-3">
+          <a href="{{ url_for('catalog.index') }}" class="btn btn-primary btn-lg px-4 shadow">
+            <i class="bi bi-compass me-2"></i> Browse All Courses
+          </a>
+          {% if not current_user.is_authenticated %}
+            <a href="{{ url_for('auth.register') }}" class="btn btn-outline-light btn-lg px-4">
+              Get Started Free
+            </a>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Stats Bar -->
+<div class="container mb-5">
+  <div class="card shadow-sm border-0 py-3 px-4">
+    <div class="row text-center g-3">
+      <div class="col-md-3 col-6 border-end">
+        <h3 class="fw-bold text-primary mb-0">19+</h3>
+        <span class="text-muted small">Industry Courses</span>
+      </div>
+      <div class="col-md-3 col-6 border-end">
+        <h3 class="fw-bold text-primary mb-0">6</h3>
+        <span class="text-muted small">Career Roadmaps</span>
+      </div>
+      <div class="col-md-3 col-6 border-end">
+        <h3 class="fw-bold text-primary mb-0">200+</h3>
+        <span class="text-muted small">Hands-on Video Topics</span>
+      </div>
+      <div class="col-md-3 col-6">
+        <h3 class="fw-bold text-primary mb-0">Verified</h3>
+        <span class="text-muted small">Certificates & Badges</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Career Field Roadmaps (Beginner to Advanced) -->
+<div class="container mb-5">
+  <div class="d-flex justify-content-between align-items-end mb-4">
+    <div>
+      <span class="badge bg-primary-subtle text-primary px-3 py-1 rounded-pill fw-semibold mb-2">
+        <i class="bi bi-signpost-split me-1"></i> Guided Career Paths
+      </span>
+      <h2 class="fw-bold mb-1">Career Field Roadmaps</h2>
+      <p class="text-muted mb-0">Explore progressive learning paths with topic-by-topic YouTube video lectures from Beginner to Advanced.</p>
+    </div>
+    <a href="{{ url_for('catalog.roadmaps') }}" class="btn btn-outline-primary btn-sm">
+      View All Roadmaps <i class="bi bi-arrow-right ms-1"></i>
+    </a>
+  </div>
+
+  <div class="row g-4">
+    {% for rm in roadmaps[:4] %}
+      {% set cat = rm.category %}
+      {% set meta = rm.meta %}
+      <div class="col-md-6 col-lg-3">
+        <div class="card h-100 shadow-sm border-0 overflow-hidden roadmap-card">
+          <div class="p-3 text-white" style="background: {{ meta.bg_gradient }};">
+            <div class="d-flex justify-content-between align-items-center mb-2">
+              <span class="badge bg-white text-dark small">{{ meta.badge }}</span>
+              <span class="small text-light opacity-75"><i class="bi bi-clock me-1"></i>{{ meta.estimated_duration }}</span>
+            </div>
+            <div class="d-flex align-items-center gap-2 mt-2">
+              <i class="bi {{ meta.icon }} fs-3"></i>
+              <h5 class="fw-bold mb-0 text-white">{{ cat.name }}</h5>
+            </div>
+          </div>
+          <div class="card-body p-3 d-flex flex-column">
+            <p class="text-secondary small mb-3 flex-grow-1">{{ meta.tagline[:90] }}...</p>
+            <div class="mb-3">
+              <span class="small text-muted fw-semibold d-block mb-1">Progression Track:</span>
+              <div class="d-flex flex-column gap-1">
+                {% for c in rm.courses %}
+                  <div class="d-flex justify-content-between align-items-center small p-1 px-2 rounded bg-light border">
+                    <span class="text-truncate" style="max-width: 140px; font-size: 0.75rem;">{{ c.title }}</span>
+                    <span class="badge {% if c.level == 'Beginner' %}bg-success{% elif c.level == 'Intermediate' %}bg-primary{% else %}bg-purple text-white{% endif %}" style="font-size: 0.65rem; {% if c.level == 'Advanced' %}background-color: #7c3aed;{% endif %}">{{ c.level }}</span>
+                  </div>
+                {% endfor %}
+              </div>
+            </div>
+            <div class="mb-3">
+              <span class="small text-muted fw-semibold d-block mb-1">Key Skills:</span>
+              <div class="d-flex flex-wrap gap-1">
+                {% for sk in meta.skills[:3] %}
+                  <span class="badge bg-primary-subtle text-primary border border-primary-subtle" style="font-size: 0.7rem;">{{ sk }}</span>
+                {% endfor %}
+                {% if meta.skills|length > 3 %}
+                  <span class="badge bg-light text-muted border" style="font-size: 0.7rem;">+{{ meta.skills|length - 3 }} more</span>
+                {% endif %}
+              </div>
+            </div>
+            <a href="{{ url_for('catalog.roadmap_detail', slug=cat.slug) }}" class="btn btn-outline-primary btn-sm w-100 mt-auto">
+              Explore Roadmap <i class="bi bi-arrow-right ms-1"></i>
+            </a>
+          </div>
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+</div>
+
+<!-- Featured Courses -->
+<div class="container mb-5">
+  <div class="d-flex justify-content-between align-items-end mb-4">
+    <div>
+      <h2 class="fw-bold mb-1">Featured Courses</h2>
+      <p class="text-muted mb-0">Handpicked courses designed to advance your web and software engineering career</p>
+    </div>
+    <a href="{{ url_for('catalog.index') }}" class="btn btn-outline-primary btn-sm">
+      View All <i class="bi bi-arrow-right ms-1"></i>
+    </a>
+  </div>
+
+  <div class="row g-4">
+    {% for course in featured_courses %}
+      <div class="col-md-4">
+        {% include 'partials/course_card.html' %}
+      </div>
+    {% endfor %}
+  </div>
+</div>
+
+<!-- Categories Grid -->
+<div class="container mb-5">
+  <h2 class="fw-bold mb-4">Explore by Category</h2>
+  <div class="row g-3">
+    {% for cat in categories %}
+      <div class="col-md-3 col-6">
+        <a href="{{ url_for('catalog.index', category=cat.id) }}" class="card text-decoration-none p-3 h-100 border text-center hover-card">
+          <i class="bi bi-folder2-open fs-2 text-primary mb-2"></i>
+          <h6 class="fw-bold text-dark mb-1">{{ cat.name }}</h6>
+          <span class="text-muted small">{{ cat.courses|length }} courses</span>
+        </a>
+      </div>
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}

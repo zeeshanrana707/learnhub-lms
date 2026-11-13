@@ -1,0 +1,135 @@
+{% extends 'base.html' %}
+{% block title %}Certificate of Completion - {{ cert.code }}{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+  <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-4 no-print">
+    <a href="{{ url_for('learning.my_learning') }}" class="btn btn-outline-secondary btn-tactile">
+      <i class="bi bi-arrow-left me-1"></i> Back to My Learning
+    </a>
+    <div class="d-flex flex-wrap gap-2">
+      <!-- Add to LinkedIn Profile button -->
+      {% set linkedin_url = "https://www.linkedin.com/profile/add?startTask=CERTIFICATION_NAME&name=" ~ (cert.enrollment.course.title|urlencode) ~ "&organizationName=LearnHub+Academy&issueYear=" ~ cert.issued_at.year ~ "&issueMonth=" ~ cert.issued_at.month ~ "&certUrl=" ~ (url_for('learning.view_certificate', code=cert.code, _external=True)|urlencode) ~ "&certId=" ~ cert.code %}
+      <a href="{{ linkedin_url }}" target="_blank" rel="noopener noreferrer" class="btn btn-outline-primary btn-tactile shadow-sm">
+        <i class="bi bi-linkedin me-1 text-primary"></i> Add to LinkedIn
+      </a>
+
+      <!-- Copy Verification Link button -->
+      <button type="button" id="btnCopyCertLink" onclick="copyCertLink();" class="btn btn-outline-dark btn-tactile shadow-sm">
+        <i class="bi bi-link-45deg me-1" id="iconCopyCert"></i>
+        <span id="textCopyCert">Copy Link</span>
+      </button>
+
+      <!-- Download PDF Certificate button -->
+      <a href="{{ url_for('learning.download_certificate_pdf', code=cert.code) }}" class="btn btn-success btn-tactile shadow-sm">
+        <i class="bi bi-file-earmark-pdf me-1"></i> Download PDF
+      </a>
+
+      <!-- Print button -->
+      <button onclick="window.print()" class="btn btn-primary btn-tactile shadow-sm">
+        <i class="bi bi-printer me-1"></i> Print
+      </button>
+    </div>
+  </div>
+
+  <div class="row justify-content-center">
+    <div class="col-lg-10">
+      <div class="certificate-frame text-center">
+        <!-- Certificate Seal -->
+        <div class="certificate-seal mb-4">
+          <i class="bi bi-mortarboard-fill"></i>
+        </div>
+
+        <p class="text-uppercase tracking-widest text-secondary fw-semibold small mb-1">LearnHub Academy • Verified Credential</p>
+        <h1 class="display-5 fw-bold text-dark mb-4" style="font-family: Georgia, serif;">Certificate of Completion</h1>
+
+        <p class="lead text-muted mb-2">This is proudly presented to</p>
+        <h2 class="display-6 fw-bold text-primary mb-3 text-capitalize" style="text-decoration: underline; text-underline-offset: 8px;">
+          {{ cert.enrollment.user.profile.full_name or cert.enrollment.user.username }}
+        </h2>
+
+        <p class="text-muted lead mx-auto mb-4" style="max-width: 650px;">
+          for successfully completing all modules, lectures, laboratory assignments, and passing the comprehensive examination for
+        </p>
+
+        <h3 class="fw-bold text-dark mb-4">{{ cert.enrollment.course.title }}</h3>
+
+        <div class="row pt-5 mt-4 border-top text-secondary small align-items-end">
+          <div class="col-4 text-start">
+            <strong>Issued Date:</strong><br>
+            {{ cert.issued_at.strftime('%B %d, %Y') }}
+          </div>
+          <div class="col-4 text-center">
+            <div class="badge bg-success-subtle text-success p-2 px-3 border border-success mb-1">VERIFIED CREDENTIAL</div>
+            <div class="font-monospace text-muted" style="font-size: 0.75rem;">ID: {{ cert.code }}</div>
+          </div>
+          <div class="col-4 text-end">
+            <strong>Lead Instructor:</strong><br>
+            {{ cert.enrollment.course.creator.profile.full_name or cert.enrollment.course.creator.username }}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
+<script>
+  // Copy Certificate Verification Link
+  function copyCertLink() {
+    const url = window.location.href;
+    navigator.clipboard.writeText(url).then(() => {
+      const btn = document.getElementById('btnCopyCertLink');
+      const icon = document.getElementById('iconCopyCert');
+      const text = document.getElementById('textCopyCert');
+      if (text) text.innerText = 'Copied!';
+      if (icon) {
+        icon.className = 'bi bi-check-lg me-1 text-success';
+      }
+      setTimeout(() => {
+        if (text) text.innerText = 'Copy Link';
+        if (icon) icon.className = 'bi bi-link-45deg me-1';
+      }, 2500);
+    }).catch(() => {
+      prompt('Copy certificate link:', window.location.href);
+    });
+  }
+
+  // Confetti on load
+  document.addEventListener('DOMContentLoaded', function() {
+    if (typeof confetti === 'function') {
+      confetti({
+        particleCount: 120,
+        spread: 80,
+        origin: { y: 0.6 }
+      });
+      setTimeout(() => {
+        confetti({
+          particleCount: 60,
+          angle: 60,
+          spread: 55,
+          origin: { x: 0 }
+        });
+        confetti({
+          particleCount: 60,
+          angle: 120,
+          spread: 55,
+          origin: { x: 1 }
+        });
+      }, 400);
+    }
+  });
+</script>
+
+<style>
+  .btn-tactile {
+    transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  .btn-tactile:hover {
+    transform: translateY(-1.5px);
+  }
+  .btn-tactile:active {
+    transform: scale(0.97) translateY(0);
+  }
+</style>
+{% endblock %}

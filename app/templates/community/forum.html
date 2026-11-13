@@ -1,0 +1,77 @@
+{% extends 'base.html' %}
+{% block title %}Discussion Forum - {{ course.title }}{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+      <a href="{{ url_for('catalog.detail', course_id=course.id) }}" class="text-muted small text-decoration-none">
+        <i class="bi bi-arrow-left me-1"></i> Back to {{ course.title }}
+      </a>
+      <h2 class="fw-bold mb-1">Course Community Forum</h2>
+      <p class="text-muted mb-0">Ask questions, share insights, and discuss assignments</p>
+    </div>
+    {% if current_user.is_authenticated %}
+      <a href="{{ url_for('community.create_thread', course_id=course.id) }}" class="btn btn-primary">
+        <i class="bi bi-chat-plus me-1"></i> New Discussion Topic
+      </a>
+    {% endif %}
+  </div>
+
+  <div class="card shadow-sm border-0">
+    <div class="list-group list-group-flush">
+      {% for thread in threads %}
+        <div class="list-group-item p-3 d-flex justify-content-between align-items-center hover-card">
+          <div class="d-flex align-items-center gap-3">
+            <i class="bi {% if thread.is_pinned %}bi-pin-angle-fill text-danger{% elif thread.is_locked %}bi-lock-fill text-secondary{% else %}bi-chat-left-text text-primary{% endif %} fs-4"></i>
+            <div>
+              <h6 class="fw-bold mb-1">
+                <a href="{{ url_for('community.view_thread', thread_id=thread.id) }}" class="text-dark text-decoration-none">
+                  {{ thread.title }}
+                </a>
+                {% if thread.is_pinned %}<span class="badge bg-danger ms-1">Pinned</span>{% endif %}
+                {% if thread.is_locked %}<span class="badge bg-secondary ms-1">Locked</span>{% endif %}
+              </h6>
+              <div class="text-muted small">
+                Started by <strong>{{ thread.author.profile.full_name or thread.author.username }}</strong>
+                • {{ thread.created_at.strftime('%b %d, %Y') }}
+              </div>
+            </div>
+          </div>
+          <div class="d-flex align-items-center gap-3">
+            <div class="text-end text-muted small">
+              <span class="badge bg-light text-dark border fs-6">{{ thread.posts|length }}</span>
+              <div>replies</div>
+            </div>
+            {% if current_user.is_authenticated and (current_user.is_admin or course.is_instructor(current_user.id)) %}
+              <div class="dropdown">
+                <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown"></button>
+                <ul class="dropdown-menu dropdown-menu-end">
+                  <li>
+                    <form action="{{ url_for('community.toggle_thread_pin', thread_id=thread.id) }}" method="POST">
+                      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                      <button class="dropdown-item">{% if thread.is_pinned %}Unpin{% else %}Pin to Top{% endif %}</button>
+                    </form>
+                  </li>
+                  <li>
+                    <form action="{{ url_for('community.toggle_thread_lock', thread_id=thread.id) }}" method="POST">
+                      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                      <button class="dropdown-item">{% if thread.is_locked %}Unlock{% else %}Lock Replies{% endif %}</button>
+                    </form>
+                  </li>
+                </ul>
+              </div>
+            {% endif %}
+          </div>
+        </div>
+      {% else %}
+        <div class="p-5 text-center text-muted">
+          <i class="bi bi-chat-square-dots fs-1 mb-2 d-block"></i>
+          <h5>No Discussion Topics Yet</h5>
+          <p class="small">Be the first to start a conversation in this course forum.</p>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+</div>
+{% endblock %}

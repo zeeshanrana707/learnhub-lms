@@ -1,0 +1,63 @@
+{% extends 'base.html' %}
+{% block title %}Log In{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+  <div class="row justify-content-center">
+    <div class="col-md-5">
+      <div class="card p-4 shadow-sm border-0">
+        <div class="text-center mb-4">
+          <i class="bi bi-person-circle fs-1 text-primary"></i>
+          <h3 class="fw-bold mt-2">Welcome Back</h3>
+          <p class="text-muted small">Sign in to your LMS learning account</p>
+        </div>
+
+        <form method="POST" action="{{ url_for('auth.login', next=request.args.get('next')) }}">
+          {{ form.hidden_tag() }}
+
+          <div class="mb-3">
+            {{ form.login_id.label(class="form-label fw-semibold") }}
+            {{ form.login_id(class="form-control" + (" is-invalid" if form.login_id.errors else ""), placeholder="username or email@example.com") }}
+            {% for error in form.login_id.errors %}
+              <div class="invalid-feedback">{{ error }}</div>
+            {% endfor %}
+          </div>
+
+          <div class="mb-3">
+            <div class="d-flex justify-content-between">
+              {{ form.password.label(class="form-label fw-semibold") }}
+              <a href="{{ url_for('auth.reset_password_request') }}" class="small text-decoration-none">Forgot password?</a>
+            </div>
+            {{ form.password(class="form-control" + (" is-invalid" if form.password.errors else ""), placeholder="••••••••") }}
+            {% for error in form.password.errors %}
+              <div class="invalid-feedback">{{ error }}</div>
+            {% endfor %}
+          </div>
+
+          {% if reset_email %}
+            <div class="alert alert-warning py-2 px-3 small d-flex justify-content-between align-items-center mb-3">
+              <span>Forgot password for <strong>{{ reset_email }}</strong>?</span>
+              <a href="{{ url_for('auth.reset_password_request', email=reset_email) }}" class="btn btn-sm btn-outline-dark fw-semibold ms-2">Reset Password</a>
+            </div>
+          {% endif %}
+
+          <div class="mb-4 form-check">
+            {{ form.remember_me(class="form-check-input") }}
+            {{ form.remember_me.label(class="form-check-label") }}
+          </div>
+
+          <button type="submit" class="btn btn-primary w-100 py-2 fw-semibold">
+            <i class="bi bi-box-arrow-in-right me-1"></i> Sign In
+          </button>
+        </form>
+
+        <hr class="my-4">
+
+        <div class="text-center small">
+          Don't have an account? <a href="{{ url_for('auth.register') }}" class="fw-semibold text-decoration-none">Create an account</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

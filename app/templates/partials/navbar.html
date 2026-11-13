@@ -1,0 +1,1086 @@
+{% set is_admin_panel = (request.blueprint == 'admin') %}
+<nav class="navbar navbar-expand-lg navbar-glass sticky-top py-2">
+  <div class="container-fluid px-xl-5 px-lg-4 px-3">
+    <!-- Brand Logo & Name -->
+    <a class="navbar-brand d-flex align-items-center gap-2 text-decoration-none me-2" href="{{ url_for('admin.dashboard') if is_admin_panel else url_for('catalog.home') }}">
+      <div class="brand-logo-squircle">
+        <i class="bi bi-mortarboard-fill"></i>
+      </div>
+      <span class="fs-4 brand-text leading-none">LearnHub<span class="text-primary">.</span></span>
+    </a>
+    {% if is_admin_panel %}
+      <div class="d-none d-lg-block vr mx-2 my-auto" style="height: 22px; opacity: 0.18;"></div>
+    {% endif %}
+
+    {% if not is_admin_panel and not (current_user.is_authenticated and current_user.is_admin) %}
+    <!-- Explore / Categories Dropdown Menu (Desktop) -->
+    <div class="dropdown d-none d-md-block me-2">
+      <button class="btn btn-outline-secondary btn-sm rounded-pill px-3 py-1.5 fw-semibold dropdown-toggle d-flex align-items-center gap-1.5" type="button" id="navExploreDropdown" data-bs-toggle="dropdown" aria-expanded="false" style="border-color: #cbd5e1; color: #334155;">
+        <i class="bi bi-grid-3x3-gap-fill text-primary"></i>
+        <span>Explore</span>
+      </button>
+      <div class="dropdown-menu shadow-lg border-0 rounded-4 dropdown-menu-modern explore-dropdown-menu" aria-labelledby="navExploreDropdown">
+        <div class="px-2 py-1 mb-2 border-bottom">
+          <span class="text-uppercase fw-bold text-muted small" style="font-size: 0.72rem; letter-spacing: 0.05em;">Career Tracks & Specializations</span>
+        </div>
+        <div class="d-flex flex-column gap-1">
+          <a href="{{ url_for('catalog.roadmap_detail', slug='ai-engineer-roadmap') }}" class="explore-item">
+            <div class="explore-icon-box" style="background: rgba(99, 102, 241, 0.12); color: #6366f1;">
+              <i class="bi bi-cpu-fill"></i>
+            </div>
+            <div>
+              <div class="fw-semibold small text-dark">Artificial Intelligence</div>
+              <div class="text-muted" style="font-size: 0.75rem;">Machine Learning, PyTorch, LLMs & LangChain</div>
+            </div>
+          </a>
+          <a href="{{ url_for('catalog.roadmap_detail', slug='full-stack-web-roadmap') }}" class="explore-item">
+            <div class="explore-icon-box" style="background: rgba(14, 165, 233, 0.12); color: #0ea5e9;">
+              <i class="bi bi-code-slash"></i>
+            </div>
+            <div>
+              <div class="fw-semibold small text-dark">Web Development</div>
+              <div class="text-muted" style="font-size: 0.75rem;">Modern JS, Python Flask, React 18, APIs</div>
+            </div>
+          </a>
+          <a href="{{ url_for('catalog.roadmap_detail', slug='cloud-devops-roadmap') }}" class="explore-item">
+            <div class="explore-icon-box" style="background: rgba(5, 150, 105, 0.12); color: #059669;">
+              <i class="bi bi-cloud-check-fill"></i>
+            </div>
+            <div>
+              <div class="fw-semibold small text-dark">Cloud & DevOps</div>
+              <div class="text-muted" style="font-size: 0.75rem;">Linux Systems, Docker, CI/CD, Kubernetes</div>
+            </div>
+          </a>
+          <a href="{{ url_for('catalog.roadmap_detail', slug='cybersecurity-roadmap') }}" class="explore-item">
+            <div class="explore-icon-box" style="background: rgba(220, 38, 38, 0.12); color: #dc2626;">
+              <i class="bi bi-shield-lock-fill"></i>
+            </div>
+            <div>
+              <div class="fw-semibold small text-dark">Cybersecurity</div>
+              <div class="text-muted" style="font-size: 0.75rem;">Ethical Hacking, OWASP Top 10, PenTesting</div>
+            </div>
+          </a>
+          <a href="{{ url_for('catalog.roadmap_detail', slug='data-engineering-roadmap') }}" class="explore-item">
+            <div class="explore-icon-box" style="background: rgba(217, 119, 6, 0.12); color: #d97706;">
+              <i class="bi bi-database-fill-gear"></i>
+            </div>
+            <div>
+              <div class="fw-semibold small text-dark">Data Engineering</div>
+              <div class="text-muted" style="font-size: 0.75rem;">SQL Architecture, Redis Caching, Kafka</div>
+            </div>
+          </a>
+          <a href="{{ url_for('catalog.roadmap_detail', slug='cs-foundations-roadmap') }}" class="explore-item">
+            <div class="explore-icon-box" style="background: rgba(139, 92, 246, 0.12); color: #8b5cf6;">
+              <i class="bi bi-mortarboard-fill"></i>
+            </div>
+            <div>
+              <div class="fw-semibold small text-dark">Computer Science Foundations</div>
+              <div class="text-muted" style="font-size: 0.75rem;">Algorithms, Memory Pointers, Big-O, UI Design</div>
+            </div>
+          </a>
+        </div>
+        <div class="dropdown-divider my-2"></div>
+        <div class="d-flex justify-content-between align-items-center px-2 py-1">
+          <a href="{{ url_for('catalog.roadmaps') }}" class="text-primary text-decoration-none small fw-semibold">
+            <i class="bi bi-signpost-split me-1"></i>All 6 Roadmaps
+          </a>
+          <a href="{{ url_for('catalog.index') }}" class="text-secondary text-decoration-none small">
+            Browse Full Catalog <i class="bi bi-arrow-right small ms-0.5"></i>
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Central Omnisearch Bar with Live Search Dropdown (Desktop) -->
+    <div class="d-none d-lg-block mx-2 my-0 flex-grow-1 search-form-header nav-search-wrapper" style="max-width: 300px; min-width: 160px;">
+      <form action="{{ url_for('catalog.index') }}" method="GET" class="m-0" role="search" id="desktopSearchForm">
+        <div class="position-relative">
+          <i class="bi bi-search position-absolute top-50 start-0 translate-middle-y ms-3 text-muted"></i>
+          <input type="search" 
+                 name="q" 
+                 id="navGlobalSearchInput"
+                 class="form-control nav-search-control ps-5 pe-5 py-2 rounded-pill" 
+                 placeholder="" 
+                 value="{{ request.args.get('q', '') }}"
+                 autocomplete="off">
+          <kbd class="nav-kbd-badge position-absolute top-50 end-0 translate-middle-y me-2.5 d-none d-xl-inline-block">Ctrl K</kbd>
+        </div>
+      </form>
+      <!-- Live Search Instant Results -->
+      <div id="desktopSearchResults" class="nav-search-results"></div>
+    </div>
+    {% endif %}
+
+    <!-- Mobile Top Navigation Icons & Offcanvas Drawer Toggle -->
+    <div class="d-flex align-items-center gap-1.5 d-lg-none ms-auto">
+      {% if not is_admin_panel %}
+      <!-- Dark/Light Theme Quick Toggle (Mobile Top Bar) -->
+      <button class="btn-nav-icon position-relative text-decoration-none border-0" id="mobileTopThemeToggleBtn" type="button" title="Toggle Dark/Light Mode" aria-label="Toggle Theme">
+        <i class="bi bi-moon-stars fs-5 theme-icon-active" id="mobileTopThemeIcon"></i>
+      </button>
+      {% endif %}
+
+      {% if is_admin_panel or (current_user.is_authenticated and current_user.is_admin) %}
+      <!-- Direct Mobile Log Out Button for Admin -->
+      <form action="{{ url_for('auth.logout') }}" method="POST" class="m-0 d-inline">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <button type="submit" class="btn btn-outline-danger btn-sm rounded-pill px-2.5 py-0.5 fw-semibold d-flex align-items-center gap-1" title="Log Out" style="font-size: 0.78rem;">
+          <i class="bi bi-box-arrow-right"></i>
+          <span>Log Out</span>
+        </button>
+      </form>
+      {% endif %}
+
+      {% if not is_admin_panel and not (current_user.is_authenticated and current_user.is_admin) %}
+      <!-- Wishlist Quick Icon (Mobile) -->
+      <a class="btn-nav-icon position-relative text-decoration-none" href="{{ url_for('learning.wishlist') }}" title="Wishlist">
+        <i class="bi bi-heart fs-5"></i>
+        {% if wishlist_count > 0 %}
+          <span class="badge-counter badge-counter-wishlist bg-danger ring-white">
+            {{ wishlist_count }}
+          </span>
+        {% else %}
+          <span class="badge-counter badge-counter-wishlist bg-danger ring-white" style="display: none;">
+            0
+          </span>
+        {% endif %}
+      </a>
+
+      <!-- Shopping Cart Quick Icon (Mobile) -->
+      <a class="btn-nav-icon position-relative text-decoration-none" href="{{ url_for('commerce.cart') }}" title="Shopping Cart">
+        <i class="bi bi-cart3 fs-5"></i>
+        {% if cart_count > 0 %}
+          <span class="badge-counter bg-danger ring-white">
+            {{ cart_count }}
+          </span>
+        {% endif %}
+      </a>
+      {% endif %}
+
+      <!-- Offcanvas Mobile Drawer Hamburger Toggle Button -->
+      <button class="navbar-toggler border-0 p-2 shadow-none ms-1" type="button" data-bs-toggle="offcanvas" data-bs-target="#navbarOffcanvas" aria-controls="navbarOffcanvas" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+    </div>
+
+    <!-- Responsive Navigation: Offcanvas Drawer on Mobile, Standard Flex Bar on Desktop -->
+    <div class="offcanvas-lg offcanvas-start flex-grow-1" tabindex="-1" id="navbarOffcanvas" aria-labelledby="navbarOffcanvasLabel">
+      
+      <!-- Offcanvas Mobile Header (Visible only on mobile: d-lg-none) -->
+      <div class="offcanvas-header border-bottom d-lg-none py-3 px-3 bg-light">
+        {% if current_user.is_authenticated %}
+          <div class="d-flex align-items-center gap-2.5 flex-grow-1 min-w-0">
+            <div class="avatar-nav-circle" style="width: 38px; height: 38px; font-size: 0.95rem;">
+              {{ (current_user.username[0]|upper) if current_user.username else 'U' }}
+            </div>
+            <div class="min-w-0">
+              <div class="d-flex align-items-center gap-1.5">
+                <span class="fw-bold text-dark text-truncate" id="navbarOffcanvasLabel">{{ current_user.username }}</span>
+                <span class="badge-role-pill badge-role-{{ current_user.role.name|lower }}">{{ current_user.role.name }}</span>
+              </div>
+              <div class="text-muted small text-truncate" style="font-size: 0.78rem;">{{ current_user.email }}</div>
+            </div>
+          </div>
+        {% else %}
+          <div class="d-flex align-items-center gap-2">
+            <div class="brand-logo-squircle" style="width: 32px; height: 32px; font-size: 1rem;">
+              <i class="bi bi-mortarboard-fill"></i>
+            </div>
+            <span class="fw-bold text-dark fs-5" id="navbarOffcanvasLabel">LearnHub<span class="text-primary">.</span></span>
+          </div>
+        {% endif %}
+        <button type="button" class="btn-close shadow-none" data-bs-dismiss="offcanvas" data-bs-target="#navbarOffcanvas" aria-label="Close"></button>
+      </div>
+
+      <!-- Offcanvas Body -->
+      <div class="offcanvas-body d-flex flex-column flex-lg-row align-items-lg-center justify-content-between p-3 p-lg-0 w-100">
+        
+        <!-- Mobile Search Bar with Live Search (d-lg-none) -->
+        {% if not is_admin_panel and not (current_user.is_authenticated and current_user.is_admin) %}
+        <div class="d-lg-none mb-3 w-100 nav-search-wrapper">
+          <form action="{{ url_for('catalog.index') }}" method="GET" role="search" id="mobileSearchForm">
+            <div class="position-relative">
+              <i class="bi bi-search position-absolute top-50 start-0 translate-middle-y ms-3 text-muted"></i>
+              <input type="search" 
+                     name="q" 
+                     id="navGlobalSearchInputMobile"
+                     class="form-control nav-search-control ps-5 pe-3 rounded-pill" 
+                     placeholder="" 
+                     value="{{ request.args.get('q', '') }}"
+                     autocomplete="off">
+            </div>
+          </form>
+          <div id="mobileSearchResults" class="nav-search-results"></div>
+        </div>
+        {% endif %}
+
+        <!-- ============================================== -->
+        <!-- MOBILE SEGMENTED APP DRAWER (d-lg-none)        -->
+        <!-- ============================================== -->
+        <div class="d-lg-none w-100 pb-4">
+          <!-- 1. Resume Learning Card (Mobile) -->
+          {% if resume_learning %}
+            <div class="mobile-resume-card mb-3">
+              <div class="d-flex align-items-center justify-content-between mb-1.5">
+                <span class="badge bg-primary-subtle text-primary fw-bold" style="font-size: 0.7rem;">In Progress</span>
+                <span class="small fw-bold text-primary">{{ resume_learning.progress_pct }}%</span>
+              </div>
+              <div class="fw-bold text-dark small text-truncate mb-1">{{ resume_learning.course_title }}</div>
+              <div class="text-muted small text-truncate mb-2" style="font-size: 0.76rem;">
+                <i class="bi bi-play-circle me-1 text-primary"></i>Next: {{ resume_learning.lesson_title }}
+              </div>
+              <div class="progress resume-progress-bar mb-2" style="height: 5px;">
+                <div class="progress-bar bg-primary" role="progressbar" style="width: {{ resume_learning.progress_pct }}%;"></div>
+              </div>
+              <a href="{{ resume_learning.url }}" class="btn btn-primary btn-sm w-100 rounded-pill fw-semibold py-1">
+                <i class="bi bi-play-fill me-1"></i> Continue Lesson
+              </a>
+            </div>
+          {% endif %}
+
+          <!-- 2. Learning & Catalog Section (Students & Non-Admin) -->
+          {% if not is_admin_panel and not (current_user.is_authenticated and current_user.is_admin) %}
+          <div class="mobile-nav-heading">Learning Hub</div>
+          <a href="{{ url_for('catalog.index') }}" class="mobile-nav-link {% if request.endpoint == 'catalog.index' %}active{% endif %}">
+            <i class="bi bi-grid-fill text-primary"></i>
+            <span>Browse All Courses</span>
+          </a>
+          <a href="{{ url_for('catalog.roadmaps') }}" class="mobile-nav-link {% if request.endpoint in ['catalog.roadmaps', 'catalog.roadmap_detail'] %}active{% endif %}">
+            <i class="bi bi-signpost-split-fill text-info"></i>
+            <span>Career Roadmaps</span>
+          </a>
+          {% if current_user.is_authenticated and current_user.is_student %}
+            <a href="{{ url_for('learning.my_learning') }}" class="mobile-nav-link {% if request.endpoint == 'learning.my_learning' %}active{% endif %}">
+              <i class="bi bi-journal-bookmark-fill text-success"></i>
+              <span>My Learning Dashboard</span>
+            </a>
+            <a href="{{ url_for('assessments.student_grades') }}" class="mobile-nav-link {% if request.endpoint and request.endpoint.startswith('assessments.') %}active{% endif %}">
+              <i class="bi bi-card-checklist text-warning"></i>
+              <span>My Grades & Feedback</span>
+            </a>
+          {% endif %}
+
+          <!-- 3. Career Tracks Accordion (Mobile) -->
+          <div class="mobile-nav-heading mt-3">Career Pathways</div>
+          <a href="{{ url_for('catalog.roadmap_detail', slug='ai-engineer-roadmap') }}" class="mobile-nav-link">
+            <i class="bi bi-cpu-fill" style="color: #6366f1;"></i>
+            <span>Artificial Intelligence</span>
+          </a>
+          <a href="{{ url_for('catalog.roadmap_detail', slug='full-stack-web-roadmap') }}" class="mobile-nav-link">
+            <i class="bi bi-code-slash" style="color: #0ea5e9;"></i>
+            <span>Full-Stack Web Dev</span>
+          </a>
+          <a href="{{ url_for('catalog.roadmap_detail', slug='cloud-devops-roadmap') }}" class="mobile-nav-link">
+            <i class="bi bi-cloud-check-fill" style="color: #059669;"></i>
+            <span>Cloud & DevOps</span>
+          </a>
+          <a href="{{ url_for('catalog.roadmap_detail', slug='cybersecurity-roadmap') }}" class="mobile-nav-link">
+            <i class="bi bi-shield-lock-fill" style="color: #dc2626;"></i>
+            <span>Cybersecurity</span>
+          </a>
+          <a href="{{ url_for('catalog.roadmap_detail', slug='data-engineering-roadmap') }}" class="mobile-nav-link">
+            <i class="bi bi-database-fill-gear" style="color: #d97706;"></i>
+            <span>Data Engineering</span>
+          </a>
+          <a href="{{ url_for('catalog.roadmap_detail', slug='cs-foundations-roadmap') }}" class="mobile-nav-link">
+            <i class="bi bi-mortarboard-fill" style="color: #8b5cf6;"></i>
+            <span>CS Foundations</span>
+          </a>
+          {% endif %}
+
+          <!-- 4. Teaching Studio (If Instructor) -->
+          {% if current_user.is_authenticated and current_user.is_instructor %}
+            <div class="mobile-nav-heading mt-3">Teaching Studio</div>
+            <a href="{{ url_for('catalog.instructor_dashboard') }}" class="mobile-nav-link">
+              <i class="bi bi-speedometer2 text-primary"></i>
+              <span>Instructor Dashboard</span>
+            </a>
+            <a href="{{ url_for('catalog.create_course') }}" class="mobile-nav-link">
+              <i class="bi bi-plus-circle text-success"></i>
+              <span>Create New Course</span>
+            </a>
+            <a href="{{ url_for('assessments.grading_queue') }}" class="mobile-nav-link d-flex align-items-center justify-content-between">
+              <div class="d-flex align-items-center gap-2">
+                <i class="bi bi-clipboard-check text-info"></i>
+                <span>Grading Queue</span>
+              </div>
+              {% if pending_grading_count > 0 %}
+                <span class="badge bg-danger rounded-pill px-2 py-0.5" style="font-size: 0.68rem;">{{ pending_grading_count }}</span>
+              {% endif %}
+            </a>
+            <a href="{{ url_for('assessments.rubrics') }}" class="mobile-nav-link">
+              <i class="bi bi-card-list text-warning"></i>
+              <span>Rubrics Manager</span>
+            </a>
+          {% endif %}
+
+          <!-- 5. Platform Administration (If Admin) -->
+          {% if current_user.is_authenticated and current_user.is_admin %}
+            <div class="mobile-nav-heading mt-3 text-danger">Platform Administration</div>
+            <a href="{{ url_for('admin.dashboard') }}" class="mobile-nav-link">
+              <i class="bi bi-speedometer2 text-danger"></i>
+              <span>Admin Dashboard</span>
+            </a>
+            <a href="{{ url_for('admin.users_list') }}" class="mobile-nav-link">
+              <i class="bi bi-people text-info"></i>
+              <span>Users & Role Permissions</span>
+            </a>
+            <a href="{{ url_for('admin.roadmaps') }}" class="mobile-nav-link">
+              <i class="bi bi-signpost-split-fill text-primary"></i>
+              <span>Manage Roadmaps</span>
+            </a>
+            <a href="{{ url_for('admin.categories') }}" class="mobile-nav-link">
+              <i class="bi bi-folder text-warning"></i>
+              <span>Categories & Taxonomy</span>
+            </a>
+            <a href="{{ url_for('admin.coupons') }}" class="mobile-nav-link">
+              <i class="bi bi-ticket-perforated text-success"></i>
+              <span>Promo Coupons</span>
+            </a>
+            <a href="{{ url_for('admin.audit_logs') }}" class="mobile-nav-link">
+              <i class="bi bi-shield-check text-dark"></i>
+              <span>Security Audit Logs</span>
+            </a>
+            <a href="{{ url_for('admin.settings') }}" class="mobile-nav-link">
+              <i class="bi bi-gear text-secondary"></i>
+              <span>System Settings</span>
+            </a>
+          {% endif %}
+
+          <!-- 6. Account & Preferences -->
+          <div class="mobile-nav-heading mt-3">Account & Settings</div>
+          {% if current_user.is_authenticated %}
+            <a href="{{ url_for('auth.profile') }}" class="mobile-nav-link">
+              <i class="bi bi-person text-primary"></i>
+              <span>My Profile</span>
+            </a>
+            <a href="{{ url_for('community.notifications') }}" class="mobile-nav-link d-flex align-items-center justify-content-between">
+              <div class="d-flex align-items-center gap-2">
+                <i class="bi bi-bell text-primary"></i>
+                <span>Notifications</span>
+              </div>
+              {% if unread_notifications_count > 0 %}
+                <span class="badge bg-primary rounded-pill">{{ unread_notifications_count }}</span>
+              {% endif %}
+            </a>
+            <a href="{{ url_for('community.inbox') }}" class="mobile-nav-link d-flex align-items-center justify-content-between">
+              <div class="d-flex align-items-center gap-2">
+                <i class="bi bi-chat-dots text-success"></i>
+                <span>Direct Messages</span>
+              </div>
+              {% if unread_messages_count > 0 %}
+                <span class="badge bg-success rounded-pill">{{ unread_messages_count }}</span>
+              {% endif %}
+            </a>
+            {% if not (current_user.is_authenticated and current_user.is_admin) %}
+            <a href="{{ url_for('learning.wishlist') }}" class="mobile-nav-link">
+              <i class="bi bi-heart text-danger"></i>
+              <span>Saved Wishlist</span>
+            </a>
+            <a href="{{ url_for('commerce.orders') }}" class="mobile-nav-link">
+              <i class="bi bi-receipt text-info"></i>
+              <span>Order History</span>
+            </a>
+            {% endif %}
+            <a href="{{ url_for('auth.change_password') }}" class="mobile-nav-link">
+              <i class="bi bi-key text-secondary"></i>
+              <span>Change Password</span>
+            </a>
+
+            <!-- Mobile Theme Switcher Card -->
+            <div class="d-flex align-items-center justify-content-between px-3 py-2.5 my-2.5 rounded-3 bg-light mobile-theme-card">
+              <div class="d-flex align-items-center gap-2">
+                <i class="bi bi-palette text-primary"></i>
+                <span class="small fw-semibold text-dark">Appearance</span>
+              </div>
+              <button class="btn btn-sm btn-outline-secondary rounded-pill px-3 py-1 d-flex align-items-center gap-1.5" id="mobileThemeToggleBtn" type="button">
+                <i class="bi bi-moon-stars" id="mobileThemeIcon"></i>
+                <span id="mobileThemeLabel" class="small fw-semibold">Dark</span>
+              </button>
+            </div>
+
+            <div class="mt-2 pt-2 border-top">
+              <form action="{{ url_for('auth.logout') }}" method="POST">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <button type="submit" class="btn btn-outline-danger btn-sm w-100 rounded-pill py-2 fw-semibold d-flex align-items-center justify-content-center gap-2">
+                  <i class="bi bi-box-arrow-right"></i> Log Out
+                </button>
+              </form>
+            </div>
+          {% else %}
+            <div class="d-grid gap-2 mt-2">
+              <a href="{{ url_for('auth.login') }}" class="btn btn-outline-primary btn-sm rounded-pill py-2 fw-semibold">Log In</a>
+              <a href="{{ url_for('auth.register') }}" class="btn btn-primary btn-sm rounded-pill py-2 fw-semibold">Sign Up</a>
+            </div>
+          {% endif %}
+        </div>
+
+        <!-- ============================================== -->
+        <!-- DESKTOP NAVBAR LINKS (d-none d-lg-flex)        -->
+        <!-- ============================================== -->
+        <ul class="navbar-nav me-auto mb-2 mb-lg-0 align-items-lg-center gap-1 flex-lg-nowrap d-none d-lg-flex">
+          {% if is_admin_panel %}
+            <!-- Expand-Active Admin Navigation System: only active page shows name, others show icons -->
+            {% set is_dash_active = (request.endpoint == 'admin.dashboard') %}
+            {% set is_users_active = (request.endpoint and ('user' in request.endpoint or 'role' in request.endpoint)) %}
+            {% set is_roadmaps_active = (request.endpoint and 'roadmap' in request.endpoint) %}
+            {% set is_cat_active = (request.endpoint and ('categor' in request.endpoint or 'department' in request.endpoint or 'tag' in request.endpoint)) %}
+            {% set is_coupons_active = (request.endpoint and 'coupon' in request.endpoint) %}
+            {% set is_audit_active = (request.endpoint and 'audit' in request.endpoint) %}
+            {% set is_settings_active = (request.endpoint and ('setting' in request.endpoint or 'badge' in request.endpoint)) %}
+
+            <!-- Dashboard -->
+            <li class="nav-item">
+              <a class="nav-link admin-nav-item {% if is_dash_active %}active{% endif %}" href="{{ url_for('admin.dashboard') }}" title="Dashboard">
+                <i class="bi bi-speedometer2 text-danger {% if is_dash_active %}me-1.5{% endif %}"></i>
+                {% if is_dash_active %}<span>Dashboard</span>{% endif %}
+              </a>
+            </li>
+
+            <!-- Users -->
+            <li class="nav-item">
+              <a class="nav-link admin-nav-item {% if is_users_active %}active{% endif %}" href="{{ url_for('admin.users_list') }}" title="Users & Roles">
+                <i class="bi bi-people text-info {% if is_users_active %}me-1.5{% endif %}"></i>
+                {% if is_users_active %}<span>Users</span>{% endif %}
+              </a>
+            </li>
+
+            <!-- Roadmaps -->
+            <li class="nav-item">
+              <a class="nav-link admin-nav-item {% if is_roadmaps_active %}active{% endif %}" href="{{ url_for('admin.roadmaps') }}" title="Career Roadmaps">
+                <i class="bi bi-signpost-split-fill text-primary {% if is_roadmaps_active %}me-1.5{% endif %}"></i>
+                {% if is_roadmaps_active %}<span>Roadmaps</span>{% endif %}
+              </a>
+            </li>
+
+            <!-- Categories -->
+            <li class="nav-item">
+              <a class="nav-link admin-nav-item {% if is_cat_active %}active{% endif %}" href="{{ url_for('admin.categories') }}" title="Categories & Taxonomy">
+                <i class="bi bi-folder text-warning {% if is_cat_active %}me-1.5{% endif %}"></i>
+                {% if is_cat_active %}<span>Categories</span>{% endif %}
+              </a>
+            </li>
+
+            <!-- Coupons -->
+            <li class="nav-item">
+              <a class="nav-link admin-nav-item {% if is_coupons_active %}active{% endif %}" href="{{ url_for('admin.coupons') }}" title="Promo Coupons">
+                <i class="bi bi-ticket-perforated text-success {% if is_coupons_active %}me-1.5{% endif %}"></i>
+                {% if is_coupons_active %}<span>Coupons</span>{% endif %}
+              </a>
+            </li>
+
+            <!-- Audit Logs -->
+            <li class="nav-item">
+              <a class="nav-link admin-nav-item {% if is_audit_active %}active{% endif %}" href="{{ url_for('admin.audit_logs') }}" title="Security Audit Logs">
+                <i class="bi bi-shield-check text-dark {% if is_audit_active %}me-1.5{% endif %}"></i>
+                {% if is_audit_active %}<span>Audit Logs</span>{% endif %}
+              </a>
+            </li>
+
+            <!-- Settings -->
+            <li class="nav-item">
+              <a class="nav-link admin-nav-item {% if is_settings_active %}active{% endif %}" href="{{ url_for('admin.settings') }}" title="System Settings">
+                <i class="bi bi-gear text-secondary {% if is_settings_active %}me-1.5{% endif %}"></i>
+                {% if is_settings_active %}<span>Settings</span>{% endif %}
+              </a>
+            </li>
+
+            <!-- Live Site -->
+            <li class="nav-item ms-1">
+              <a class="nav-link admin-nav-item text-secondary border" href="{{ url_for('catalog.index') }}" title="View Live Site">
+                <i class="bi bi-box-arrow-up-right"></i>
+              </a>
+            </li>
+          {% else %}
+            <!-- Standard Catalog & Role Links (Non-Admin Panel) -->
+            {% if not (current_user.is_authenticated and current_user.is_admin) %}
+            <li class="nav-item">
+              <a class="nav-link nav-pill-link {% if request.endpoint in ['catalog.roadmaps', 'catalog.roadmap_detail'] %}active{% endif %}" href="{{ url_for('catalog.roadmaps') }}">
+                <i class="bi bi-signpost-split-fill me-1.5 text-primary"></i>
+                <span>Career Roadmaps</span>
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link nav-pill-link {% if request.endpoint in ['catalog.index', 'catalog.detail'] %}active{% endif %}" href="{{ url_for('catalog.index') }}">
+                <i class="bi bi-grid-fill me-1.5 text-secondary"></i>
+                <span>Course Catalog</span>
+              </a>
+            </li>
+            {% endif %}
+
+            {% if current_user.is_authenticated %}
+              {% if current_user.is_student %}
+                <li class="nav-item">
+                  <a class="nav-link nav-pill-link {% if request.endpoint == 'learning.my_learning' %}active{% endif %}" href="{{ url_for('learning.my_learning') }}">
+                    <i class="bi bi-journal-bookmark me-1.5 text-secondary"></i>
+                    <span>My Learning</span>
+                  </a>
+                </li>
+
+                <!-- Student Quick Action: Resume Learning Pill -->
+                {% if resume_learning %}
+                  <li class="nav-item d-none d-md-block">
+                    <a href="{{ resume_learning.url }}" class="nav-resume-pill text-decoration-none d-flex align-items-center gap-2" title="Resume: {{ resume_learning.course_title }} — {{ resume_learning.lesson_title }}">
+                      <span class="resume-play-btn">
+                        <i class="bi bi-play-fill"></i>
+                      </span>
+                      <div class="d-flex flex-column" style="max-width: 140px;">
+                        <span class="resume-pill-title text-truncate">{{ resume_learning.course_title }}</span>
+                        <div class="d-flex align-items-center gap-1.5 mt-0.5">
+                          <div class="progress resume-progress-bar flex-grow-1" style="height: 4px;">
+                            <div class="progress-bar bg-primary" role="progressbar" style="width: {{ resume_learning.progress_pct }}%;" aria-valuenow="{{ resume_learning.progress_pct }}" aria-valuemin="0" aria-valuemax="100"></div>
+                          </div>
+                          <span class="resume-pill-pct">{{ resume_learning.progress_pct }}%</span>
+                        </div>
+                      </div>
+                    </a>
+                  </li>
+                {% endif %}
+
+                <li class="nav-item">
+                  <a class="nav-link nav-pill-link {% if request.endpoint and request.endpoint.startswith('assessments.') %}active{% endif %}" href="{{ url_for('assessments.student_grades') }}">
+                    <i class="bi bi-card-checklist me-1.5 text-secondary"></i>
+                    <span>Grades</span>
+                  </a>
+                </li>
+              {% elif current_user.is_instructor %}
+                <!-- Instructor Quick Action: Studio with Grading Queue Counter -->
+                <li class="nav-item dropdown">
+                  <a class="nav-link dropdown-toggle nav-pill-link text-primary fw-semibold {% if request.endpoint and request.endpoint.startswith('catalog.instructor') %}active{% endif %}" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    <i class="bi bi-person-workspace me-1.5"></i>
+                    <span>Instructor Studio</span>
+                    {% if pending_grading_count > 0 %}
+                      <span class="badge bg-danger rounded-pill px-1.5 py-0.5 ms-1 animate-pulse" style="font-size: 0.68rem;" title="{{ pending_grading_count }} pending submission(s) to grade">
+                        {{ pending_grading_count }}
+                      </span>
+                    {% endif %}
+                  </a>
+                  <ul class="dropdown-menu shadow-lg border-0 rounded-3 p-2 dropdown-menu-modern">
+                    <li><a class="dropdown-item rounded-2 py-2" href="{{ url_for('catalog.instructor_dashboard') }}"><i class="bi bi-speedometer2 me-2 text-primary"></i>Dashboard</a></li>
+                    <li><a class="dropdown-item rounded-2 py-2" href="{{ url_for('catalog.create_course') }}"><i class="bi bi-plus-circle me-2 text-success"></i>New Course</a></li>
+                    <li>
+                      <a class="dropdown-item rounded-2 py-2 d-flex align-items-center justify-content-between" href="{{ url_for('assessments.grading_queue') }}">
+                        <span><i class="bi bi-clipboard-check me-2 text-info"></i>Grading Queue</span>
+                        {% if pending_grading_count > 0 %}
+                          <span class="badge bg-danger rounded-pill px-2 py-0.5" style="font-size: 0.68rem;">{{ pending_grading_count }}</span>
+                        {% endif %}
+                      </a>
+                    </li>
+                    <li><a class="dropdown-item rounded-2 py-2" href="{{ url_for('assessments.rubrics') }}"><i class="bi bi-card-list me-2 text-warning"></i>Rubrics</a></li>
+                  </ul>
+                </li>
+              {% elif current_user.is_admin %}
+                <!-- Quick Link to Admin Console when outside Admin Panel -->
+                <li class="nav-item">
+                  <a class="btn btn-sm btn-outline-danger rounded-pill px-3 py-1 fw-semibold d-flex align-items-center gap-1.5 text-decoration-none" href="{{ url_for('admin.dashboard') }}">
+                    <i class="bi bi-shield-lock-fill"></i>
+                    <span>Admin Console</span>
+                  </a>
+                </li>
+              {% endif %}
+            {% endif %}
+          {% endif %}
+        </ul>
+
+        <!-- ============================================== -->
+        <!-- DESKTOP UTILITY CONTROLS (d-none d-lg-flex)    -->
+        <!-- ============================================== -->
+        <ul class="navbar-nav ms-auto mb-2 mb-lg-0 align-items-center gap-2 flex-nowrap justify-content-end d-none d-lg-flex">
+          {% if not is_admin_panel %}
+          <!-- Dark/Light Theme Switcher (Desktop) -->
+          <li class="nav-item">
+            <button class="btn-nav-icon position-relative text-decoration-none border-0" id="themeToggleBtn" type="button" title="Toggle Theme" aria-label="Toggle Theme">
+              <i class="bi bi-moon-stars fs-5 theme-icon-active" id="themeIcon"></i>
+            </button>
+          </li>
+          {% endif %}
+
+          {% if not is_admin_panel and not (current_user.is_authenticated and current_user.is_admin) %}
+          <!-- Wishlist (Desktop) -->
+          <li class="nav-item">
+            <a class="btn-nav-icon position-relative text-decoration-none" href="{{ url_for('learning.wishlist') }}" title="Wishlist">
+              <i class="bi bi-heart fs-5"></i>
+              {% if wishlist_count > 0 %}
+                <span class="badge-counter badge-counter-wishlist bg-danger ring-white">
+                  {{ wishlist_count }}
+                </span>
+              {% else %}
+                <span class="badge-counter badge-counter-wishlist bg-danger ring-white" style="display: none;">
+                  0
+                </span>
+              {% endif %}
+            </a>
+          </li>
+
+          <!-- Shopping Cart (Desktop) -->
+          <li class="nav-item">
+            <a class="btn-nav-icon position-relative text-decoration-none" href="{{ url_for('commerce.cart') }}" title="Shopping Cart">
+              <i class="bi bi-cart3 fs-5"></i>
+              {% if cart_count > 0 %}
+                <span class="badge-counter bg-danger ring-white">
+                  {{ cart_count }}
+                </span>
+              {% endif %}
+            </a>
+          </li>
+          {% endif %}
+
+          {% if current_user.is_authenticated %}
+            <!-- Interactive Notifications Dropdown -->
+            <li class="nav-item dropdown">
+              <a class="btn-nav-icon position-relative text-decoration-none dropdown-toggle border-0" href="#" id="navNotifDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false" title="Notifications">
+                <i class="bi bi-bell fs-5"></i>
+                {% if unread_notifications_count > 0 %}
+                  <span class="badge-counter bg-primary ring-white animate-pulse">
+                    {{ unread_notifications_count }}
+                  </span>
+                {% endif %}
+              </a>
+              <div class="dropdown-menu dropdown-menu-end shadow-lg border-0 dropdown-menu-modern dropdown-menu-utility" aria-labelledby="navNotifDropdown">
+                <div class="dropdown-utility-header">
+                  <div class="d-flex align-items-center gap-2">
+                    <span class="fw-bold text-dark">Notifications</span>
+                    {% if unread_notifications_count > 0 %}
+                      <span class="badge bg-primary-subtle text-primary small px-2 py-0.5 rounded-pill">{{ unread_notifications_count }} new</span>
+                    {% endif %}
+                  </div>
+                  {% if unread_notifications_count > 0 %}
+                    <form action="{{ url_for('community.mark_all_notifications_read') }}" method="POST" class="m-0" id="navMarkAllReadForm">
+                      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                      <button type="submit" class="btn btn-link btn-sm text-primary p-0 text-decoration-none small fw-semibold">
+                        Mark all read
+                      </button>
+                    </form>
+                  {% endif %}
+                </div>
+                <div class="dropdown-utility-body">
+                  {% if navbar_recent_notifications %}
+                    {% for n in navbar_recent_notifications %}
+                      <a href="{{ n.link or url_for('community.notifications') }}" class="utility-list-item {% if not n.is_read %}is-unread{% endif %}">
+                        <div class="d-flex align-items-start gap-2.5">
+                          <div class="rounded-circle bg-primary-subtle text-primary p-2 d-flex align-items-center justify-content-center" style="width: 32px; height: 32px; flex-shrink: 0;">
+                            <i class="bi bi-bell-fill small"></i>
+                          </div>
+                          <div class="flex-grow-1 min-w-0">
+                            <div class="d-flex align-items-center justify-content-between gap-1">
+                              <span class="fw-semibold text-dark small text-truncate">{{ n.title }}</span>
+                              {% if not n.is_read %}
+                                <span class="utility-unread-dot"></span>
+                              {% endif %}
+                            </div>
+                            <p class="text-secondary small mb-1 text-truncate" style="font-size: 0.8rem;">{{ n.message }}</p>
+                            <span class="text-muted" style="font-size: 0.72rem;">{{ n.created_at.strftime('%b %d, %H:%M') if n.created_at else '' }}</span>
+                          </div>
+                        </div>
+                      </a>
+                    {% endfor %}
+                  {% else %}
+                    <div class="py-4 text-center text-muted">
+                      <i class="bi bi-bell-slash fs-3 d-block mb-1 text-secondary opacity-50"></i>
+                      <span class="small">No notifications yet</span>
+                    </div>
+                  {% endif %}
+                </div>
+                <div class="dropdown-utility-footer">
+                  <a href="{{ url_for('community.notifications') }}" class="text-decoration-none small fw-semibold text-primary d-flex align-items-center justify-content-center gap-1">
+                    <span>View all notifications</span>
+                    <i class="bi bi-arrow-right small"></i>
+                  </a>
+                </div>
+              </div>
+            </li>
+
+            <!-- Interactive Direct Messages Dropdown -->
+            <li class="nav-item dropdown">
+              <a class="btn-nav-icon position-relative text-decoration-none dropdown-toggle border-0" href="#" id="navMsgDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false" title="Direct Messages">
+                <i class="bi bi-chat-dots fs-5"></i>
+                {% if unread_messages_count > 0 %}
+                  <span class="badge-counter bg-success ring-white">
+                    {{ unread_messages_count }}
+                  </span>
+                {% endif %}
+              </a>
+              <div class="dropdown-menu dropdown-menu-end shadow-lg border-0 dropdown-menu-modern dropdown-menu-utility" aria-labelledby="navMsgDropdown">
+                <div class="dropdown-utility-header">
+                  <div class="d-flex align-items-center gap-2">
+                    <span class="fw-bold text-dark">Direct Messages</span>
+                    {% if unread_messages_count > 0 %}
+                      <span class="badge bg-success-subtle text-success small px-2 py-0.5 rounded-pill">{{ unread_messages_count }} new</span>
+                    {% endif %}
+                  </div>
+                  <a href="{{ url_for('community.send_message') }}" class="btn btn-outline-primary btn-sm rounded-pill px-2.5 py-0.5" style="font-size: 0.75rem;">
+                    <i class="bi bi-pencil-square me-1"></i>New
+                  </a>
+                </div>
+                <div class="dropdown-utility-body">
+                  {% if navbar_recent_messages %}
+                    {% for m in navbar_recent_messages %}
+                      <a href="{{ url_for('community.view_message', message_id=m.id) }}" class="utility-list-item {% if not m.is_read %}is-unread{% endif %}">
+                        <div class="d-flex align-items-start gap-2.5">
+                          <div class="msg-sender-avatar">
+                            {{ (m.sender.username[0]|upper) if m.sender and m.sender.username else '?' }}
+                          </div>
+                          <div class="flex-grow-1 min-w-0">
+                            <div class="d-flex align-items-center justify-content-between gap-1">
+                              <span class="fw-semibold text-dark small text-truncate">{{ m.sender.username if m.sender else 'User' }}</span>
+                              {% if not m.is_read %}
+                                <span class="utility-unread-dot" style="background-color: #10b981;"></span>
+                              {% endif %}
+                            </div>
+                            <p class="text-secondary small mb-0 text-truncate fw-medium" style="font-size: 0.8rem;">{{ m.subject }}</p>
+                            <p class="text-muted small mb-1 text-truncate" style="font-size: 0.75rem;">{{ m.body }}</p>
+                            <span class="text-muted" style="font-size: 0.72rem;">{{ m.created_at.strftime('%b %d, %H:%M') if m.created_at else '' }}</span>
+                          </div>
+                        </div>
+                      </a>
+                    {% endfor %}
+                  {% else %}
+                    <div class="py-4 text-center text-muted">
+                      <i class="bi bi-chat-square-dots fs-3 d-block mb-1 text-secondary opacity-50"></i>
+                      <span class="small">No messages yet</span>
+                    </div>
+                  {% endif %}
+                </div>
+                <div class="dropdown-utility-footer">
+                  <a href="{{ url_for('community.inbox') }}" class="text-decoration-none small fw-semibold text-primary d-flex align-items-center justify-content-center gap-1">
+                    <span>View all in Inbox</span>
+                    <i class="bi bi-arrow-right small"></i>
+                  </a>
+                </div>
+              </div>
+            </li>
+
+            <div class="d-none d-lg-block vr mx-2 my-auto" style="height: 24px; opacity: 0.15;"></div>
+
+            <!-- User Profile Dropdown Pill -->
+            <li class="nav-item dropdown">
+              <a class="user-profile-pill d-flex align-items-center gap-2 text-decoration-none" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                <div class="position-relative">
+                  <div class="avatar-nav-circle">
+                    {{ (current_user.username[0]|upper) if current_user.username else 'U' }}
+                  </div>
+                  <span class="online-dot"></span>
+                </div>
+                <span class="fw-semibold text-dark user-name-label">{{ current_user.username }}</span>
+                <i class="bi bi-chevron-down text-muted small ms-0.5"></i>
+              </a>
+              <ul class="dropdown-menu dropdown-menu-end shadow-lg border-0 rounded-4 p-2 dropdown-menu-modern" style="min-width: 250px;">
+                <li class="px-3 py-2.5 border-bottom mb-2 bg-light rounded-3">
+                  <div class="d-flex align-items-center justify-content-between gap-2">
+                    <div class="fw-bold text-dark text-truncate">{{ current_user.username }}</div>
+                    <span class="badge-role-pill badge-role-{{ current_user.role.name|lower }}">{{ current_user.role.name }}</span>
+                  </div>
+                  <div class="small text-muted text-truncate mt-0.5">{{ current_user.email }}</div>
+                </li>
+                <li><a class="dropdown-item rounded-2 py-2" href="{{ url_for('auth.profile') }}"><i class="bi bi-person me-2 text-primary"></i>My Profile</a></li>
+                {% if not current_user.is_admin %}
+                <li><a class="dropdown-item rounded-2 py-2" href="{{ url_for('learning.wishlist') }}"><i class="bi bi-heart me-2 text-danger"></i>Wishlist</a></li>
+                <li><a class="dropdown-item rounded-2 py-2" href="{{ url_for('commerce.orders') }}"><i class="bi bi-receipt me-2 text-info"></i>Order History</a></li>
+                {% endif %}
+                <li><a class="dropdown-item rounded-2 py-2" href="{{ url_for('auth.change_password') }}"><i class="bi bi-key me-2 text-secondary"></i>Change Password</a></li>
+                <li><hr class="dropdown-divider my-1"></li>
+                <li>
+                  <form action="{{ url_for('auth.logout') }}" method="POST" class="d-inline">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                    <button type="submit" class="dropdown-item rounded-2 py-2 text-danger fw-semibold d-flex align-items-center gap-2">
+                      <i class="bi bi-box-arrow-right"></i> Log Out
+                    </button>
+                  </form>
+                </li>
+              </ul>
+            </li>
+
+            <!-- Direct Standalone Log Out Button for Admin -->
+            {% if is_admin_panel or current_user.is_admin %}
+              <li class="nav-item ms-1">
+                <form action="{{ url_for('auth.logout') }}" method="POST" class="m-0">
+                  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                  <button type="submit" class="btn btn-outline-danger btn-sm rounded-pill px-3 py-1 fw-semibold d-flex align-items-center gap-1.5" title="Sign out of LearnHub">
+                    <i class="bi bi-box-arrow-right"></i>
+                    <span>Log Out</span>
+                  </button>
+                </form>
+              </li>
+            {% endif %}
+          {% else %}
+            <li class="nav-item ms-2">
+              <a class="btn btn-outline-primary btn-sm rounded-pill px-3 fw-semibold" href="{{ url_for('auth.login') }}">Log In</a>
+            </li>
+            <li class="nav-item">
+              <a class="btn-modern-primary btn-sm px-3.5 py-1.5 fw-semibold" href="{{ url_for('auth.register') }}">Sign Up</a>
+            </li>
+          {% endif %}
+        </ul>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<!-- Global Omnisearch, Live AJAX Results & Dynamic Course Typewriter -->
+<script>
+// Keyboard Shortcut (Ctrl + K / Cmd + K)
+document.addEventListener('keydown', function(e) {
+  if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') {
+    const searchInput = document.getElementById('navGlobalSearchInput') || document.getElementById('navGlobalSearchInputMobile');
+    if (searchInput) {
+      e.preventDefault();
+      searchInput.focus();
+      searchInput.select();
+    }
+  }
+});
+
+// Live AJAX Search Autocomplete Engine
+(function() {
+  const searchApiUrl = "{{ url_for('catalog.api_search') }}";
+  const catalogBaseUrl = "{{ url_for('catalog.index') }}";
+
+  function setupLiveSearch(inputId, resultsId) {
+    const input = document.getElementById(inputId);
+    const resultsContainer = document.getElementById(resultsId);
+    if (!input || !resultsContainer) return;
+
+    let debounceTimer = null;
+
+    input.addEventListener('input', function() {
+      const q = this.value.trim();
+      clearTimeout(debounceTimer);
+
+      if (q.length < 2) {
+        resultsContainer.innerHTML = '';
+        resultsContainer.style.display = 'none';
+        return;
+      }
+
+      debounceTimer = setTimeout(function() {
+        fetch(`${searchApiUrl}?q=${encodeURIComponent(q)}`)
+          .then(resp => resp.json())
+          .then(data => {
+            renderResults(data.results, q, resultsContainer);
+          })
+          .catch(() => {
+            resultsContainer.innerHTML = '';
+            resultsContainer.style.display = 'none';
+          });
+      }, 220);
+    });
+
+    // Close on Escape or click outside
+    document.addEventListener('click', function(e) {
+      if (!input.contains(e.target) && !resultsContainer.contains(e.target)) {
+        resultsContainer.style.display = 'none';
+      }
+    });
+
+    input.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape') {
+        resultsContainer.style.display = 'none';
+      }
+    });
+  }
+
+  function renderResults(results, query, container) {
+    if (!results || results.length === 0) {
+      container.innerHTML = `
+        <div class="p-3 text-center text-muted small">
+          <i class="bi bi-search text-secondary d-block mb-1 fs-5 opacity-50"></i>
+          No courses matching "<strong>${escapeHtml(query)}</strong>"
+          <div class="mt-2">
+            <a href="${catalogBaseUrl}?q=${encodeURIComponent(query)}" class="btn btn-sm btn-outline-primary rounded-pill px-3 py-1">
+              Search all catalog courses
+            </a>
+          </div>
+        </div>
+      `;
+      container.style.display = 'block';
+      return;
+    }
+
+    let html = `
+      <div class="px-3 py-2 bg-light border-bottom d-flex align-items-center justify-content-between">
+        <span class="text-uppercase fw-bold text-muted" style="font-size: 0.7rem; letter-spacing: 0.05em;">Courses</span>
+        <span class="badge bg-primary-subtle text-primary rounded-pill small">${results.length} found</span>
+      </div>
+      <div class="py-1">
+    `;
+
+    results.forEach(c => {
+      const priceBadge = c.is_free 
+        ? `<span class="badge bg-success-subtle text-success fw-bold" style="font-size: 0.72rem;">Free</span>`
+        : `<span class="badge bg-light text-dark border fw-bold" style="font-size: 0.72rem;">$${c.price.toFixed(2)}</span>`;
+
+      html += `
+        <a href="${c.url}" class="nav-search-result-item">
+          <img src="${c.thumbnail}" class="search-thumb" alt="" loading="lazy">
+          <div class="flex-grow-1 min-w-0">
+            <div class="d-flex align-items-center justify-content-between gap-2">
+              <span class="fw-semibold text-dark small text-truncate">${escapeHtml(c.title)}</span>
+              ${priceBadge}
+            </div>
+            <div class="d-flex align-items-center gap-2 mt-0.5 text-muted small" style="font-size: 0.75rem;">
+              <span><i class="bi bi-person me-1"></i>${escapeHtml(c.instructor || 'Instructor')}</span>
+              <span>•</span>
+              <span class="badge bg-secondary-subtle text-secondary py-0 px-1.5" style="font-size: 0.68rem;">${escapeHtml(c.level)}</span>
+              <span>•</span>
+              <span>${c.total_lessons} lessons</span>
+            </div>
+          </div>
+        </a>
+      `;
+    });
+
+    html += `
+      </div>
+      <div class="p-2 bg-light border-top text-center">
+        <a href="${catalogBaseUrl}?q=${encodeURIComponent(query)}" class="small fw-semibold text-primary text-decoration-none">
+          View all results for "<strong>${escapeHtml(query)}</strong>" <i class="bi bi-arrow-right small ms-0.5"></i>
+        </a>
+      </div>
+    `;
+
+    container.innerHTML = html;
+    container.style.display = 'block';
+  }
+
+  function escapeHtml(str) {
+    if (!str) return '';
+    return str.replace(/[&<>"']/g, function(m) {
+      return {'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'}[m];
+    });
+  }
+
+  setupLiveSearch('navGlobalSearchInput', 'desktopSearchResults');
+  setupLiveSearch('navGlobalSearchInputMobile', 'mobileSearchResults');
+})();
+
+// Dynamic Character-by-Character Typewriter for Course Titles
+(function() {
+  const courseTitles = {{ (navbar_course_titles or [
+    'Python for AI & Data Science Foundations',
+    'Practical Machine Learning with Scikit-Learn',
+    'Deep Learning & Neural Networks with PyTorch',
+    'Generative AI, LLMs & LangChain',
+    'SQL Complete One Shot & Database Design'
+  ]) | tojson }};
+
+  if (!courseTitles || !courseTitles.length) return;
+
+  const desktopInput = document.getElementById('navGlobalSearchInput');
+  const mobileInput = document.getElementById('navGlobalSearchInputMobile');
+  const inputs = [desktopInput, mobileInput].filter(Boolean);
+  if (!inputs.length) return;
+
+  let titleIdx = 0;
+  let charIdx = 0;
+  let isDeleting = false;
+  const typeSpeed = 55;       // ms per char typing
+  const delSpeed = 25;        // ms per char deleting
+  const pauseComplete = 1700; // ms to pause on full title
+  const pauseRestart = 350;   // ms to pause before next title
+
+  function tick() {
+    const isUserActive = inputs.some(el => el === document.activeElement || (el && el.value.trim().length > 0));
+    if (isUserActive) {
+      setTimeout(tick, 800);
+      return;
+    }
+
+    const currentTitle = courseTitles[titleIdx % courseTitles.length];
+
+    if (isDeleting) {
+      charIdx--;
+    } else {
+      charIdx++;
+    }
+
+    const currentSub = currentTitle.substring(0, charIdx);
+    const placeholderText = currentSub;
+
+    inputs.forEach(el => {
+      if (el && (!el.value || el.value === '')) {
+        el.setAttribute('placeholder', placeholderText);
+      }
+    });
+
+    let delay = isDeleting ? delSpeed : typeSpeed;
+
+    if (!isDeleting && charIdx === currentTitle.length) {
+      delay = pauseComplete;
+      isDeleting = true;
+    } else if (isDeleting && charIdx === 0) {
+      isDeleting = false;
+      titleIdx = (titleIdx + 1) % courseTitles.length;
+      delay = pauseRestart;
+    }
+
+    setTimeout(tick, delay);
+  }
+
+  setTimeout(tick, 450);
+})();
+
+// Theme Engine (Dark / Light Mode)
+(function() {
+  function getPreferredTheme() {
+    const stored = localStorage.getItem('learnhub-theme');
+    if (stored) return stored;
+    return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+  }
+
+  function updateThemeUI(theme) {
+    const isDark = theme === 'dark';
+    document.documentElement.setAttribute('data-bs-theme', theme);
+
+    // Desktop Theme Icon
+    const desktopIcon = document.getElementById('themeIcon');
+    if (desktopIcon) {
+      desktopIcon.className = isDark ? 'bi bi-sun-fill fs-5 text-warning theme-icon-active' : 'bi bi-moon-stars fs-5 theme-icon-active';
+    }
+
+    // Mobile Top Bar Icon
+    const mobileTopIcon = document.getElementById('mobileTopThemeIcon');
+    if (mobileTopIcon) {
+      mobileTopIcon.className = isDark ? 'bi bi-sun-fill fs-5 text-warning theme-icon-active' : 'bi bi-moon-stars fs-5 theme-icon-active';
+    }
+
+    // Mobile Drawer Icon & Label
+    const mobileIcon = document.getElementById('mobileThemeIcon');
+    const mobileLabel = document.getElementById('mobileThemeLabel');
+    if (mobileIcon) {
+      mobileIcon.className = isDark ? 'bi bi-sun-fill text-warning' : 'bi bi-moon-stars';
+    }
+    if (mobileLabel) {
+      mobileLabel.textContent = isDark ? 'Light' : 'Dark';
+    }
+  }
+
+  function toggleTheme() {
+    const current = document.documentElement.getAttribute('data-bs-theme') || 'light';
+    const next = current === 'dark' ? 'light' : 'dark';
+    localStorage.setItem('learnhub-theme', next);
+    updateThemeUI(next);
+  }
+
+  // Initial sync with stored/system theme
+  updateThemeUI(getPreferredTheme());
+
+  // Attach click listeners to all theme switcher buttons
+  document.addEventListener('DOMContentLoaded', function() {
+    ['themeToggleBtn', 'mobileThemeToggleBtn', 'mobileTopThemeToggleBtn'].forEach(id => {
+      const btn = document.getElementById(id);
+      if (btn) {
+        btn.addEventListener('click', toggleTheme);
+      }
+    });
+  });
+
+  // Listen to system OS theme changes if user has no stored preference
+  if (window.matchMedia) {
+    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', function(e) {
+      if (!localStorage.getItem('learnhub-theme')) {
+        updateThemeUI(e.matches ? 'dark' : 'light');
+      }
+    });
+  }
+})();
+</script>

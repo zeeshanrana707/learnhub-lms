@@ -1,0 +1,60 @@
+{% extends 'base.html' %}
+{% block title %}Quiz Result - {{ quiz.title }}{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+  <div class="row justify-content-center">
+    <div class="col-lg-8">
+      <!-- Result Score Summary Card -->
+      <div class="card p-5 text-center shadow-sm border-0 mb-4">
+        <div class="mb-3">
+          {% if attempt.passed %}
+            <i class="bi bi-check-circle-fill text-success display-1"></i>
+            <h2 class="fw-bold mt-2 text-success">Quiz Passed! 🎉</h2>
+          {% else %}
+            <i class="bi bi-x-circle-fill text-danger display-1"></i>
+            <h2 class="fw-bold mt-2 text-danger">Quiz Failed</h2>
+          {% endif %}
+        </div>
+
+        <div class="display-3 fw-bold my-2 text-dark">{{ attempt.score }}%</div>
+        <p class="text-muted lead">Passing threshold: {{ quiz.pass_mark }}%</p>
+
+        <div class="d-flex justify-content-center gap-3 mt-3">
+          <a href="{{ url_for('learning.course_overview', course_id=quiz.course_id) }}" class="btn btn-outline-primary">
+            <i class="bi bi-arrow-left me-1"></i> Back to Course Overview
+          </a>
+          <a href="{{ url_for('assessments.take_quiz', quiz_id=quiz.id) }}" class="btn btn-primary">
+            <i class="bi bi-arrow-repeat me-1"></i> Retake Quiz
+          </a>
+        </div>
+      </div>
+
+      <!-- Question by question review -->
+      <div class="card shadow-sm border-0">
+        <div class="card-header bg-white py-3 border-bottom">
+          <h5 class="fw-bold mb-0">Attempt Breakdown & Answers</h5>
+        </div>
+        <div class="card-body p-4">
+          <div class="d-flex flex-column gap-3">
+            {% for ans in attempt.answers %}
+              <div class="p-3 border rounded {% if ans.is_correct %}border-success-subtle bg-success-subtle{% else %}border-danger-subtle bg-danger-subtle{% endif %}">
+                <div class="d-flex justify-content-between align-items-center mb-1">
+                  <span class="fw-bold">Question {{ loop.index }}: {{ ans.question.text }}</span>
+                  <span class="badge {% if ans.is_correct %}bg-success{% else %}bg-danger{% endif %}">
+                    {% if ans.is_correct %}Correct (+{{ ans.question.points }} pts){% else %}Incorrect (0 pts){% endif %}
+                  </span>
+                </div>
+                <div class="small mt-2">
+                  <span class="text-muted">Your Selected Answer:</span>
+                  <strong>{{ ans.option.text if ans.option else ans.answer_text or 'No response' }}</strong>
+                </div>
+              </div>
+            {% endfor %}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

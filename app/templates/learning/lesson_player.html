@@ -1,0 +1,798 @@
+{% extends 'base.html' %}
+{% block title %}{{ lesson.title }} - {{ course.title }}{% endblock %}
+
+{% block content %}
+<div class="container-fluid px-lg-5 py-3">
+  <!-- Back breadcrumb & header -->
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <div>
+      <a href="{{ url_for('learning.course_overview', course_id=course.id) }}" class="text-decoration-none small text-muted">
+        <i class="bi bi-arrow-left me-1"></i> Back to {{ course.title }} Overview
+      </a>
+      <h3 class="fw-bold mb-0 mt-1">{{ lesson.title }}</h3>
+    </div>
+    <div class="d-flex align-items-center gap-2">
+      {% if enrollment %}
+        <form action="{{ url_for('learning.toggle_complete', lesson_id=lesson.id) }}" method="POST">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+          <button type="submit" class="btn {% if is_completed %}btn-success{% else %}btn-outline-success{% endif %}">
+            <i class="bi {% if is_completed %}bi-check-circle-fill{% else %}bi-check-circle{% endif %} me-1"></i>
+            {% if is_completed %}Completed{% else %}Mark as Complete{% endif %}
+          </button>
+        </form>
+      {% endif %}
+    </div>
+  </div>
+
+  <div class="row g-4">
+    <!-- Lesson Content Main Viewer -->
+    <div class="col-lg-8">
+      <div class="card shadow-sm border-0 p-4 mb-4">
+        <!-- Video Embed Rendering -->
+        {% set yt_embed = lesson.content | youtube_embed %}
+        {% if yt_embed %}
+          <div class="ratio ratio-16x9 mb-4 rounded-3 overflow-hidden shadow border">
+            <iframe id="theaterYtPlayer" src="{{ yt_embed }}?enablejsapi=1&rel=0&modestbranding=1" title="{{ lesson.title }}" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+          </div>
+        {% endif %}
+
+        <!-- Dual Navigation Tabs: Lecture Breakdown & Interactive Programming Quiz -->
+        <ul class="nav nav-pills mb-4 border-bottom pb-3 gap-2" id="playerLessonTabs" role="tablist">
+          <li class="nav-item" role="presentation">
+            <button class="nav-link active fw-semibold" id="tab-p-breakdown-btn" data-bs-toggle="pill" data-bs-target="#tab-p-breakdown" type="button" role="tab">
+              <i class="bi bi-collection-play me-1"></i> Key Components & Explanation
+            </button>
+          </li>
+          <li class="nav-item" role="presentation">
+            <button class="nav-link fw-semibold position-relative" id="tab-p-codequiz-btn" data-bs-toggle="pill" data-bs-target="#tab-p-codequiz" type="button" role="tab">
+              <i class="bi bi-terminal-fill text-warning me-1"></i> Programming Quiz (Solve Problem)
+              <span class="badge bg-danger rounded-pill ms-1" style="font-size: 0.65rem;">3 Tiers</span>
+            </button>
+          </li>
+        </ul>
+
+        <div class="tab-content" id="playerLessonTabsContent">
+          <!-- Tab 1: Key Components & Breakdown -->
+          <div class="tab-pane fade show active" id="tab-p-breakdown" role="tabpanel">
+            <!-- Lecture Overview & Basic Explanation -->
+            {% set bd = lesson.breakdown %}
+            <div class="p-3 bg-light rounded-3 border mb-4">
+              <div class="d-flex justify-content-between align-items-center mb-2">
+                <span class="badge bg-primary-subtle text-primary fw-bold px-2 py-1">
+                  <i class="bi bi-info-circle me-1"></i> Lecture Overview & Explanation
+                </span>
+                <span class="badge bg-white text-muted border small">
+                  <i class="bi bi-clock me-1"></i> {{ lesson.duration_min | format_duration }}
+                </span>
+              </div>
+              <p class="text-secondary small mb-0 lh-base">
+                {{ bd.overview }}
+              </p>
+            </div>
+
+            <!-- Key Components of the Video -->
+            <div class="mb-4">
+              <div class="d-flex align-items-center justify-content-between mb-3">
+                <h6 class="fw-bold text-dark mb-0">
+                  <i class="bi bi-grid-fill text-primary me-2"></i>Key Components of This Video
+                </h6>
+                <span class="badge bg-light text-secondary border small">Core Architecture</span>
+              </div>
+
+              <div class="row g-3">
+                {% for comp in bd.components %}
+                  <div class="col-md-6">
+                    <div class="card h-100 border shadow-none bg-white p-3 rounded-3 component-card">
+                      <div class="d-flex align-items-start gap-2 mb-2">
+                        <div class="rounded p-2 bg-primary-subtle text-primary d-flex align-items-center justify-content-center" style="width: 34px; height: 34px;">
+                          <i class="bi {{ comp.icon }} fs-6"></i>
+                        </div>
+                        <div>
+                          <span class="badge bg-secondary-subtle text-secondary small px-1.5 py-0.5" style="font-size: 0.65rem;">{{ comp.badge }}</span>
+                          <h6 class="fw-bold text-dark mb-0 mt-0.5 small">{{ comp.title }}</h6>
+                        </div>
+                      </div>
+                      <p class="text-muted small mb-0 lh-sm" style="font-size: 0.8rem;">
+                        {{ comp.desc }}
+                      </p>
+                    </div>
+                  </div>
+                {% endfor %}
+              </div>
+            </div>
+
+            <!-- What You'll Learn / Key Takeaways -->
+            <div class="p-3 rounded-3 border border-success-subtle bg-success-subtle bg-opacity-25 mb-4">
+              <h6 class="fw-bold text-success mb-2 small text-uppercase">
+                <i class="bi bi-check2-circle me-1"></i> What You'll Master in This Lecture
+              </h6>
+              <ul class="mb-0 ps-3 small text-secondary">
+                {% for t in bd.takeaways %}
+                  <li class="mb-1">{{ t }}</li>
+                {% endfor %}
+              </ul>
+            </div>
+
+            <!-- Why This Matters in Your Career Roadmap -->
+            <div class="small text-muted p-2.5 rounded bg-light border mb-3">
+              <strong class="text-dark"><i class="bi bi-compass text-warning me-1"></i>Roadmap Context:</strong>
+              <span>{{ bd.why_it_matters }}</span>
+            </div>
+          </div>
+
+          <!-- Tab 2: Interactive Programming Quiz (Solve Problem: Basic / Intermediate / Advance) -->
+          <div class="tab-pane fade" id="tab-p-codequiz" role="tabpanel">
+            {% set pq = lesson.programming_quiz %}
+            {% set basic_ch = pq.challenges.get('basic', {}) %}
+
+            <!-- Difficulty Tiers Selector -->
+            <div class="d-flex flex-wrap justify-content-between align-items-center bg-light p-3 rounded-3 border mb-3">
+              <div>
+                <span class="small fw-bold text-uppercase text-muted d-block mb-1">Select Difficulty Tier:</span>
+                <div class="btn-group btn-group-sm" role="group" id="playerDiffGroup">
+                  <button type="button" class="btn btn-outline-success active fw-semibold" id="btnPlayerDiffBasic" onclick="selectPlayerDifficulty('basic');">
+                    <i class="bi bi-check-circle me-1"></i> Basic (Warm-Up)
+                  </button>
+                  <button type="button" class="btn btn-outline-primary fw-semibold" id="btnPlayerDiffIntermediate" onclick="selectPlayerDifficulty('intermediate');">
+                    <i class="bi bi-layers me-1"></i> Intermediate (Engineering)
+                  </button>
+                  <button type="button" class="btn btn-outline-purple text-dark fw-semibold" id="btnPlayerDiffAdvance" onclick="selectPlayerDifficulty('advance');" style="border-color: #7c3aed;">
+                    <i class="bi bi-lightning-fill text-warning me-1"></i> Advance (Algorithmic)
+                  </button>
+                </div>
+              </div>
+              <div class="text-end mt-2 mt-md-0">
+                <span class="badge bg-dark px-3 py-2">
+                  <i class="bi bi-code-slash text-warning me-1"></i> {{ pq.language|upper }}
+                </span>
+              </div>
+            </div>
+
+            <!-- Problem Statement Card -->
+            <div class="card border-0 shadow-sm p-3 rounded-3 mb-3" style="background: #f8fafc;">
+              <div class="d-flex justify-content-between align-items-start mb-2">
+                <div class="d-flex align-items-center gap-2">
+                  <span class="badge bg-success fw-bold" id="playerChallengeDiffBadge">Basic</span>
+                  <span class="badge bg-secondary-subtle text-secondary small fw-semibold" id="playerChallengeApproachBadge">
+                    <i class="bi bi-code-slash me-1"></i>{{ basic_ch.approach|default('function')|capitalize }}
+                  </span>
+                  <h5 class="fw-bold mb-0 text-dark" id="playerChallengeTitle">{{ basic_ch.title }}</h5>
+                </div>
+                <button class="btn btn-sm btn-outline-secondary" onclick="resetPlayerStarterCode();" title="Reset starter code">
+                  <i class="bi bi-arrow-counterclockwise me-1"></i> Reset Starter
+                </button>
+              </div>
+              <p class="text-secondary small mb-2 lh-base" id="playerChallengePrompt">{{ basic_ch.prompt }}</p>
+              <div class="small text-muted mb-0">
+                <strong>Constraints:</strong> <code class="text-dark bg-white px-2 py-0.5 rounded border" id="playerChallengeConstraints">{{ basic_ch.constraints }}</code>
+              </div>
+            </div>
+
+            <!-- Interactive Code Workspace -->
+            <div class="card border-0 shadow-sm overflow-hidden mb-3">
+              <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center py-2 px-3">
+                <span class="small font-monospace"><i class="bi bi-terminal me-2 text-info"></i>solution.{{ 'js' if pq.language == 'javascript' else 'py' }}</span>
+                <span class="small text-light opacity-75">Write your solution below</span>
+              </div>
+              <div class="card-body p-0 position-relative">
+                <textarea id="playerCodeEditor" class="form-control font-monospace border-0 p-3" rows="8" style="background: #1e1e2e; color: #f8f8f2; font-size: 0.92rem; line-height: 1.5; tab-size: 4; border-radius: 0; outline: none; resize: vertical;" spellcheck="false">{{ basic_ch.starter_code }}</textarea>
+              </div>
+              <div class="card-footer bg-light d-flex flex-wrap justify-content-between align-items-center py-2 px-3 gap-2">
+                <div class="d-flex flex-wrap gap-2">
+                  <button class="btn btn-primary btn-sm px-3 fw-semibold shadow-sm" id="playerRunCodeBtn" onclick="runPlayerCode(false);">
+                    <i class="bi bi-play-fill me-1"></i> Run & Test Code
+                  </button>
+                  <button class="btn btn-outline-primary btn-sm" onclick="toggleCustomInput();" id="btnToggleCustomInput">
+                    <i class="bi bi-input-cursor me-1"></i> Custom Input
+                  </button>
+                  <button class="btn btn-outline-secondary btn-sm" onclick="togglePlayerHint();">
+                    <i class="bi bi-lightbulb text-warning me-1"></i> Hint
+                  </button>
+                  <button class="btn btn-outline-info btn-sm" id="playerSolutionToggleBtn" onclick="togglePlayerSolution();">
+                    <i class="bi bi-eye me-1"></i> Reveal Solution
+                  </button>
+                </div>
+                <div id="playerEvalSpinner" class="spinner-border spinner-border-sm text-primary d-none" role="status"></div>
+              </div>
+            </div>
+
+            <!-- Custom Input Box -->
+            <div class="card border border-primary-subtle bg-primary-subtle bg-opacity-10 p-3 rounded-3 mb-3 d-none" id="playerCustomInputBox">
+              <div class="d-flex justify-content-between align-items-center mb-2">
+                <h6 class="fw-bold text-primary mb-0"><i class="bi bi-input-cursor-text me-1"></i> Test with Any Custom Input</h6>
+                <button type="button" class="btn-close btn-sm" onclick="toggleCustomInput();"></button>
+              </div>
+              <p class="text-secondary small mb-2">Provide any argument or comma-separated parameters to test how your function responds:</p>
+              <div class="input-group">
+                <span class="input-group-text bg-white small font-monospace">Input</span>
+                <input type="text" id="playerCustomInputVal" class="form-control font-monospace form-control-sm" placeholder="e.g. 25 or [1, 2, 3] or 'hello' or 4, 10">
+                <button class="btn btn-primary btn-sm px-3 fw-semibold" id="btnRunCustomInput" onclick="runPlayerCode(true);">
+                  <i class="bi bi-play-fill me-1"></i> Run Input
+                </button>
+              </div>
+            </div>
+
+            <!-- Execution Console & Output Terminal -->
+            <div class="card border-0 shadow-sm overflow-hidden mb-3" id="playerConsoleCard" style="background: #0f172a; border-radius: 8px;">
+              <div class="card-header border-0 py-2 px-3 d-flex justify-content-between align-items-center" style="background: #1e293b; color: #94a3b8;">
+                <div class="d-flex align-items-center gap-2">
+                  <div class="d-flex gap-1">
+                    <span style="display:inline-block; width:10px; height:10px; border-radius:50%; background:#ef4444;"></span>
+                    <span style="display:inline-block; width:10px; height:10px; border-radius:50%; background:#f59e0b;"></span>
+                    <span style="display:inline-block; width:10px; height:10px; border-radius:50%; background:#10b981;"></span>
+                  </div>
+                  <span class="small font-monospace fw-semibold ms-2 text-light"><i class="bi bi-terminal me-1 text-info"></i> Output & Terminal</span>
+                </div>
+                <div class="d-flex align-items-center gap-2">
+                  <button class="btn btn-link btn-sm text-secondary p-0 text-decoration-none" onclick="clearConsole();" style="font-size: 0.75rem;" title="Clear output">
+                    <i class="bi bi-eraser me-1"></i>Clear
+                  </button>
+                  <span class="badge bg-secondary font-monospace" id="playerConsoleBadge">Terminal Idle</span>
+                </div>
+              </div>
+              <div class="card-body p-3 font-monospace small" id="playerConsoleBody" style="color: #cbd5e1; max-height: 220px; overflow-y: auto; white-space: pre-wrap; font-size: 0.84rem; line-height: 1.55;">
+Click "Run & Test Code" or "Run Input" to execute your Python solution. Captured print() output, return values, or syntax/runtime errors will appear here.
+              </div>
+            </div>
+
+            <!-- Collapsible Hint -->
+            <div class="alert alert-warning d-none py-2 px-3 mb-3 small" id="playerHintBox">
+              <strong><i class="bi bi-lightbulb-fill me-1"></i> Hint:</strong> <span id="playerHintText">{{ basic_ch.hint }}</span>
+            </div>
+
+            <!-- Collapsible Solution & Explanation -->
+            <div class="card border border-info-subtle bg-info-subtle bg-opacity-25 p-3 rounded-3 mb-3 d-none shadow-sm" id="playerSolutionBox" style="transition: all 0.3s ease;">
+              <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-2">
+                <h6 class="fw-bold text-info-emphasis mb-0"><i class="bi bi-check2-all me-1"></i> Reference Solution & Explanation</h6>
+                <div class="d-flex align-items-center gap-2">
+                  <button type="button" class="btn btn-sm btn-success fw-semibold" id="btnApplyPlayerSolution" onclick="applyPlayerSolutionToEditor();" title="Load solution code into editor">
+                    <i class="bi bi-arrow-up-circle-fill me-1"></i> Insert into Editor
+                  </button>
+                  <button type="button" class="btn btn-sm btn-outline-secondary" onclick="copyPlayerSolutionCode();" title="Copy code to clipboard">
+                    <i class="bi bi-clipboard me-1"></i> Copy
+                  </button>
+                  <button type="button" class="btn-close btn-sm ms-1" onclick="togglePlayerSolution();" title="Close solution box"></button>
+                </div>
+              </div>
+              <pre class="bg-dark text-light p-3 rounded small font-monospace mb-2 overflow-auto" id="playerSolutionPre"><code>{{ basic_ch.solution_code }}</code></pre>
+              <p class="text-secondary small mb-0" id="playerExplanationText">{{ basic_ch.explanation }}</p>
+            </div>
+
+            <!-- Real-Time Test Results Panel -->
+            <div class="card border-0 shadow-sm p-3 rounded-3" id="playerTestResultsCard" style="background: #fdfdfd;">
+              <div class="d-flex justify-content-between align-items-center mb-2">
+                <h6 class="fw-bold mb-0 text-dark small text-uppercase">
+                  <i class="bi bi-clipboard-check text-primary me-1"></i> Test Suite Validation
+                </h6>
+                <span class="badge bg-secondary" id="playerTestSummaryBadge">Ready to Test ({{ basic_ch.test_cases|length }} test cases)</span>
+              </div>
+              <div id="playerTestCasesContainer" class="d-flex flex-column gap-2 small">
+                {% for tc in basic_ch.test_cases %}
+                  <div class="p-2 rounded border bg-white d-flex justify-content-between align-items-center">
+                    <div>
+                      <strong>Test {{ loop.index }}:</strong> <span class="text-secondary">{{ tc.desc }}</span>
+                      <div class="text-muted" style="font-size: 0.75rem;">Input: <code>{{ tc.input }}</code> | Expected: <code>{{ tc.expected }}</code></div>
+                    </div>
+                    <span class="badge bg-light text-muted border">Untested</span>
+                  </div>
+                {% endfor %}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Attached Resources -->
+        {% if lesson.resources %}
+          <div class="mt-4 pt-3 border-top">
+            <h6 class="fw-bold mb-3"><i class="bi bi-paperclip text-primary me-2"></i>Attached Lesson Resources</h6>
+            <div class="d-flex flex-wrap gap-2">
+              {% for res in lesson.resources %}
+                <a href="{{ res.url_or_path }}" target="_blank" class="btn btn-outline-secondary btn-sm d-flex align-items-center gap-2">
+                  <i class="bi {% if res.resource_type == 'pdf' %}bi-file-pdf text-danger{% elif res.resource_type == 'code' %}bi-code-slash text-success{% else %}bi-link-45deg text-primary{% endif %}"></i>
+                  <span>{{ res.title }}</span>
+                </a>
+              {% endfor %}
+            </div>
+          </div>
+        {% endif %}
+      </div>
+
+      <!-- Navigation Prev / Next Buttons -->
+      <div class="d-flex justify-content-between align-items-center mb-5">
+        {% if prev_lesson %}
+          <a href="{{ url_for('learning.lesson_player', lesson_id=prev_lesson.id) }}" class="btn btn-outline-primary">
+            <i class="bi bi-arrow-left me-1"></i> Previous Lesson
+          </a>
+        {% else %}
+          <div></div>
+        {% endif %}
+
+        {% if next_lesson %}
+          <a href="{{ url_for('learning.lesson_player', lesson_id=next_lesson.id) }}" class="btn btn-primary">
+            Next Lesson <i class="bi bi-arrow-right ms-1"></i>
+          </a>
+        {% else %}
+          <a href="{{ url_for('learning.course_overview', course_id=course.id) }}" class="btn btn-success">
+            Complete & Return to Hub <i class="bi bi-check2-all ms-1"></i>
+          </a>
+        {% endif %}
+      </div>
+    </div>
+
+    <!-- Right Syllabus Navigation Sidebar -->
+    <div class="col-lg-4">
+      <div class="card shadow-sm border-0 sticky-top" style="top: 80px;">
+        <div class="card-header bg-white py-3 border-bottom d-flex justify-content-between align-items-center">
+          <h6 class="fw-bold mb-0">Course Curriculum</h6>
+          <span class="small text-muted">{{ course.total_lessons }} lessons</span>
+        </div>
+        <div class="card-body p-0" style="max-height: 520px; overflow-y: auto;">
+          <div class="accordion accordion-flush" id="lessonNavAccordion">
+            {% for mod in course.modules %}
+              <div class="accordion-item">
+                <h2 class="accordion-header" id="navMod{{ mod.id }}">
+                  <button class="accordion-button {% if mod.id != lesson.module_id %}collapsed{% endif %} py-2 px-3 small fw-semibold" type="button" data-bs-toggle="collapse" data-bs-target="#navCollapse{{ mod.id }}">
+                    {{ mod.title }}
+                  </button>
+                </h2>
+                <div id="navCollapse{{ mod.id }}" class="accordion-collapse collapse {% if mod.id == lesson.module_id %}show{% endif %}" data-bs-parent="#lessonNavAccordion">
+                  <div class="accordion-body p-0">
+                    <div class="list-group list-group-flush small">
+                      {% for les in mod.lessons %}
+                        <a href="{{ url_for('learning.lesson_player', lesson_id=les.id) }}" class="list-group-item list-group-item-action py-2 px-3 d-flex justify-content-between align-items-center {% if les.id == lesson.id %}active{% endif %}">
+                          <span>{{ les.title }}</span>
+                          <span class="text-muted small">{{ les.duration_min | format_duration }}</span>
+                        </a>
+                      {% endfor %}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            {% endfor %}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- JavaScript for Theater Mode Interactive Programming Quiz -->
+<script>
+const playerLessonId = {{ lesson.id }};
+const playerQuizData = {{ lesson.programming_quiz | tojson }};
+let playerDifficulty = 'basic';
+const playerCsrfToken = "{{ csrf_token() }}";
+
+function selectPlayerDifficulty(diff) {
+  playerDifficulty = diff;
+  const challenges = playerQuizData.challenges || {};
+  const ch = challenges[diff] || {};
+
+  // 1. Update buttons
+  ['basic', 'intermediate', 'advance'].forEach(d => {
+    const btn = document.getElementById('btnPlayerDiff' + d.charAt(0).toUpperCase() + d.slice(1));
+    if (btn) {
+      if (d === diff) {
+        btn.classList.add('active', 'shadow-sm');
+      } else {
+        btn.classList.remove('active', 'shadow-sm');
+      }
+    }
+  });
+
+  // 2. Update Statement & Metadata
+  const badgeEl = document.getElementById('playerChallengeDiffBadge');
+  if (badgeEl) {
+    badgeEl.innerText = diff.charAt(0).toUpperCase() + diff.slice(1);
+    badgeEl.className = 'badge fw-bold ' + (diff === 'basic' ? 'bg-success' : (diff === 'intermediate' ? 'bg-primary' : 'bg-purple text-white'));
+    if (diff === 'advance') badgeEl.style.backgroundColor = '#7c3aed';
+    else badgeEl.style.backgroundColor = '';
+  }
+
+  const titleEl = document.getElementById('playerChallengeTitle');
+  if (titleEl) titleEl.innerText = ch.title || 'Coding Challenge';
+
+  const apprEl = document.getElementById('playerChallengeApproachBadge');
+  if (apprEl) {
+    const appr = (ch.approach || 'function').toLowerCase();
+    const icon = appr === 'class' ? 'bi-diagram-3' : (appr === 'script' ? 'bi-file-earmark-code' : 'bi-code-slash');
+    apprEl.innerHTML = `<i class="bi ${icon} me-1"></i>${appr.toUpperCase()}`;
+  }
+
+  const promptEl = document.getElementById('playerChallengePrompt');
+  if (promptEl) promptEl.innerText = ch.prompt || 'Implement the solution.';
+
+  const constrEl = document.getElementById('playerChallengeConstraints');
+  if (constrEl) constrEl.innerText = ch.constraints || 'Standard execution';
+
+  // 3. Update Code Editor
+  const editor = document.getElementById('playerCodeEditor');
+  if (editor) editor.value = ch.starter_code || '';
+
+  // 4. Update Hint & Solution
+  const hintText = document.getElementById('playerHintText');
+  if (hintText) hintText.innerText = ch.hint || '';
+
+  const solPre = document.getElementById('playerSolutionPre');
+  if (solPre) solPre.innerHTML = `<code>${escapeHtml(ch.solution_code || '')}</code>`;
+
+  const expText = document.getElementById('playerExplanationText');
+  if (expText) expText.innerText = ch.explanation || '';
+
+  document.getElementById('playerHintBox')?.classList.add('d-none');
+  const pSolBox = document.getElementById('playerSolutionBox');
+  if (pSolBox) pSolBox.classList.add('d-none');
+  const pSolBtn = document.getElementById('playerSolutionToggleBtn');
+  if (pSolBtn) {
+    pSolBtn.innerHTML = '<i class="bi bi-eye me-1"></i> Reveal Solution';
+    pSolBtn.classList.remove('active', 'btn-info', 'text-white');
+    pSolBtn.classList.add('btn-outline-info');
+  }
+
+  // 5. Render Test Cases List
+  renderPlayerTestCases(ch.test_cases || []);
+  clearConsole();
+}
+
+function renderPlayerTestCases(testCases) {
+  const container = document.getElementById('playerTestCasesContainer');
+  const summary = document.getElementById('playerTestSummaryBadge');
+  if (summary) {
+    summary.className = 'badge bg-secondary';
+    summary.innerText = `Ready to Test (${testCases.length} test cases)`;
+  }
+  if (!container) return;
+  container.innerHTML = '';
+  testCases.forEach((tc, idx) => {
+    const div = document.createElement('div');
+    div.className = 'p-2 rounded border bg-white d-flex justify-content-between align-items-center';
+    div.innerHTML = `
+      <div>
+        <strong>Test ${idx + 1}:</strong> <span class="text-secondary">${tc.desc || 'Unit test'}</span>
+        <div class="text-muted" style="font-size: 0.75rem;">Input: <code>${JSON.stringify(tc.input)}</code> | Expected: <code>${JSON.stringify(tc.expected)}</code></div>
+      </div>
+      <span class="badge bg-light text-muted border">Untested</span>
+    `;
+    container.appendChild(div);
+  });
+}
+
+function resetPlayerStarterCode() {
+  const challenges = playerQuizData.challenges || {};
+  const ch = challenges[playerDifficulty] || {};
+  const editor = document.getElementById('playerCodeEditor');
+  if (editor && ch.starter_code) {
+    editor.value = ch.starter_code;
+  }
+}
+
+function togglePlayerHint() {
+  document.getElementById('playerHintBox')?.classList.toggle('d-none');
+}
+
+function togglePlayerSolution() {
+  const box = document.getElementById('playerSolutionBox');
+  const btn = document.getElementById('playerSolutionToggleBtn');
+  if (!box) return;
+
+  const isHidden = box.classList.contains('d-none');
+  if (isHidden) {
+    const ch = (playerQuizData.challenges || {})[playerDifficulty] || {};
+    const solCode = ch.solution_code || '';
+    const solPre = document.getElementById('playerSolutionPre');
+    if (solPre && solCode) {
+      solPre.innerHTML = `<code>${escapeHtml(solCode)}</code>`;
+    }
+    const expText = document.getElementById('playerExplanationText');
+    if (expText && ch.explanation) {
+      expText.innerText = ch.explanation;
+    }
+
+    box.classList.remove('d-none');
+    if (btn) {
+      btn.innerHTML = '<i class="bi bi-eye-slash me-1"></i> Hide Solution';
+      btn.classList.add('active', 'btn-info', 'text-white');
+      btn.classList.remove('btn-outline-info');
+    }
+    box.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  } else {
+    box.classList.add('d-none');
+    if (btn) {
+      btn.innerHTML = '<i class="bi bi-eye me-1"></i> Reveal Solution';
+      btn.classList.remove('active', 'btn-info', 'text-white');
+      btn.classList.add('btn-outline-info');
+    }
+  }
+}
+
+function applyPlayerSolutionToEditor() {
+  const ch = (playerQuizData.challenges || {})[playerDifficulty] || {};
+  const solCode = ch.solution_code || '';
+  const editor = document.getElementById('playerCodeEditor');
+  if (editor && solCode) {
+    editor.value = solCode;
+    editor.focus();
+    editor.scrollIntoView({ behavior: 'smooth', block: 'center' });
+
+    const applyBtn = document.getElementById('btnApplyPlayerSolution');
+    if (applyBtn) {
+      const orig = applyBtn.innerHTML;
+      applyBtn.innerHTML = '<i class="bi bi-check2-circle me-1"></i> Inserted!';
+      applyBtn.classList.replace('btn-success', 'btn-dark');
+      setTimeout(() => {
+        applyBtn.innerHTML = orig;
+        applyBtn.classList.replace('btn-dark', 'btn-success');
+      }, 2000);
+    }
+  }
+}
+
+function copyPlayerSolutionCode() {
+  const ch = (playerQuizData.challenges || {})[playerDifficulty] || {};
+  const solCode = ch.solution_code || '';
+  if (solCode) {
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(solCode).then(() => {
+        alert('Solution code copied to clipboard!');
+      }).catch(() => fallbackPlayerCopy(solCode));
+    } else {
+      fallbackPlayerCopy(solCode);
+    }
+  }
+}
+
+function fallbackPlayerCopy(text) {
+  const ta = document.createElement('textarea');
+  ta.value = text;
+  document.body.appendChild(ta);
+  ta.select();
+  document.execCommand('copy');
+  document.body.removeChild(ta);
+  alert('Solution code copied to clipboard!');
+}
+
+function toggleCustomInput() {
+  const box = document.getElementById('playerCustomInputBox');
+  if (box) {
+    box.classList.toggle('d-none');
+    if (!box.classList.contains('d-none')) {
+      document.getElementById('playerCustomInputVal')?.focus();
+    }
+  }
+}
+
+function clearConsole() {
+  const body = document.getElementById('playerConsoleBody');
+  const badge = document.getElementById('playerConsoleBadge');
+  if (body) {
+    body.innerHTML = 'Click "Run & Test Code" or "Run Input" to execute your Python solution. Captured print() output, return values, or syntax/runtime errors will appear here.';
+    body.style.color = '#cbd5e1';
+  }
+  if (badge) {
+    badge.className = 'badge bg-secondary font-monospace';
+    badge.innerText = 'Terminal Idle';
+  }
+}
+
+function runPlayerCode(isCustomInputOnly) {
+  const editor = document.getElementById('playerCodeEditor');
+  const code = editor ? editor.value : '';
+  const spinner = document.getElementById('playerEvalSpinner');
+  const runBtn = document.getElementById('playerRunCodeBtn');
+  const customRunBtn = document.getElementById('btnRunCustomInput');
+  const customInputEl = document.getElementById('playerCustomInputVal');
+  const customInputVal = customInputEl ? customInputEl.value : null;
+
+  const consoleBadge = document.getElementById('playerConsoleBadge');
+  const consoleBody = document.getElementById('playerConsoleBody');
+
+  if (spinner) spinner.classList.remove('d-none');
+  if (runBtn) runBtn.disabled = true;
+  if (customRunBtn) customRunBtn.disabled = true;
+
+  if (consoleBadge) {
+    consoleBadge.className = 'badge bg-warning text-dark font-monospace';
+    consoleBadge.innerHTML = '<span class="spinner-border spinner-border-sm me-1" style="width: 10px; height: 10px;"></span> Running...';
+  }
+
+  fetch('/learn/api/evaluate_code', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'X-CSRFToken': playerCsrfToken
+    },
+    body: JSON.stringify({
+      lesson_id: playerLessonId,
+      difficulty: playerDifficulty,
+      code: code,
+      custom_input: (isCustomInputOnly || customInputVal) ? customInputVal : null
+    })
+  })
+  .then(res => res.json())
+  .then(data => {
+    if (spinner) spinner.classList.add('d-none');
+    if (runBtn) runBtn.disabled = false;
+    if (customRunBtn) customRunBtn.disabled = false;
+
+    // 1. Update Console & Terminal Output
+    if (consoleBadge && consoleBody) {
+      if (data.error) {
+        consoleBadge.className = 'badge bg-danger font-monospace text-white';
+        consoleBadge.innerHTML = '<i class="bi bi-exclamation-triangle-fill me-1"></i> Error Detected';
+      } else if (data.passed) {
+        consoleBadge.className = 'badge bg-success font-monospace text-white';
+        consoleBadge.innerHTML = '<i class="bi bi-check-circle-fill me-1"></i> Success (0 Errors)';
+      } else {
+        consoleBadge.className = 'badge bg-info font-monospace text-dark';
+        consoleBadge.innerHTML = '<i class="bi bi-terminal-fill me-1"></i> Executed';
+      }
+
+      let consoleHtml = '';
+
+      // Print error details if any
+      if (data.error) {
+        consoleHtml += `
+          <div class="text-danger fw-bold mb-1">
+            <i class="bi bi-x-octagon-fill me-1"></i> Execution / Compilation Error:
+          </div>
+          <div class="p-2.5 rounded mb-2 font-monospace" style="background: rgba(239, 68, 68, 0.15); border-left: 3px solid #ef4444; color: #fca5a5; font-size: 0.82rem;">${escapeHtml(data.error)}</div>
+        `;
+      }
+
+      // Print captured stdout if any
+      if (data.stdout && data.stdout.trim()) {
+        consoleHtml += `
+          <div class="text-info fw-bold mb-1">
+            <i class="bi bi-terminal me-1"></i> Standard Output (stdout):
+          </div>
+          <div class="p-2 rounded mb-2 font-monospace text-light" style="background: #1e293b; color: #38bdf8; font-size: 0.82rem;">${escapeHtml(data.stdout)}</div>
+        `;
+      }
+
+      // Print custom input test results if requested
+      if (data.custom_result) {
+        const cr = data.custom_result;
+        consoleHtml += `
+          <div class="p-2.5 rounded mb-2 font-monospace" style="background: #1e293b; border: 1px solid ${cr.success ? '#10b981' : '#ef4444'};">
+            <div class="${cr.success ? 'text-success' : 'text-danger'} fw-bold mb-1">
+              <i class="bi ${cr.success ? 'bi-check2-circle' : 'bi-exclamation-octagon'} me-1"></i> Custom Input Evaluation Result:
+            </div>
+            <div class="text-light small">
+              <span class="text-muted">Input:</span> <code class="text-warning bg-dark px-1.5 py-0.5 rounded">${escapeHtml(cr.input)}</code>
+            </div>
+            <div class="text-light small mt-1">
+              <span class="text-muted">Return Value:</span> <code class="${cr.success ? 'text-success' : 'text-danger'} bg-dark px-1.5 py-0.5 rounded">${cr.output !== null ? escapeHtml(cr.output) : 'None'}</code>
+            </div>
+            ${cr.stdout ? `<div class="text-light small mt-1"><span class="text-muted">Stdout:</span> <pre class="text-info bg-dark p-1 rounded mb-0 mt-0.5">${escapeHtml(cr.stdout)}</pre></div>` : ''}
+            ${cr.error ? `<div class="text-danger small mt-1 font-monospace"><strong>Error:</strong> ${escapeHtml(cr.error)}</div>` : ''}
+          </div>
+        `;
+      }
+
+      // Overall status message
+      if (!data.error) {
+        if (data.passed) {
+          consoleHtml += `<div class="text-success fw-semibold"><i class="bi bi-check-circle-fill me-1"></i> ${escapeHtml(data.message)}</div>`;
+        } else {
+          consoleHtml += `<div class="text-warning fw-semibold"><i class="bi bi-exclamation-triangle-fill me-1"></i> ${escapeHtml(data.message)}</div>`;
+        }
+      }
+
+      consoleBody.innerHTML = consoleHtml || '<div class="text-muted">No output produced.</div>';
+    }
+
+    // 2. Update Test Suite Summary Badge
+    const summary = document.getElementById('playerTestSummaryBadge');
+    if (summary) {
+      if (data.error && (!data.test_results || data.test_results.length === 0)) {
+        summary.className = 'badge bg-danger';
+        summary.innerHTML = '<i class="bi bi-x-octagon-fill me-1"></i> Execution Failed';
+      } else if (data.passed) {
+        summary.className = 'badge bg-success';
+        summary.innerHTML = `<i class="bi bi-check-circle-fill me-1"></i> Passed (${data.passed_count}/${data.total_count})`;
+      } else {
+        summary.className = 'badge bg-danger';
+        summary.innerHTML = `<i class="bi bi-x-circle-fill me-1"></i> Failed (${data.passed_count}/${data.total_count})`;
+      }
+    }
+
+    // 3. Update Test Cases Container
+    const container = document.getElementById('playerTestCasesContainer');
+    if (container) {
+      if (data.error && (!data.test_results || data.test_results.length === 0)) {
+        container.innerHTML = `
+          <div class="alert alert-danger py-2.5 px-3 small mb-0 rounded border-0 shadow-sm">
+            <div class="d-flex align-items-center gap-2 mb-1">
+              <i class="bi bi-x-octagon-fill text-danger fs-6"></i>
+              <strong>Cannot Run Test Suite:</strong>
+            </div>
+            <div class="text-danger-emphasis">${escapeHtml(data.message || 'Code error occurred.')} Check the Console & Output panel above for error line number and traceback.</div>
+          </div>
+        `;
+      } else if (Array.isArray(data.test_results)) {
+        container.innerHTML = '';
+        data.test_results.forEach(tr => {
+          const div = document.createElement('div');
+          div.className = `p-2.5 rounded border ${tr.passed ? 'border-success-subtle bg-success-subtle bg-opacity-25' : 'border-danger-subtle bg-danger-subtle bg-opacity-25'}`;
+          div.innerHTML = `
+            <div class="d-flex justify-content-between align-items-start">
+              <div>
+                <strong class="${tr.passed ? 'text-success' : 'text-danger'}">
+                  <i class="bi ${tr.passed ? 'bi-check-circle-fill' : 'bi-x-circle-fill'} me-1"></i>Test ${tr.test_num}:
+                </strong>
+                <span class="text-dark fw-semibold">${tr.desc}</span>
+                <div class="text-muted mt-1" style="font-size: 0.75rem;">
+                  <span>Input: <code>${escapeHtml(tr.input)}</code></span> | 
+                  <span>Expected: <code>${escapeHtml(tr.expected)}</code></span>
+                </div>
+                <div class="mt-1" style="font-size: 0.75rem;">
+                  <span class="${tr.passed ? 'text-success' : 'text-danger'} fw-semibold">Actual Output: <code>${escapeHtml(tr.actual)}</code></span>
+                </div>
+                ${tr.stdout ? `<div class="mt-1 text-muted" style="font-size: 0.75rem;"><span class="text-info"><i class="bi bi-terminal me-1"></i>stdout:</span> <code class="text-dark bg-white px-1 border rounded">${escapeHtml(tr.stdout)}</code></div>` : ''}
+                ${tr.error ? `<div class="mt-1 text-danger font-monospace" style="font-size: 0.75rem;"><i class="bi bi-bug me-1"></i>${escapeHtml(tr.error)}</div>` : ''}
+              </div>
+              <span class="badge ${tr.passed ? 'bg-success' : 'bg-danger'}">${tr.passed ? 'Passed' : 'Failed'}</span>
+            </div>
+          `;
+          container.appendChild(div);
+        });
+      }
+    }
+  })
+  .catch(err => {
+    if (spinner) spinner.classList.add('d-none');
+    if (runBtn) runBtn.disabled = false;
+    if (customRunBtn) customRunBtn.disabled = false;
+    if (consoleBadge) {
+      consoleBadge.className = 'badge bg-danger font-monospace text-white';
+      consoleBadge.innerText = 'Network Error';
+    }
+    if (consoleBody) {
+      consoleBody.innerHTML = `<div class="text-danger"><i class="bi bi-wifi-off me-1"></i> Network request failed: ${escapeHtml(err.message)}</div>`;
+    }
+  });
+}
+
+function escapeHtml(text) {
+  if (!text) return '';
+  const map = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' };
+  return text.replace(/[&<>"']/g, m => map[m]);
+}
+</script>
+
+<!-- Real-Time YouTube Duration Sync for Lesson Player -->
+<script src="https://www.youtube.com/iframe_api"></script>
+<script>
+let theaterYtPlayer = null;
+function onYouTubeIframeAPIReady() {
+  const el = document.getElementById('theaterYtPlayer');
+  if (el) {
+    try {
+      theaterYtPlayer = new YT.Player('theaterYtPlayer', {
+        events: {
+          'onReady': onTheaterPlayerReadyOrChange,
+          'onStateChange': onTheaterPlayerReadyOrChange
+        }
+      });
+    } catch(e) {}
+  }
+}
+
+function onTheaterPlayerReadyOrChange(event) {
+  if (!theaterYtPlayer || typeof theaterYtPlayer.getDuration !== 'function') return;
+  const sec = Math.round(theaterYtPlayer.getDuration());
+  if (!sec || sec <= 0) return;
+  const mins = Math.max(1, Math.round(sec / 60));
+
+  // Sync to backend to persist
+  fetch(`/learn/api/sync_lesson_duration/${playerLessonId}`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'X-CSRFToken': playerCsrfToken
+    },
+    body: JSON.stringify({ duration_min: mins, duration_sec: sec })
+  }).catch(() => {});
+}
+</script>
+{% endblock %}

@@ -1,0 +1,96 @@
+{% extends 'base.html' %}
+{% block title %}Order Receipt #{{ order.id }}{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+  <div class="d-flex justify-content-between align-items-center mb-4 no-print">
+    <a href="{{ url_for('commerce.orders') }}" class="btn btn-outline-secondary">
+      <i class="bi bi-arrow-left me-1"></i> Back to Orders
+    </a>
+    <button onclick="window.print()" class="btn btn-primary">
+      <i class="bi bi-printer me-1"></i> Print Receipt
+    </button>
+  </div>
+
+  <div class="row justify-content-center">
+    <div class="col-lg-8">
+      <div class="card p-5 shadow-sm border-0">
+        <!-- Receipt Header -->
+        <div class="d-flex justify-content-between align-items-start mb-4 pb-4 border-bottom">
+          <div>
+            <div class="d-flex align-items-center gap-2 mb-1">
+              <i class="bi bi-mortarboard-fill fs-3 text-primary"></i>
+              <h4 class="fw-bold text-dark mb-0">LearnHub LMS</h4>
+            </div>
+            <p class="text-muted small mb-0">Official Electronic Payment Invoice</p>
+          </div>
+          <div class="text-end">
+            <span class="badge bg-success fs-6 text-uppercase mb-1">{{ order.status }}</span>
+            <div class="font-monospace small text-muted">Invoice #{{ order.id }}</div>
+            <div class="small text-muted">{{ order.created_at.strftime('%B %d, %Y') }}</div>
+          </div>
+        </div>
+
+        <!-- Customer & Payment Metadata -->
+        <div class="row mb-4 pb-3 border-bottom small">
+          <div class="col-md-6">
+            <strong>Billed To:</strong><br>
+            {{ order.user.profile.full_name or order.user.username }}<br>
+            {{ order.user.email }}
+          </div>
+          <div class="col-md-6 text-md-end">
+            <strong>Payment Method:</strong> {{ order.payment.method if order.payment else 'Simulated Card' }}<br>
+            <strong>Transaction Ref:</strong> {{ order.payment.transaction_ref if order.payment else 'N/A' }}<br>
+            <strong>Date Paid:</strong> {{ order.payment.paid_at.strftime('%Y-%m-%d %H:%M UTC') if order.payment else order.created_at.strftime('%Y-%m-%d') }}
+          </div>
+        </div>
+
+        <!-- Items Table -->
+        <div class="table-responsive mb-4">
+          <table class="table table-bordered align-middle">
+            <thead class="table-light small">
+              <tr>
+                <th>Purchased Course</th>
+                <th style="width: 140px;" class="text-end">Price</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for item in order.items %}
+                <tr>
+                  <td>
+                    <div class="fw-bold">{{ item.course.title }}</div>
+                    <div class="text-muted small">{{ item.course.category.name if item.course.category else 'General' }}</div>
+                  </td>
+                  <td class="text-end fw-semibold">${{ "%.2f"|format(item.price_at_purchase) }}</td>
+                </tr>
+              {% endfor %}
+            </tbody>
+            <tfoot>
+              <tr>
+                <td class="text-end small">Subtotal:</td>
+                <td class="text-end fw-semibold">${{ "%.2f"|format(order.subtotal) }}</td>
+              </tr>
+              {% if order.discount > 0 %}
+                <tr class="text-success">
+                  <td class="text-end small">Discount Applied:</td>
+                  <td class="text-end fw-semibold">-${{ "%.2f"|format(order.discount) }}</td>
+                </tr>
+              {% endif %}
+              <tr class="table-light fs-5 fw-bold">
+                <td class="text-end">Total Amount Paid:</td>
+                <td class="text-end text-primary">${{ "%.2f"|format(order.total) }}</td>
+              </tr>
+            </tfoot>
+          </table>
+        </div>
+
+        <div class="text-center pt-3 border-top no-print">
+          <a href="{{ url_for('learning.my_learning') }}" class="btn btn-primary px-4">
+            <i class="bi bi-mortarboard me-1"></i> Go to My Learning Portal
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

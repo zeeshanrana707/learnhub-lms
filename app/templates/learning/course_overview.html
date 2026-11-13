@@ -1,0 +1,2670 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+  <title>{{ course.title }} - Learning Hub & Video Console</title>
+  
+  <!-- Inter Font & Material Symbols -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Fira+Code:wght@400;500;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+  
+  <!-- Bootstrap Icons for Supplemental Badges -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+  
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            "secondary": "#006398",
+            "primary-fixed": "#dbe1ff",
+            "surface-variant": "#d3e4fe",
+            "inverse-primary": "#b4c5ff",
+            "on-tertiary-fixed-variant": "#3323cc",
+            "on-background": "#0b1c30",
+            "surface-bright": "#f8f9ff",
+            "primary-container": "#2563eb",
+            "on-tertiary-fixed": "#0f0069",
+            "tertiary-fixed": "#e2dfff",
+            "background": "#f8f9ff",
+            "tertiary-container": "#5d55f3",
+            "on-secondary-fixed-variant": "#004b73",
+            "error-container": "#ffdad6",
+            "on-error-container": "#93000a",
+            "surface-container-low": "#eff4ff",
+            "surface-container-highest": "#d3e4fe",
+            "inverse-surface": "#213145",
+            "on-secondary-container": "#00476e",
+            "on-tertiary-container": "#f2eeff",
+            "on-primary": "#ffffff",
+            "tertiary": "#4338d9",
+            "surface-tint": "#0053db",
+            "on-primary-container": "#eeefff",
+            "on-secondary-fixed": "#001d31",
+            "tertiary-fixed-dim": "#c3c0ff",
+            "on-surface-variant": "#434655",
+            "on-tertiary": "#ffffff",
+            "primary-fixed-dim": "#b4c5ff",
+            "primary": "#004ac6",
+            "surface-container": "#e5eeff",
+            "error": "#ba1a1a",
+            "secondary-container": "#5bb8fe",
+            "surface": "#f8f9ff",
+            "on-surface": "#0b1c30",
+            "surface-container-lowest": "#ffffff",
+            "surface-container-high": "#dce9ff",
+            "outline-variant": "#c3c6d7",
+            "on-primary-fixed": "#00174b",
+            "on-primary-fixed-variant": "#003ea8",
+            "on-error": "#ffffff",
+            "inverse-on-surface": "#eaf1ff",
+            "secondary-fixed-dim": "#93ccff",
+            "secondary-fixed": "#cce5ff",
+            "outline": "#737686",
+            "surface-dim": "#cbdbf5",
+            "on-secondary": "#ffffff"
+          },
+          borderRadius: {
+            DEFAULT: "0.25rem",
+            lg: "0.5rem",
+            xl: "0.75rem",
+            full: "9999px"
+          },
+          spacing: {
+            "space-md": "1rem",
+            "gutter": "1.5rem",
+            "space-xs": "0.25rem",
+            "space-2xl": "3rem",
+            "gutter-mobile": "1rem",
+            "margin-mobile": "1rem",
+            "space-lg": "1.5rem",
+            "space-sm": "0.5rem",
+            "space-xl": "2rem",
+            "margin": "2rem"
+          },
+          fontFamily: {
+            sans: ["Inter", "sans-serif"],
+            mono: ["Fira Code", "monospace"],
+            "label-md": ["Inter"],
+            "body-lg": ["Inter"],
+            "body-sm": ["Inter"],
+            "body-md": ["Inter"],
+            "headline-xl": ["Inter"],
+            "label-lg": ["Inter"],
+            "display-lg": ["Inter"],
+            "headline-sm": ["Inter"],
+            "label-sm": ["Inter"],
+            "display-lg-mobile": ["Inter"],
+            "headline-md": ["Inter"],
+            "headline-xl-mobile": ["Inter"],
+            "headline-lg": ["Inter"]
+          },
+          fontSize: {
+            "label-md": ["0.75rem", { lineHeight: "1rem", fontWeight: "500" }],
+            "body-lg": ["1.125rem", { lineHeight: "1.75rem", fontWeight: "400" }],
+            "body-sm": ["0.875rem", { lineHeight: "1.25rem", fontWeight: "400" }],
+            "body-md": ["1rem", { lineHeight: "1.5rem", fontWeight: "400" }],
+            "headline-xl": ["2rem", { lineHeight: "2.5rem", fontWeight: "600" }],
+            "label-lg": ["0.875rem", { lineHeight: "1.25rem", fontWeight: "500" }],
+            "display-lg": ["3rem", { lineHeight: "3.5rem", fontWeight: "700" }],
+            "headline-sm": ["1.125rem", { lineHeight: "1.5rem", fontWeight: "600" }],
+            "label-sm": ["0.6875rem", { lineHeight: "0.875rem", fontWeight: "600" }],
+            "display-lg-mobile": ["2.25rem", { lineHeight: "2.75rem", fontWeight: "700" }],
+            "headline-md": ["1.25rem", { lineHeight: "1.75rem", fontWeight: "600" }],
+            "headline-xl-mobile": ["1.75rem", { lineHeight: "2.25rem", fontWeight: "600" }],
+            "headline-lg": ["1.5rem", { lineHeight: "2rem", fontWeight: "600" }]
+          }
+        }
+      }
+    };
+  </script>
+
+  <style>
+    @layer base {
+      html, body {
+        margin: 0;
+        padding: 0;
+        font-family: 'Inter', sans-serif;
+      }
+    }
+    
+    /* Equalizer Sound Wave Animation for Currently Playing Video */
+    @keyframes soundwave {
+      0%, 100% { height: 25%; }
+      50% { height: 100%; }
+    }
+    .wave-bar-1 { animation: soundwave 0.6s ease-in-out infinite; }
+    .wave-bar-2 { animation: soundwave 0.4s ease-in-out infinite 0.15s; }
+    .wave-bar-3 { animation: soundwave 0.8s ease-in-out infinite 0.3s; }
+    
+    /* Code Editor Styling */
+    #codeEditorArea {
+      font-family: 'Fira Code', monospace;
+      font-size: 0.875rem;
+      line-height: 1.6;
+      tab-size: 4;
+      white-space: pre;
+    }
+    
+    /* Enhanced Smooth Scrollbar */
+    .custom-scroll {
+      scrollbar-width: thin;
+      scrollbar-color: #94a3b8 #f1f5f9;
+    }
+    .custom-scroll::-webkit-scrollbar {
+      width: 8px;
+      height: 8px;
+      display: block;
+    }
+    .custom-scroll::-webkit-scrollbar-track {
+      background: #f1f5f9;
+      border-radius: 9999px;
+    }
+    .custom-scroll::-webkit-scrollbar-thumb {
+      background: #94a3b8;
+      border-radius: 9999px;
+      border: 2px solid #f1f5f9;
+      min-height: 36px;
+      transition: background-color 0.2s ease;
+    }
+    .custom-scroll::-webkit-scrollbar-thumb:hover {
+      background: #2563eb;
+    }
+    .custom-scroll::-webkit-scrollbar-thumb:active {
+      background: #1d4ed8;
+    }
+
+    /* Curriculum Track Dedicated Slider / Scrollbar */
+    .curriculum-slider {
+      overflow-y: scroll !important;
+      scrollbar-gutter: stable;
+      scroll-behavior: smooth;
+      scrollbar-width: thin;
+      scrollbar-color: #64748b #f1f5f9;
+    }
+    .curriculum-slider::-webkit-scrollbar {
+      width: 9px;
+      display: block !important;
+    }
+    .curriculum-slider::-webkit-scrollbar-track {
+      background: #f8fafc;
+      border-left: 1px solid rgba(0, 0, 0, 0.06);
+      border-radius: 0 0 8px 0;
+      margin: 2px 0;
+    }
+    .curriculum-slider::-webkit-scrollbar-thumb {
+      background: #94a3b8;
+      border-radius: 9999px;
+      border: 2px solid #f8fafc;
+      min-height: 48px;
+      transition: background-color 0.2s ease, border-color 0.2s ease;
+    }
+    .curriculum-slider::-webkit-scrollbar-thumb:hover {
+      background: #2563eb;
+      border-color: #e0e7ff;
+    }
+    .curriculum-slider::-webkit-scrollbar-thumb:active {
+      background: #1d4ed8;
+    }
+
+    /* Tactile Press Effect */
+    .btn-tactile {
+      transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+      cursor: pointer;
+    }
+    .btn-tactile:hover {
+      transform: translateY(-1.5px);
+    }
+    .btn-tactile:active {
+      transform: scale(0.97) translateY(0);
+    }
+
+    /* Glowing Pulse Animation for Completion & Certificates */
+    @keyframes pulseGlow {
+      0%, 100% {
+        box-shadow: 0 0 10px rgba(16, 185, 129, 0.45), 0 2px 4px rgba(0, 0, 0, 0.1);
+      }
+      50% {
+        box-shadow: 0 0 22px rgba(16, 185, 129, 0.85), 0 4px 8px rgba(0, 0, 0, 0.15);
+        transform: translateY(-1px);
+      }
+    }
+    .btn-complete-pulse {
+      animation: pulseGlow 2.2s infinite ease-in-out;
+    }
+
+    /* Floating XP Particle Animation */
+    @keyframes floatUpFade {
+      0% {
+        opacity: 0;
+        transform: translateY(0) scale(0.8);
+      }
+      20% {
+        opacity: 1;
+        transform: translateY(-8px) scale(1.1);
+      }
+      80% {
+        opacity: 1;
+        transform: translateY(-28px) scale(1);
+      }
+      100% {
+        opacity: 0;
+        transform: translateY(-42px) scale(0.9);
+      }
+    }
+    .floating-xp-pill {
+      position: fixed;
+      pointer-events: none;
+      animation: floatUpFade 1.6s forwards ease-out;
+      z-index: 9999;
+    }
+  </style>
+  <!-- Canvas Confetti CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
+</head>
+<body class="bg-surface font-body-md text-body-md text-on-surface min-h-screen">
+
+  <!-- Top Header Navigation Console -->
+  <header class="fixed top-0 left-0 right-0 h-16 bg-surface-container-lowest/90 backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.04)] z-50 flex items-center justify-between px-gutter border-b border-surface-container-high">
+    <div class="flex items-center gap-space-md min-w-0">
+      <!-- Back to Course Detail -->
+      <a href="{{ url_for('catalog.detail', course_id=course.id) }}" class="flex items-center gap-space-xs text-on-surface-variant hover:text-on-surface py-space-xs px-space-sm rounded-lg hover:bg-surface-container-low transition-colors" title="Back to Course Detail">
+        <span class="material-symbols-outlined text-[20px]">arrow_back</span>
+        <span class="font-label-lg text-label-lg hidden sm:inline">Course Detail</span>
+      </a>
+      
+      <div class="h-5 w-[1px] bg-outline-variant/40 hidden sm:block"></div>
+      
+      <!-- LearnHub Platform Logo -->
+      <a href="{{ url_for('catalog.index') }}" class="flex items-center gap-1.5 text-primary font-bold text-headline-sm hidden md:flex hover:opacity-80 transition-opacity">
+        <span class="material-symbols-outlined text-[22px]">school</span>
+        <span>LearnHub</span>
+      </a>
+
+      <div class="h-5 w-[1px] bg-outline-variant/40 hidden md:block"></div>
+
+      <!-- Course & Active Lecture Heading -->
+      <div class="flex flex-col min-w-0">
+        <span class="font-headline-sm text-headline-sm text-on-surface truncate font-semibold">{{ course.title }}</span>
+        <div class="flex items-center gap-space-sm">
+          <span class="font-label-sm text-label-sm text-on-surface-variant truncate" id="headerLectureTitle">
+            {{ active_lesson.title if active_lesson else 'Curriculum Syllabus' }}
+          </span>
+          <span id="headerLectureStatus" class="inline-flex items-center px-space-xs rounded-full bg-surface-container-high font-label-sm text-label-sm text-primary font-medium">
+            {% if active_lesson and active_lesson.id in completed_lesson_ids %}Completed{% else %}In Progress{% endif %}
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Header Right: Progress, Resources, Profile -->
+    <div class="flex items-center gap-space-lg flex-shrink-0">
+      <!-- Progress Bar -->
+      <div class="hidden md:flex flex-col w-36 gap-1">
+        <div class="flex justify-between items-center">
+          <span class="font-label-sm text-label-sm text-on-surface-variant">Progress</span>
+          <span class="font-label-sm text-label-sm font-semibold text-primary" id="headerProgressPct">
+            {{ enrollment.progress_pct if enrollment else 0 }}%
+          </span>
+        </div>
+        <div class="w-full h-1.5 bg-surface-container-high rounded-full overflow-hidden">
+          <div id="headerProgressBar" class="h-full bg-primary rounded-full transition-all duration-500" style="width: {{ enrollment.progress_pct if enrollment else 0 }}%"></div>
+        </div>
+      </div>
+
+      <!-- Navigation Quick Links Dropdown -->
+      <div class="relative group">
+        <button class="flex items-center gap-space-xs py-space-xs px-space-sm rounded-lg bg-surface-container-low text-on-surface hover:bg-surface-container-high transition-colors font-label-md text-label-md" type="button">
+          <span class="material-symbols-outlined text-[18px]">grid_view</span>
+          <span class="hidden lg:inline">Navigation</span>
+          <span class="material-symbols-outlined text-[16px]">expand_more</span>
+        </button>
+        <div class="absolute right-0 mt-1 w-52 bg-white rounded-xl shadow-xl border border-surface-container-high py-2 hidden group-hover:block transition-all z-50">
+          <a href="{{ url_for('catalog.index') }}" class="flex items-center gap-2 px-4 py-2 text-sm text-on-surface hover:bg-surface-container-low transition-colors">
+            <span class="material-symbols-outlined text-[18px] text-primary">explore</span> Course Catalog
+          </a>
+          <a href="{{ url_for('catalog.roadmaps') }}" class="flex items-center gap-2 px-4 py-2 text-sm text-on-surface hover:bg-surface-container-low transition-colors">
+            <span class="material-symbols-outlined text-[18px] text-tertiary">route</span> Career Roadmaps
+          </a>
+          <a href="{{ url_for('learning.my_learning') }}" class="flex items-center gap-2 px-4 py-2 text-sm text-on-surface hover:bg-surface-container-low transition-colors">
+            <span class="material-symbols-outlined text-[18px] text-secondary">bookmark_manager</span> My Learning Hub
+          </a>
+          <a href="{{ url_for('assessments.student_grades') }}" class="flex items-center gap-2 px-4 py-2 text-sm text-on-surface hover:bg-surface-container-low transition-colors">
+            <span class="material-symbols-outlined text-[18px] text-amber-600">card_membership</span> Student Grades
+          </a>
+          <div class="my-1 border-t border-surface-container-high"></div>
+          <a href="{{ url_for('community.course_forum', course_id=course.id) }}" class="flex items-center gap-2 px-4 py-2 text-sm text-on-surface hover:bg-surface-container-low transition-colors">
+            <span class="material-symbols-outlined text-[18px] text-emerald-600">forum</span> Course Forum
+          </a>
+        </div>
+      </div>
+
+      <!-- Student Profile Badge -->
+      <div class="flex items-center gap-space-sm pl-space-xs">
+        <div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center text-on-primary font-bold text-sm shadow-sm">
+          {{ current_user.username[0]|upper if current_user.username else 'S' }}
+        </div>
+        <span class="font-label-md text-label-md text-on-surface hidden sm:inline font-semibold">{{ current_user.username }}</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- Left Sidebar / Curriculum Syllabus -->
+  <aside class="fixed left-0 top-16 bottom-0 w-64 bg-surface-container-lowest shadow-[0_1px_8px_rgba(0,0,0,0.04)] z-40 flex flex-col justify-between py-space-md border-r border-surface-container-high">
+    <div class="flex flex-col gap-space-md px-space-sm">
+      <div class="px-space-sm py-space-xs">
+        <span class="font-label-sm text-label-sm uppercase tracking-wider text-on-surface-variant font-semibold">Curriculum Syllabus</span>
+      </div>
+      <nav class="flex flex-col gap-1" id="leftSyllabusNav">
+        <button type="button" onclick="switchWorkspaceTab('video-section');" class="w-full flex items-center justify-between px-space-sm py-space-sm transition-colors bg-primary-container text-on-primary-container font-semibold rounded-lg text-left" id="navBtnVideo">
+          <div class="flex items-center gap-space-sm truncate">
+            <span class="material-symbols-outlined text-[20px]">play_circle</span>
+            <span class="font-label-md text-label-md truncate">Lecture Video & Slides</span>
+          </div>
+        </button>
+        <button type="button" onclick="switchWorkspaceTab('code-lab');" class="w-full flex items-center justify-between px-space-sm py-space-sm rounded-lg text-on-surface-variant hover:bg-surface-container-low hover:text-on-surface transition-colors text-left" id="navBtnLab">
+          <div class="flex items-center gap-space-sm truncate">
+            <span class="material-symbols-outlined text-[20px]">terminal</span>
+            <span class="font-label-md text-label-md truncate">Interactive Code Lab</span>
+          </div>
+        </button>
+        <button type="button" onclick="switchWorkspaceTab('notes');" class="w-full flex items-center justify-between px-space-sm py-space-sm rounded-lg text-on-surface-variant hover:bg-surface-container-low hover:text-on-surface transition-colors text-left" id="navBtnNotes">
+          <div class="flex items-center gap-space-sm truncate">
+            <span class="material-symbols-outlined text-[20px]">menu_book</span>
+            <span class="font-label-md text-label-md truncate">Lecture Notes & Theory</span>
+          </div>
+        </button>
+        <button type="button" onclick="switchWorkspaceTab('quizzes');" class="w-full flex items-center justify-between px-space-sm py-space-sm rounded-lg text-on-surface-variant hover:bg-surface-container-low hover:text-on-surface transition-colors text-left" id="navBtnQuizzes">
+          <div class="flex items-center gap-space-sm truncate">
+            <span class="material-symbols-outlined text-[20px]">quiz</span>
+            <span class="font-label-md text-label-md truncate">Knowledge Assessment</span>
+          </div>
+        </button>
+        <a href="{{ url_for('community.course_forum', course_id=course.id) }}" class="w-full flex items-center justify-between px-space-sm py-space-sm rounded-lg text-on-surface-variant hover:bg-surface-container-low hover:text-on-surface transition-colors">
+          <div class="flex items-center gap-space-sm truncate">
+            <span class="material-symbols-outlined text-[20px]">forum</span>
+            <span class="font-label-md text-label-md truncate">Peer Discussion</span>
+          </div>
+          <span class="material-symbols-outlined text-[16px]">open_in_new</span>
+        </a>
+      </nav>
+    </div>
+
+    <!-- Pinned Next Session Teaser Card -->
+    <div class="px-space-sm">
+      <div onclick="playNextVideo();" class="p-space-sm bg-surface-container-low hover:bg-surface-container-high rounded-xl flex items-center justify-between cursor-pointer transition-colors shadow-sm border border-surface-container-high" title="Play Next Lecture">
+        <div class="flex flex-col min-w-0 pr-2">
+          <span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider font-semibold">Next Session</span>
+          <span class="font-label-md text-label-md text-on-surface font-semibold truncate" id="leftAsideNextTitle">
+            Next Lecture
+          </span>
+        </div>
+        <span class="material-symbols-outlined text-primary text-[22px] flex-shrink-0">skip_next</span>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Main Content Stage -->
+  <div class="pl-64">
+    <main class="relative w-full pt-16 bg-surface min-h-screen pb-16">
+      <div class="flex flex-col w-full">
+
+        <!-- Flash Messages Banner if any -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+          {% if messages %}
+            <div class="w-full px-gutter pt-3">
+              {% for category, message in messages %}
+                <div class="p-3 rounded-lg mb-2 text-sm flex items-center justify-between {% if category == 'success' %}bg-emerald-50 text-emerald-800 border border-emerald-200{% elif category == 'danger' %}bg-rose-50 text-rose-800 border border-rose-200{% else %}bg-blue-50 text-blue-800 border border-blue-200{% endif %}">
+                  <span>{{ message }}</span>
+                  <button type="button" onclick="this.parentElement.remove();" class="text-xs font-bold">&times;</button>
+                </div>
+              {% endfor %}
+            </div>
+          {% endif %}
+        {% endwith %}
+
+        <!-- Top Cloud Sandbox Notification Banner -->
+        <div class="w-full bg-surface-container-low px-gutter py-2 flex items-center justify-between border-b border-surface-container-high">
+          <div class="flex items-center gap-space-sm min-w-0">
+            <span class="inline-flex items-center justify-center w-5 h-5 rounded-full bg-tertiary text-on-tertiary shadow-sm">
+              <span class="material-symbols-outlined text-[14px]">bolt</span>
+            </span>
+            <span class="font-label-md text-label-md text-on-surface truncate">
+              <span class="font-semibold">Cloud Execution Sandbox Active:</span> Python 3.12, PyTorch & Interactive Test Runner instance ready for hardware profiling.
+            </span>
+          </div>
+          <div class="flex items-center gap-space-md flex-shrink-0">
+            <span class="inline-flex items-center gap-1.5 px-space-sm py-0.5 rounded-full bg-surface-container-lowest shadow-sm font-label-sm text-label-sm text-on-surface border border-surface-container-high">
+              <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+              Execution Engine: Idle (0.1s TTFT)
+            </span>
+            <span class="font-label-sm text-label-sm text-primary flex items-center gap-0.5 cursor-pointer hover:underline" onclick="switchWorkspaceTab('code-lab');">
+              Test Runner <span class="material-symbols-outlined text-[14px]">terminal</span>
+            </span>
+          </div>
+        </div>
+
+        <!-- Primary Two-Column Learning Console (8 cols stage / 4 cols playlist) -->
+        <div class="w-full px-gutter py-space-md">
+          <div class="grid grid-cols-1 lg:grid-cols-12 gap-gutter items-start">
+
+            <!-- LEFT / MAIN STAGE (8 columns) -->
+            <section class="lg:col-span-8 flex flex-col gap-space-lg min-w-0" id="videoStageSection">
+
+              <!-- 16:9 Cinema Video Player Container -->
+              <div class="relative w-full rounded-xl overflow-hidden bg-on-background shadow-xl flex flex-col group select-none border border-slate-800" id="cinemaPlayerEnvelope">
+                {% if active_lesson %}
+                  {% set yt_embed = active_lesson.content | youtube_embed %}
+                  
+                  <!-- Main Visual Viewport (16:9 aspect) -->
+                  <div class="relative w-full aspect-video bg-inverse-surface flex items-center justify-center overflow-hidden">
+                    <!-- YouTube Iframe -->
+                    <iframe id="mainCourseVideoPlayer"
+                            class="w-full h-full absolute inset-0 border-0 z-0"
+                            src="{% if yt_embed %}{{ yt_embed }}?enablejsapi=1&rel=0&modestbranding=1&autoplay=0&origin={{ request.host_url.rstrip('/') | urlencode }}{% else %}https://www.youtube.com/embed/LfaMVlDaQ24?enablejsapi=1{% endif %}"
+                            title="{{ active_lesson.title }}"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen>
+                    </iframe>
+
+                    <!-- Top Floating HUD Overlay -->
+                    <div class="absolute top-3 left-3 right-3 flex items-start justify-between pointer-events-none z-10">
+                      <!-- Architectural Insight Pill -->
+                      <div class="pointer-events-auto bg-inverse-surface/85 backdrop-blur-md px-3 py-1.5 rounded-lg shadow-md flex items-center gap-2 border border-white/10">
+                        <span class="w-2 h-2 rounded-full bg-tertiary-container animate-ping"></span>
+                        <span class="font-label-sm text-label-sm text-surface uppercase tracking-wider font-semibold" id="videoHudModule">{{ active_lesson.module.title }}</span>
+                        <span class="h-3 w-[1px] bg-outline/40"></span>
+                        <span class="font-label-sm text-label-sm text-surface-container-high truncate max-w-xs" id="videoHudTopic">{{ active_lesson.title }}</span>
+                      </div>
+
+                      <!-- Quick Action Buttons -->
+                      <div class="pointer-events-auto flex items-center gap-2">
+                        <button type="button" onclick="switchWorkspaceTab('code-lab');" class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-primary text-on-primary hover:bg-blue-600 transition-colors shadow-md font-label-sm text-label-sm font-medium">
+                          <span class="material-symbols-outlined text-[16px]">terminal</span>
+                          <span>Launch Sync Code Lab</span>
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Custom Integrated Video Controls Console -->
+                  <div class="w-full bg-inverse-surface/95 px-space-md py-space-sm flex flex-col gap-2.5 border-t border-slate-700/50">
+                    <!-- Timeline Scrubber Preview -->
+                    <div class="relative w-full flex flex-col group/timeline cursor-pointer" onclick="seekRelative(0);">
+                      <div class="w-full h-1.5 rounded-full bg-surface-container-highest/20 relative flex items-center overflow-hidden">
+                        <div class="absolute left-0 top-0 bottom-0 bg-primary-container rounded-full" style="width: 35%;" id="videoScrubberBar"></div>
+                      </div>
+                    </div>
+
+                    <!-- Lower Action Bar: Controls, Timestamp, Chapter Title, Settings -->
+                    <div class="flex items-center justify-between text-surface gap-space-sm flex-wrap">
+                      <!-- Left Controls -->
+                      <div class="flex items-center gap-space-sm">
+                        <button type="button" onclick="togglePlayPauseVideo();" id="btnVideoPlayPause" aria-label="Play or Pause" class="text-surface hover:text-primary-fixed transition-colors flex items-center justify-center p-1 rounded hover:bg-white/10">
+                          <span class="material-symbols-outlined text-[24px]" id="iconPlayPause" style="font-variation-settings: 'FILL' 1;">play_arrow</span>
+                        </button>
+                        <button type="button" onclick="seekRelative(-10);\" aria-label="Rewind 10 seconds" class="text-surface-dim hover:text-surface transition-colors flex items-center justify-center p-1 rounded hover:bg-white/10" title="Rewind 10s">
+                          <span class="material-symbols-outlined text-[20px]">replay_10</span>
+                        </button>
+                        <button type="button" onclick="seekRelative(10);" aria-label="Forward 10 seconds" class="text-surface-dim hover:text-surface transition-colors flex items-center justify-center p-1 rounded hover:bg-white/10" title="Forward 10s">
+                          <span class="material-symbols-outlined text-[20px]">forward_10</span>
+                        </button>
+
+                        <!-- Volume -->
+                        <div class="flex items-center gap-1.5 ml-1">
+                          <button type="button" onclick="toggleMuteVideo();" class="text-surface hover:text-surface-dim transition-colors p-1 rounded">
+                            <span class="material-symbols-outlined text-[20px]" id="iconVolume">volume_up</span>
+                          </button>
+                        </div>
+
+                        <!-- Timestamp & Chapter -->
+                        <div class="flex items-center gap-2 pl-2">
+                          <span class="font-label-sm text-label-sm text-surface font-mono" id="videoCurrentTime">00:00</span>
+                          <span class="font-label-sm text-label-sm text-surface-dim font-mono" id="videoTotalDuration">/ {{ active_lesson.formatted_duration if active_lesson else '0:00' }}</span>
+                          <span class="h-3 w-[1px] bg-outline/40 mx-1 hidden sm:block"></span>
+                          <span class="font-label-sm text-label-sm text-secondary-container truncate max-w-[200px] hidden sm:inline" id="videoChapterTitle">
+                            {{ active_lesson.module.title }}
+                          </span>
+                        </div>
+                      </div>
+
+                      <!-- Right Controls: Speed, Resolution, Fullscreen -->
+                      <div class="flex items-center gap-space-sm">
+                        <!-- Playback Speed Dropdown -->
+                        <div class="relative flex items-center">
+                          <select id="playbackSpeedSelect" onchange="setPlayerSpeed(this.value);" class="bg-surface-container-highest/20 text-surface text-xs rounded px-2 py-1 font-semibold focus:outline-none cursor-pointer border border-white/10">
+                            <option value="0.75" class="text-dark bg-slate-800">0.75x</option>
+                            <option value="1" selected class="text-dark bg-slate-800">1.0x</option>
+                            <option value="1.25" class="text-dark bg-slate-800">1.25x</option>
+                            <option value="1.5" class="text-dark bg-slate-800">1.5x</option>
+                            <option value="2" class="text-dark bg-slate-800">2.0x</option>
+                          </select>
+                        </div>
+
+                        <span class="px-1.5 py-0.5 rounded bg-surface-container-highest/20 text-surface font-label-sm text-label-sm font-semibold tracking-wide hidden sm:inline">
+                          1080p60
+                        </span>
+
+                        <!-- Theater Mode Link -->
+                        <a id="theaterModeLink" href="{{ url_for('learning.lesson_player', lesson_id=active_lesson.id) }}" class="p-1 rounded text-surface-dim hover:text-surface transition-colors" title="Theater Mode View">
+                          <span class="material-symbols-outlined text-[18px]">picture_in_picture_alt</span>
+                        </a>
+
+                        <!-- Fullscreen -->
+                        <button type="button" onclick="togglePlayerFullscreen();" class="p-1 rounded text-surface hover:text-primary-fixed transition-colors" title="Toggle Fullscreen">
+                          <span class="material-symbols-outlined text-[20px]">fullscreen</span>
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                {% else %}
+                  <div class="aspect-video bg-inverse-surface flex flex-col items-center justify-center text-white p-8 text-center">
+                    <span class="material-symbols-outlined text-[48px] text-slate-400 mb-2">videocam_off</span>
+                    <h3 class="text-lg font-semibold">No Video Lectures Available</h3>
+                    <p class="text-slate-400 text-sm mt-1">The instructor has not added video lessons to this course yet.</p>
+                  </div>
+                {% endif %}
+              </div>
+
+              <!-- Tabbed Interactive Workspace Area -->
+              <div class="w-full bg-surface-container-lowest rounded-xl shadow-sm overflow-hidden flex flex-col border border-surface-container-high" id="interactiveWorkspaceContainer">
+                <!-- Tab Navigation Bar -->
+                <div class="flex items-center justify-between px-space-md pt-space-xs bg-surface-container-low overflow-x-auto border-b border-surface-container-high">
+                  <div class="flex items-center gap-space-xs min-w-max" id="workspaceTabsHeader">
+                    <!-- Active Tab: Interactive Code Lab -->
+                    <button type="button" onclick="switchWorkspaceTab('code-lab');" id="tabBtnCodeLab" class="flex items-center gap-2 px-space-md py-3 bg-surface-container-lowest text-primary font-label-md text-label-md font-semibold rounded-t-lg shadow-sm border-t-2 border-primary">
+                      <span class="material-symbols-outlined text-[18px] text-tertiary">terminal</span>
+                      <span>Interactive Code Lab (Python 3.12 / JS)</span>
+                      <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+                    </button>
+                    <!-- Inactive Tabs -->
+                    <button type="button" onclick="switchWorkspaceTab('transcript');" id="tabBtnTranscript" class="flex items-center gap-2 px-space-md py-3 text-on-surface-variant hover:text-on-surface font-label-md text-label-md rounded-t-lg transition-colors">
+                      <span class="material-symbols-outlined text-[18px]">transcribe</span>
+                      <span>Synchronized Takeaways</span>
+                    </button>
+                    <button type="button" onclick="switchWorkspaceTab('notes');" id="tabBtnNotes" class="flex items-center gap-2 px-space-md py-3 text-on-surface-variant hover:text-on-surface font-label-md text-label-md rounded-t-lg transition-colors">
+                      <span class="material-symbols-outlined text-[18px]">article</span>
+                      <span>Lecture Notes & Architecture</span>
+                    </button>
+                    <button type="button" onclick="switchWorkspaceTab('quizzes');" id="tabBtnQuizzes" class="flex items-center gap-2 px-space-md py-3 text-on-surface-variant hover:text-on-surface font-label-md text-label-md rounded-t-lg transition-colors">
+                      <span class="material-symbols-outlined text-[18px]">quiz</span>
+                      <span>Course Quizzes ({{ course.quizzes|length }})</span>
+                    </button>
+                    <button type="button" onclick="switchWorkspaceTab('reviews');" id="tabBtnReviews" class="flex items-center gap-2 px-space-md py-3 text-on-surface-variant hover:text-on-surface font-label-md text-label-md rounded-t-lg transition-colors">
+                      <span class="material-symbols-outlined text-[18px]">star</span>
+                      <span>Rate & Reviews</span>
+                    </button>
+                  </div>
+
+                  <!-- Quick Code Sandbox Actions -->
+                  <div class="hidden sm:flex items-center gap-space-xs py-2" id="quickCodeActions">
+                    <button type="button" id="btnFormatCode" onclick="formatCodeEditor();" class="btn-tactile flex items-center gap-1 px-space-sm py-1 rounded bg-surface-container text-on-surface font-label-sm text-label-sm hover:bg-surface-container-high transition-colors" title="Auto-format code indentation">
+                      <span class="material-symbols-outlined text-[16px]">format_align_left</span>
+                      <span>Format</span>
+                    </button>
+                    <button type="button" onclick="resetStarterCode();" class="btn-tactile flex items-center gap-1 px-space-sm py-1 rounded bg-surface-container text-on-surface font-label-sm text-label-sm hover:bg-surface-container-high transition-colors" title="Reset starter boilerplate">
+                      <span class="material-symbols-outlined text-[16px]">restart_alt</span>
+                      <span>Reset</span>
+                    </button>
+                    <button type="button" onclick="copySolutionCode();" class="btn-tactile flex items-center gap-1 px-space-sm py-1 rounded bg-surface-container text-on-surface font-label-sm text-label-sm hover:bg-surface-container-high transition-colors" title="Copy code">
+                      <span class="material-symbols-outlined text-[16px]">content_copy</span>
+                      <span>Copy</span>
+                    </button>
+                    <button type="button" onclick="downloadActiveSolution();" class="btn-tactile flex items-center gap-1 px-space-sm py-1 rounded bg-surface-container text-on-surface font-label-sm text-label-sm hover:bg-surface-container-high transition-colors" title="Download solution code file">
+                      <span class="material-symbols-outlined text-[16px] text-tertiary">download</span>
+                      <span>Export</span>
+                    </button>
+                    <button type="button" id="runCodeBtn" onclick="runAndCheckCode();" class="btn-tactile flex items-center gap-1.5 px-space-md py-1 rounded bg-primary text-on-primary font-label-sm text-label-sm font-semibold hover:bg-blue-600 transition-colors shadow-sm" title="Run & Test Code (Shortcut: Ctrl + Enter)">
+                      <span class="material-symbols-outlined text-[16px]" id="runCodeIcon">play_arrow</span>
+                      <span id="runCodeText">Run & Test Code</span>
+                      <span class="text-[10px] opacity-75 font-mono ml-1 hidden md:inline">Ctrl+↵</span>
+                    </button>
+                  </div>
+                </div>
+
+                <!-- TAB 1 CONTENT: INTERACTIVE CODE LAB (Split IDE + Live Terminal) -->
+                <div id="tabContentCodeLab" class="flex flex-col">
+                  {% set pq = active_lesson.programming_quiz if active_lesson else {} %}
+                  {% set basic_ch = pq.challenges.get('basic', {}) if pq.challenges else {} %}
+
+                  <!-- Subheader: Difficulty Tiers & Problem Prompt -->
+                  <div class="p-space-md bg-surface-container-low border-b border-surface-container-high flex flex-col gap-space-sm">
+                    <div class="flex flex-wrap justify-between items-center gap-space-sm">
+                      <!-- Tier Selectors -->
+                      <div class="flex items-center gap-2">
+                        <span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider font-semibold">Difficulty:</span>
+                        <div class="inline-flex rounded-lg shadow-sm border border-surface-container-high overflow-hidden bg-white">
+                          <button type="button" id="btnDiffBasic" onclick="selectDifficulty('basic');" class="px-3 py-1 text-xs font-semibold bg-emerald-600 text-white transition-colors">
+                            Basic (Warm-Up)
+                          </button>
+                          <button type="button" id="btnDiffIntermediate" onclick="selectDifficulty('intermediate');" class="px-3 py-1 text-xs font-semibold text-on-surface hover:bg-surface-container-low transition-colors">
+                            Intermediate (Engineering)
+                          </button>
+                          <button type="button" id="btnDiffAdvance" onclick="selectDifficulty('advance');" class="px-3 py-1 text-xs font-semibold text-on-surface hover:bg-surface-container-low transition-colors">
+                            Advance (Algorithmic)
+                          </button>
+                        </div>
+                      </div>
+
+                      <!-- Badges & Tools -->
+                      <div class="flex items-center gap-2">
+                        <span class="px-2 py-0.5 rounded bg-surface-container text-on-surface font-mono text-xs font-semibold" id="challengeApproachBadge">
+                          FUNCTION
+                        </span>
+                        <span class="px-2 py-0.5 rounded bg-primary/10 text-primary font-mono text-xs font-bold" id="challengeLanguageText">
+                          {{ pq.language|upper if pq.language else 'PYTHON' }}
+                        </span>
+                        <button type="button" onclick="toggleHint();" class="text-xs text-amber-700 hover:text-amber-800 bg-amber-50 hover:bg-amber-100 px-2.5 py-1 rounded font-semibold transition-colors flex items-center gap-1 border border-amber-200">
+                          <span class="material-symbols-outlined text-[14px]">lightbulb</span> Hint
+                        </button>
+                        <button type="button" id="solutionToggleBtn" onclick="toggleSolution();" class="text-xs text-primary hover:text-blue-700 bg-blue-50 hover:bg-blue-100 px-2.5 py-1 rounded font-semibold transition-colors flex items-center gap-1 border border-blue-200">
+                          <span class="material-symbols-outlined text-[14px]">visibility</span> Reveal Solution
+                        </button>
+                        {% if is_owner and active_lesson %}
+                          <a href="{{ url_for('learning.manage_lesson_challenges', lesson_id=active_lesson.id) }}" id="editChallengesLink" target="_blank" class="text-xs text-indigo-700 hover:text-indigo-800 bg-indigo-50 hover:bg-indigo-100 px-2.5 py-1 rounded font-semibold transition-colors flex items-center gap-1 border border-indigo-200" title="Edit 3 Difficulty Level Programs for this lecture">
+                            <span class="material-symbols-outlined text-[14px]">edit_note</span> Edit 3-Tier Challenges
+                          </a>
+                        {% endif %}
+                      </div>
+                    </div>
+
+                    <!-- Problem Statement Banner -->
+                    <div class="p-space-sm bg-white rounded-lg border border-surface-container-high">
+                      <div class="flex items-center gap-2 mb-1">
+                        <span class="w-2 h-2 rounded-full bg-primary"></span>
+                        <h4 class="text-sm font-bold text-on-surface" id="challengeTitle">{{ basic_ch.title|default('Algorithmic Solution Challenge') }}</h4>
+                      </div>
+                      <p class="text-xs text-on-surface-variant leading-relaxed mb-1" id="challengePrompt">
+                        {{ basic_ch.prompt|default('Implement the algorithm based on the principles discussed in this video lesson.') }}
+                      </p>
+                      <div class="text-xs text-slate-500 font-mono">
+                        Constraints: <span class="text-slate-800 bg-slate-100 px-1 rounded" id="challengeConstraints">{{ basic_ch.constraints|default('Standard runtime execution') }}</span>
+                      </div>
+                    </div>
+
+                    <!-- Hint Box (Initially Hidden) -->
+                    <div id="hintBox" class="hidden p-3 rounded-lg bg-amber-50 text-amber-900 border border-amber-200 text-xs">
+                      <div class="flex items-center gap-1.5 font-bold mb-1">
+                        <span class="material-symbols-outlined text-[16px] text-amber-600">lightbulb</span> Pedagogical Hint
+                      </div>
+                      <div id="hintText">Review the function parameters and edge case handling discussed in the lecture.</div>
+                    </div>
+
+                    <!-- Solution Box (Initially Hidden) -->
+                    <div id="solutionBox" class="hidden p-3 rounded-lg bg-slate-900 text-slate-100 border border-slate-700 text-xs flex flex-col gap-2">
+                      <div class="flex items-center justify-between">
+                        <span class="font-bold text-emerald-400 flex items-center gap-1">
+                          <span class="material-symbols-outlined text-[16px]">check_circle</span> Verified Solution Boilerplate
+                        </span>
+                        <button type="button" id="btnApplySolution" onclick="applySolutionToEditor();" class="px-2.5 py-1 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold rounded transition-colors text-xs">
+                          Insert into Editor
+                        </button>
+                      </div>
+                      <pre id="solutionPre" class="bg-black/60 p-2.5 rounded font-mono overflow-x-auto text-[11px] text-emerald-300 leading-relaxed"></pre>
+                      <div id="explanationText" class="text-slate-400 text-xs italic"></div>
+                    </div>
+                  </div>
+
+                  <!-- Split Code Workspace & Cloud Terminal Output -->
+                  <div class="grid grid-cols-1 md:grid-cols-2 bg-inverse-surface divide-y md:divide-y-0 md:divide-x divide-outline/20">
+                    <!-- Left Side: Python / JS Editor Window -->
+                    <div class="flex flex-col h-[340px]">
+                      <div class="flex items-center justify-between px-space-sm py-1.5 bg-inverse-surface text-surface-dim font-label-sm text-label-sm border-b border-outline/20">
+                        <div class="flex items-center gap-2">
+                          <span class="material-symbols-outlined text-[14px] text-tertiary-fixed">code</span>
+                          <span class="font-mono text-surface" id="editorFileName">solution.{{ 'js' if pq.language == 'javascript' else 'py' }}</span>
+                        </div>
+                        <span class="font-label-sm text-label-sm text-tertiary-fixed-dim">Python 3.12 • Virtual Env</span>
+                      </div>
+                      <div class="relative flex-1 bg-[#131b2e]">
+                        <textarea id="codeEditorArea"
+                                  class="w-full h-full p-4 bg-transparent text-surface border-0 focus:outline-none resize-none font-mono text-xs leading-relaxed"
+                                  spellcheck="false">{{ basic_ch.starter_code|default('') }}</textarea>
+                      </div>
+                    </div>
+
+                    <!-- Right Side: Live Bash Console & Test Profiler -->
+                    <div class="flex flex-col h-[340px] bg-[#0c1524]">
+                      <div class="flex items-center justify-between px-space-sm py-1.5 bg-[#080e19] text-surface-dim font-label-sm text-label-sm border-b border-outline/20">
+                        <div class="flex items-center gap-2">
+                          <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                          <span class="font-mono text-surface">bash • test-runner & profiler</span>
+                        </div>
+                        <span class="font-label-sm text-label-sm text-emerald-400 font-mono" id="consoleLatencyIndicator">LATENCY: 12.4ms TTFT</span>
+                      </div>
+                      
+                      <!-- Terminal Logs Output Area -->
+                      <div id="terminalOutput" class="p-4 overflow-y-auto font-mono text-xs text-surface-container-high leading-relaxed flex-1 select-text custom-scroll flex flex-col gap-1.5">
+                        <p class="text-outline">$ python3 -m unittest runner.py --verbose</p>
+                        <p class="text-surface-dim">[INFO] Initializing interactive cloud test sandbox...</p>
+                        <p class="text-surface-dim">[INFO] Loaded {{ basic_ch.test_cases|length if basic_ch.test_cases else 2 }} verification assertions.</p>
+                        <div class="mt-1 p-2 rounded bg-surface-container-lowest/5 border border-white/5">
+                          <div class="text-emerald-400 font-semibold mb-1">>> Ready for execution</div>
+                          <div class="text-surface-dim text-[11px]">Click <strong class="text-primary-fixed">'Run & Test Code'</strong> above to compile your solution against automated test assertions.</div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- TAB 2 CONTENT: SYNCHRONIZED TAKEAWAYS -->
+                <div id="tabContentTranscript" class="hidden p-space-lg flex flex-col gap-space-md">
+                  {% set bd = active_lesson.breakdown if active_lesson else {} %}
+                  <div class="flex items-center gap-2 mb-2">
+                    <span class="material-symbols-outlined text-primary text-[22px]">checklist</span>
+                    <h3 class="text-base font-bold text-on-surface">What You'll Master in This Lecture</h3>
+                  </div>
+                  <ul class="flex flex-col gap-2" id="activeTakeawaysList">
+                    {% if bd.takeaways %}
+                      {% for t in bd.takeaways %}
+                        <li class="flex items-start gap-2 p-3 rounded-lg bg-surface-container-low border border-surface-container-high text-xs text-on-surface leading-relaxed">
+                          <span class="material-symbols-outlined text-emerald-600 text-[18px] flex-shrink-0 mt-0.5">check_circle</span>
+                          <span>{{ t }}</span>
+                        </li>
+                      {% endfor %}
+                    {% else %}
+                      <li class="text-xs text-on-surface-variant">Core takeaways will be populated as you progress through this module.</li>
+                    {% endif %}
+                  </ul>
+                </div>
+
+                <!-- TAB 3 CONTENT: LECTURE NOTES & ARCHITECTURE -->
+                <div id="tabContentNotes" class="hidden p-space-lg flex flex-col gap-space-md">
+                  {% set bd = active_lesson.breakdown if active_lesson else {} %}
+                  
+                  <!-- Narrative Overview -->
+                  <div class="p-4 rounded-xl bg-surface-container-low border border-surface-container-high">
+                    <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-bold bg-primary text-white mb-2">
+                      Lecture Overview
+                    </span>
+                    <p class="text-xs text-on-surface leading-relaxed" id="activeLessonOverview">
+                      {{ bd.overview|default(course.description) }}
+                    </p>
+                  </div>
+
+                  <!-- Architectural Components -->
+                  <div class="flex flex-col gap-2">
+                    <h4 class="text-sm font-bold text-on-surface flex items-center gap-2">
+                      <span class="material-symbols-outlined text-tertiary text-[18px]">view_in_ar</span>
+                      Key Architectural Components
+                    </h4>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-3" id="activeComponentsGrid">
+                      {% if bd.components %}
+                        {% for comp in bd.components %}
+                          <div class="p-3 rounded-xl bg-white border border-surface-container-high shadow-sm flex flex-col gap-1">
+                            <div class="flex items-center justify-between">
+                              <span class="text-xs font-bold text-primary">{{ comp.title }}</span>
+                              <span class="text-[10px] px-2 py-0.5 rounded bg-surface-container-high text-on-surface-variant font-semibold">{{ comp.badge|default('Component') }}</span>
+                            </div>
+                            <p class="text-[11px] text-on-surface-variant leading-relaxed mb-0">{{ comp.desc }}</p>
+                          </div>
+                        {% endfor %}
+                      {% endif %}
+                    </div>
+                  </div>
+
+                  <!-- Roadmap Context -->
+                  <div class="p-3 rounded-xl bg-surface-container-low border border-surface-container-high text-xs text-on-surface-variant" id="activeWhyItMatters">
+                    <strong class="text-on-surface font-semibold">Roadmap Context: </strong>
+                    <span id="activeWhyItMattersText">{{ bd.why_it_matters|default('Essential stepping stone towards industry-ready mastery.') }}</span>
+                  </div>
+                </div>
+
+                <!-- TAB 4 CONTENT: COURSE QUIZZES -->
+                <div id="tabContentQuizzes" class="hidden p-space-lg flex flex-col gap-space-md">
+                  <div class="flex items-center justify-between mb-2">
+                    <div class="flex items-center gap-2">
+                      <span class="material-symbols-outlined text-primary text-[22px]">quiz</span>
+                      <h3 class="text-base font-bold text-on-surface">Knowledge Assessments & Practice Tests</h3>
+                    </div>
+                    <span class="text-xs text-on-surface-variant">{{ course.quizzes|length }} Quizzes Available</span>
+                  </div>
+
+                  {% if course.quizzes %}
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                      {% for quiz in course.quizzes %}
+                        <div class="p-4 rounded-xl bg-surface-container-low border border-surface-container-high flex flex-col justify-between gap-3 shadow-sm">
+                          <div>
+                            <span class="text-[10px] uppercase font-bold text-primary bg-primary/10 px-2 py-0.5 rounded">Quiz</span>
+                            <h4 class="text-sm font-bold text-on-surface mt-1">{{ quiz.title }}</h4>
+                            <p class="text-xs text-on-surface-variant mt-1 mb-0">{{ quiz.questions|length }} multiple choice questions • {{ quiz.time_limit_min }} min duration</p>
+                          </div>
+                          <a href="{{ url_for('assessments.take_quiz', quiz_id=quiz.id) }}" class="inline-flex items-center justify-center gap-1.5 px-4 py-2 bg-primary text-white rounded-lg text-xs font-semibold hover:bg-blue-700 transition-colors shadow-sm">
+                            <span>Take Quiz</span>
+                            <span class="material-symbols-outlined text-[14px]">arrow_forward</span>
+                          </a>
+                        </div>
+                      {% endfor %}
+                    </div>
+                  {% else %}
+                    <div class="p-6 text-center text-xs text-on-surface-variant bg-surface-container-low rounded-xl">
+                      No formal quizzes scheduled for this course yet. Use the Interactive Code Lab above for real-time practice.
+                    </div>
+                  {% endif %}
+                </div>
+
+                <!-- TAB 5 CONTENT: REVIEWS & FEEDBACK -->
+                <div id="tabContentReviews" class="hidden p-space-lg flex flex-col gap-space-md">
+                  <h3 class="text-base font-bold text-on-surface flex items-center gap-2">
+                    <span class="material-symbols-outlined text-amber-500 text-[22px]">star</span>
+                    Course Rating & Learner Reviews
+                  </h3>
+
+                  {% if enrollment %}
+                    <div class="p-4 rounded-xl bg-surface-container-low border border-surface-container-high max-w-xl">
+                      <form action="{{ url_for('learning.submit_review', course_id=course.id) }}" method="POST" class="flex flex-col gap-3">
+                        {{ review_form.hidden_tag() }}
+                        <div>
+                          <label class="block text-xs font-semibold text-on-surface mb-1">Your Rating (1 - 5 Stars)</label>
+                          {{ review_form.rating(class="w-full p-2 rounded-lg bg-white border border-surface-container-high text-xs text-on-surface focus:outline-none focus:ring-1 focus:ring-primary") }}
+                        </div>
+                        <div>
+                          <label class="block text-xs font-semibold text-on-surface mb-1">Feedback Comments</label>
+                          {{ review_form.comment(class="w-full p-2 rounded-lg bg-white border border-surface-container-high text-xs text-on-surface focus:outline-none focus:ring-1 focus:ring-primary", rows="3", placeholder="Share what you appreciated or learned from this course...") }}
+                        </div>
+                        <button type="submit" class="px-4 py-2 bg-primary text-white rounded-lg text-xs font-semibold hover:bg-blue-700 transition-colors shadow-sm self-start">
+                          {% if user_review %}Update Review{% else %}Submit Review{% endif %}
+                        </button>
+                      </form>
+                    </div>
+                  {% else %}
+                    <p class="text-xs text-on-surface-variant">Enroll in this course to leave your review and feedback.</p>
+                  {% endif %}
+                </div>
+              </div>
+
+              <!-- Lecture Overview, Instructor Card, and Core Technical Competencies -->
+              <div class="w-full bg-surface-container-lowest p-space-lg rounded-xl shadow-sm flex flex-col gap-space-md border border-surface-container-high">
+                <div class="flex flex-col sm:flex-row sm:items-start justify-between gap-space-md">
+                  <div class="flex flex-col gap-1 min-w-0">
+                    <div class="flex items-center gap-space-sm flex-wrap">
+                      <span class="px-space-sm py-0.5 rounded-full bg-tertiary/10 text-tertiary font-label-sm text-label-sm font-semibold" id="overviewModuleBadge">
+                        {{ active_lesson.module.title if active_lesson else 'Module 01' }}
+                      </span>
+                      <span class="px-space-sm py-0.5 rounded-full bg-emerald-500/10 text-emerald-700 font-label-sm text-label-sm font-semibold">
+                        {{ course.category.name if course.category else 'Computer Science' }}
+                      </span>
+                      <span class="font-label-sm text-label-sm text-on-surface-variant flex items-center gap-1" id="activeLessonDurationBadge">
+                        <span class="material-symbols-outlined text-[14px]">schedule</span>
+                        {{ active_lesson.formatted_duration if active_lesson else '0:00' }}
+                      </span>
+                    </div>
+                    <h1 class="font-headline-lg text-headline-lg text-on-surface mt-1 font-bold" id="activeLessonTitle">
+                      {{ active_lesson.title if active_lesson else course.title }}
+                    </h1>
+                  </div>
+
+                  <!-- Instructor Avatar Card -->
+                  <div class="flex items-center gap-space-sm bg-surface-container-low p-space-sm rounded-lg flex-shrink-0 border border-surface-container-high">
+                    <div class="w-10 h-10 rounded-full bg-primary flex items-center justify-center text-white font-bold text-sm shadow-sm">
+                      {{ course.instructor_name[0]|upper if course.instructor_name else 'I' }}
+                    </div>
+                    <div class="flex flex-col min-w-0">
+                      <span class="font-label-md text-label-md font-semibold text-on-surface truncate">{{ course.instructor_name }}</span>
+                      <span class="font-label-sm text-label-sm text-on-surface-variant truncate">Lead Instructor</span>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Core Technical Competencies in This Lesson -->
+                <div class="flex flex-col gap-space-xs pt-space-xs">
+                  <span class="font-label-md text-label-md font-semibold text-on-surface uppercase tracking-wider">
+                    Core Technical Competencies in This Lesson
+                  </span>
+                  <div class="grid grid-cols-1 md:grid-cols-2 gap-space-sm mt-1" id="competenciesList">
+                    {% set bd = active_lesson.breakdown if active_lesson else {} %}
+                    {% if bd.takeaways %}
+                      {% for takeaway in bd.takeaways[:4] %}
+                        <div class="flex items-start gap-space-sm p-space-sm rounded-lg bg-surface-container-low border border-surface-container-high">
+                          <span class="material-symbols-outlined text-emerald-600 text-[20px] flex-shrink-0 mt-0.5">check_circle</span>
+                          <span class="font-body-sm text-body-sm text-on-surface">{{ takeaway }}</span>
+                        </div>
+                      {% endfor %}
+                    {% else %}
+                      <div class="flex items-start gap-space-sm p-space-sm rounded-lg bg-surface-container-low border border-surface-container-high">
+                        <span class="material-symbols-outlined text-emerald-600 text-[20px] flex-shrink-0 mt-0.5">check_circle</span>
+                        <span class="font-body-sm text-body-sm text-on-surface">Master theoretical fundamentals and architectural principles.</span>
+                      </div>
+                      <div class="flex items-start gap-space-sm p-space-sm rounded-lg bg-surface-container-low border border-surface-container-high">
+                        <span class="material-symbols-outlined text-emerald-600 text-[20px] flex-shrink-0 mt-0.5">check_circle</span>
+                        <span class="font-body-sm text-body-sm text-on-surface">Implement hands-on coding solutions through the interactive test runner.</span>
+                      </div>
+                    {% endif %}
+                  </div>
+                </div>
+
+                <!-- Attached Resources & Mark Complete Action Bar -->
+                <div class="pt-space-xs flex flex-wrap items-center justify-between gap-space-sm border-t border-surface-container-high">
+                  <div class="flex items-center gap-space-xs flex-wrap">
+                    <span class="font-label-sm text-label-sm text-on-surface-variant font-semibold">Attached Files:</span>
+                    <a id="btnDownloadStarterCode"
+                       href="{{ url_for('learning.download_starter_code', lesson_id=active_lesson.id) if active_lesson else '#' }}"
+                       download
+                       class="inline-flex items-center gap-1.5 px-space-sm py-1.5 rounded bg-surface-container text-on-surface hover:bg-surface-container-high font-label-sm text-label-sm transition-colors shadow-sm border border-surface-container-high cursor-pointer"
+                       title="Download Starter Code Solution">
+                      <span class="material-symbols-outlined text-[16px] text-tertiary">code</span>
+                      <span id="attachedSolutionFilename">solution_runner.{{ 'js' if (active_lesson and active_lesson.programming_quiz and active_lesson.programming_quiz.language == 'javascript') else 'py' }}</span>
+                      <span class="material-symbols-outlined text-[14px] text-on-surface-variant">download</span>
+                    </a>
+                    <a id="btnDownloadNotesPdf"
+                       href="{{ url_for('learning.download_lesson_notes', lesson_id=active_lesson.id) if active_lesson else '#' }}"
+                       download
+                       class="inline-flex items-center gap-1.5 px-space-sm py-1.5 rounded bg-surface-container text-on-surface hover:bg-surface-container-high font-label-sm text-label-sm transition-colors shadow-sm border border-surface-container-high cursor-pointer"
+                       title="Download Official Lecture Notes (PDF)">
+                      <span class="material-symbols-outlined text-[16px] text-rose-600">picture_as_pdf</span>
+                      <span>lecture_notes.pdf</span>
+                      <span class="material-symbols-outlined text-[14px] text-on-surface-variant">download</span>
+                    </a>
+                  </div>
+
+                  <!-- Mark Completed Form -->
+                  {% if enrollment and active_lesson %}
+                    <form id="toggleCompleteForm" action="{{ url_for('learning.toggle_complete', lesson_id=active_lesson.id) }}" method="POST" class="m-0">
+                      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                      <button type="submit" id="toggleCompleteBtn" class="inline-flex items-center gap-1.5 px-space-md py-1.5 rounded-lg font-label-sm text-label-sm font-semibold transition-colors shadow-sm {% if active_lesson.id in completed_lesson_ids %}bg-emerald-600 text-white hover:bg-emerald-700{% else %}bg-surface-container-low text-emerald-800 border border-emerald-300 hover:bg-emerald-100{% endif %}">
+                        <span class="material-symbols-outlined text-[18px]" id="completeIcon">{% if active_lesson.id in completed_lesson_ids %}check_circle{% else %}radio_button_unchecked{% endif %}</span>
+                        <span id="completeText">{% if active_lesson.id in completed_lesson_ids %}Completed{% else %}Mark as Complete{% endif %}</span>
+                      </button>
+                    </form>
+                  {% endif %}
+                </div>
+              </div>
+            </section>
+
+            <!-- RIGHT SIDEBAR / SYLLABUS & PLAYLIST DRAWER (4 columns) -->
+            <aside class="lg:col-span-4 flex flex-col gap-space-md sticky top-20">
+              <!-- Card Container -->
+              <div class="w-full bg-surface-container-lowest rounded-xl shadow-sm flex flex-col overflow-hidden border border-surface-container-high">
+                
+                <!-- Playlist Header -->
+                <div class="p-space-md bg-surface-container-low flex flex-col gap-space-sm border-b border-surface-container-high">
+                  <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-2">
+                      <span class="font-headline-sm text-headline-sm text-on-surface font-bold">Curriculum Track</span>
+                      <span class="px-2 py-0.5 rounded-full bg-primary/10 text-primary font-label-sm text-label-sm font-semibold" id="completedLessonsBadge">
+                        {{ completed_lesson_ids|length }} / {{ all_lessons|length }} Done
+                      </span>
+                    </div>
+                    <span class="material-symbols-outlined text-[20px] text-on-surface-variant">playlist_play</span>
+                  </div>
+
+                  <!-- Progress Bar Metric -->
+                  <div class="flex flex-col gap-1">
+                    {% if enrollment and enrollment.certificate %}
+                      <div class="p-2.5 rounded-lg bg-emerald-50 border border-emerald-200 flex items-center justify-between text-xs mb-1" id="sidebarCertCard">
+                        <div class="flex items-center gap-1.5 min-w-0">
+                          <span class="material-symbols-outlined text-emerald-600 text-[20px] flex-shrink-0">workspace_premium</span>
+                          <div class="flex flex-col min-w-0">
+                            <span class="font-bold text-emerald-950 truncate">Certificate Earned!</span>
+                            <span class="text-[10px] text-emerald-700 font-mono truncate">{{ enrollment.certificate.code }}</span>
+                          </div>
+                        </div>
+                        <a href="{{ url_for('learning.view_certificate', code=enrollment.certificate.code) }}" class="px-2.5 py-1 rounded bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-[11px] shadow-sm flex items-center gap-1 flex-shrink-0">
+                          <span>View</span>
+                          <span class="material-symbols-outlined text-[13px]">open_in_new</span>
+                        </a>
+                      </div>
+                    {% else %}
+                      <div class="p-2.5 rounded-lg bg-emerald-50 border border-emerald-200 hidden items-center justify-between text-xs mb-1" id="sidebarCertCard">
+                        <div class="flex items-center gap-1.5 min-w-0">
+                          <span class="material-symbols-outlined text-emerald-600 text-[20px] flex-shrink-0">workspace_premium</span>
+                          <div class="flex flex-col min-w-0">
+                            <span class="font-bold text-emerald-950 truncate">Certificate Earned!</span>
+                            <span class="text-[10px] text-emerald-700 font-mono truncate" id="sidebarCertCode">CERT-PENDING</span>
+                          </div>
+                        </div>
+                        <a id="sidebarCertLink" href="#" class="px-2.5 py-1 rounded bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-[11px] shadow-sm flex items-center gap-1 flex-shrink-0">
+                          <span>View</span>
+                          <span class="material-symbols-outlined text-[13px]">open_in_new</span>
+                        </a>
+                      </div>
+                    {% endif %}
+                    <div class="flex justify-between items-center text-label-sm font-label-sm">
+                      <span class="text-on-surface-variant">Specialization Progress</span>
+                      <span class="font-semibold text-primary" id="playlistProgressPct">{{ enrollment.progress_pct if enrollment else 0 }}% Complete</span>
+                    </div>
+                    <div class="w-full h-1.5 bg-surface-container-high rounded-full overflow-hidden">
+                      <div class="h-full bg-primary rounded-full transition-all duration-500" id="playlistProgressBar" style="width: {{ enrollment.progress_pct if enrollment else 0 }}%;"></div>
+                    </div>
+                  </div>
+
+                  <!-- Quick Search / Filter Input -->
+                  <div class="relative w-full mt-1">
+                    <span class="material-symbols-outlined text-[18px] text-on-surface-variant absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none">search</span>
+                    <input id="playlistSearchInput"
+                           oninput="filterPlaylistLessons(this.value);"
+                           class="w-full pl-9 pr-3 py-1.5 rounded-lg bg-surface-container-lowest text-on-surface font-body-sm text-body-sm placeholder:text-on-surface-variant/60 focus:outline-none focus:ring-2 focus:ring-primary shadow-sm border border-surface-container-high text-xs"
+                           placeholder="Search lectures, topics, labs..."
+                           type="text"/>
+                  </div>
+                </div>
+
+                <!-- Modules Accordion List with Dedicated Slider -->
+                <div class="flex flex-col divide-y divide-surface-container-high custom-scroll curriculum-slider"
+                     id="playlistAccordion"
+                     style="max-height: clamp(260px, 46vh, 420px);">
+                  {% for module in course.modules %}
+                    {% set mod_has_active = active_lesson and active_lesson.module_id == module.id %}
+                    <div class="flex flex-col bg-surface-container-lowest module-group" data-module-id="{{ module.id }}">
+                      
+                      <!-- Module Header -->
+                      <div onclick="toggleModuleAccordion({{ module.id }});" class="p-space-sm bg-surface-container-low flex items-center justify-between cursor-pointer hover:bg-surface-container-high transition-colors select-none">
+                        <div class="flex items-center gap-2 min-w-0">
+                          <span class="material-symbols-outlined text-primary text-[20px] transition-transform duration-200" id="modArrow{{ module.id }}">
+                            {% if mod_has_active or loop.first %}expand_less{% else %}expand_more{% endif %}
+                          </span>
+                          <div class="flex flex-col min-w-0">
+                            <span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider font-semibold">Module 0{{ loop.index }}</span>
+                            <span class="font-label-md text-label-md font-semibold text-on-surface truncate">{{ module.title }}</span>
+                          </div>
+                        </div>
+                        <span class="font-label-sm text-label-sm text-on-surface-variant flex-shrink-0">{{ module.lessons|length }} items</span>
+                      </div>
+
+                      <!-- Module Lessons List -->
+                      <div class="flex flex-col p-1 gap-1 {% if not mod_has_active and not loop.first %}hidden{% endif %}" id="modLessons{{ module.id }}">
+                        {% for lesson in module.lessons %}
+                          {% set is_active = active_lesson and active_lesson.id == lesson.id %}
+                          {% set is_comp = lesson.id in completed_lesson_ids %}
+                          {% set les_yt = lesson.content | youtube_embed %}
+
+                          <div class="playlist-item-wrapper" data-lesson-title="{{ lesson.title|lower }}">
+                            <a href="javascript:void(0);"
+                               class="playlist-item flex items-center justify-between p-space-sm rounded-lg transition-all group relative overflow-hidden {% if is_active %}bg-tertiary/10 border-l-4 border-tertiary{% else %}hover:bg-surface-container-low{% endif %}"
+                               data-lesson-id="{{ lesson.id }}"
+                               data-video-id="{{ lesson.content | youtube_id }}"
+                               data-embed-url="{{ les_yt or '' }}"
+                               data-title="{{ lesson.title }}"
+                               data-module="{{ module.title }}"
+                               data-content="{{ lesson.content|e }}"
+                               data-theater-url="{{ url_for('learning.lesson_player', lesson_id=lesson.id) }}"
+                               data-toggle-url="{{ url_for('learning.toggle_complete', lesson_id=lesson.id) }}"
+                               data-completed="{{ 'true' if is_comp else 'false' }}"
+                               data-duration="{{ lesson.formatted_duration }}"
+                               data-breakdown='{{ lesson.breakdown | tojson | forceescape }}'
+                               data-quiz='{{ lesson.programming_quiz | tojson | forceescape }}'
+                               onclick="switchCourseVideo(this);">
+                              
+                              <div class="flex items-center gap-space-sm min-w-0">
+                                <!-- Status Icon or Playing Soundwave -->
+                                <div class="w-5 h-5 flex items-center justify-center flex-shrink-0 status-icon-box">
+                                  {% if is_active %}
+                                    <!-- Animated 3-Bar Sound Wave Equalizer -->
+                                    <div class="flex items-end gap-0.5 h-3.5 w-3.5">
+                                      <span class="w-1 bg-tertiary rounded-full wave-bar-1"></span>
+                                      <span class="w-1 bg-tertiary rounded-full wave-bar-2"></span>
+                                      <span class="w-1 bg-tertiary rounded-full wave-bar-3"></span>
+                                    </div>
+                                  {% elif is_comp %}
+                                    <span class="material-symbols-outlined text-emerald-600 text-[18px]" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+                                  {% else %}
+                                    <span class="material-symbols-outlined text-on-surface-variant text-[18px]">radio_button_unchecked</span>
+                                  {% endif %}
+                                </div>
+
+                                <div class="flex flex-col min-w-0">
+                                  <span class="font-label-md text-label-md font-semibold truncate lesson-title-text {% if is_active %}text-tertiary{% else %}text-on-surface group-hover:text-primary{% endif %}">
+                                    {{ lesson.title }}
+                                  </span>
+                                  <span class="font-label-sm text-label-sm text-on-surface-variant sidebar-lesson-duration" id="lessonDurationText{{ lesson.id }}">
+                                    {{ lesson.formatted_duration }} • {% if is_comp %}Completed{% else %}Lecture{% endif %}
+                                  </span>
+                                </div>
+                              </div>
+
+                              <!-- Right Badge or Play Arrow -->
+                              <div class="flex items-center gap-1 flex-shrink-0 status-badge-box">
+                                {% if is_active %}
+                                  <span class="px-2 py-0.5 rounded-full bg-tertiary text-on-tertiary font-label-sm text-label-sm font-semibold active-playing-pill">
+                                    Now Playing
+                                  </span>
+                                {% else %}
+                                  <span class="material-symbols-outlined text-[16px] text-on-surface-variant opacity-0 group-hover:opacity-100 transition-opacity">play_arrow</span>
+                                {% endif %}
+                              </div>
+                            </a>
+                          </div>
+                        {% else %}
+                          <div class="p-3 text-xs text-on-surface-variant text-center">No lessons in this module.</div>
+                        {% endfor %}
+                      </div>
+                    </div>
+                  {% else %}
+                    <div class="p-6 text-center text-xs text-on-surface-variant">No curriculum modules found.</div>
+                  {% endfor %}
+                </div>
+
+                <!-- Persistent Bottom Controls Console -->
+                <div class="p-space-md bg-surface-container-low flex flex-col gap-space-sm border-t border-surface-container-high">
+                  <!-- Autoplay Toggle Switch -->
+                  <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-2">
+                      <span class="material-symbols-outlined text-on-surface-variant text-[18px]">playlist_play</span>
+                      <span class="font-label-sm text-label-sm text-on-surface font-medium">Autoplay next lecture</span>
+                    </div>
+                    <button type="button" id="btnAutoplayToggle" onclick="toggleAutoplay();" class="w-9 h-5 bg-primary rounded-full relative p-0.5 transition-colors focus:outline-none">
+                      <span id="autoplayPip" class="block w-4 h-4 bg-on-primary rounded-full shadow-md ml-auto transition-transform"></span>
+                    </button>
+                  </div>
+
+                  <!-- Previous & Next Navigation Buttons with Combo & Split Actions -->
+                  <div class="flex items-center gap-1.5 pt-1 relative" id="bottomNavActionsGroup">
+                    <button type="button" id="btnPrevLecture" onclick="playPreviousVideo();" class="btn-tactile py-2 px-space-sm rounded-lg bg-surface-container hover:bg-surface-container-high text-on-surface font-label-md text-label-md font-medium transition-colors flex items-center justify-center gap-1 border border-surface-container-high cursor-pointer" title="Previous Lecture (Shortcut: P)">
+                      <span class="material-symbols-outlined text-[18px]">arrow_back</span>
+                      <span class="hidden xl:inline">Prev</span>
+                    </button>
+
+                    <!-- One-Click Complete & Next Combo Button -->
+                    <button type="button" id="btnCompleteAndNext" onclick="handleCompleteAndNext(this);" class="btn-tactile flex-1 py-2 px-space-sm rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-label-md text-label-md font-semibold transition-colors flex items-center justify-center gap-1 shadow-sm" title="Mark this lesson complete and advance to next lecture">
+                      <span class="material-symbols-outlined text-[18px]">check_circle</span>
+                      <span id="btnCompleteAndNextLabel">Complete & Next</span>
+                    </button>
+
+                    <!-- Standard Next / Complete Split Button Container -->
+                    <div class="relative flex items-center" id="splitCompleteWrapper">
+                      <button type="button" id="btnNextLecture" onclick="playNextVideo();" class="btn-tactile py-2 px-3 rounded-lg bg-primary hover:bg-blue-700 text-on-primary font-label-md text-label-md font-semibold transition-colors flex items-center justify-center gap-1 shadow-md cursor-pointer" title="Next Lecture (Shortcut: N)">
+                        <span id="btnNextLectureLabel" class="hidden xl:inline">Next</span>
+                        <span class="material-symbols-outlined text-[18px]" id="btnNextLectureIcon">arrow_forward</span>
+                      </button>
+                      <button type="button" id="btnSplitDropdownToggle" onclick="toggleSplitDropdown();" class="hidden btn-tactile px-2 py-2 bg-emerald-700 hover:bg-emerald-800 text-white rounded-r-lg border-l border-emerald-500 items-center justify-center shadow-md" title="More Completion Options">
+                        <span class="material-symbols-outlined text-[18px]">arrow_drop_down</span>
+                      </button>
+
+                      <!-- Split Dropdown Menu -->
+                      <div id="splitDropdownMenu" class="hidden absolute bottom-full right-0 mb-2 w-56 bg-surface-container-lowest rounded-xl shadow-2xl border border-surface-container-high py-2 z-50 flex flex-col text-xs text-on-surface">
+                        <button type="button" onclick="handleCompleteCourse(); toggleSplitDropdown();" class="btn-tactile px-3 py-2 text-left hover:bg-surface-container-low flex items-center gap-2">
+                          <span class="material-symbols-outlined text-[16px] text-emerald-600">workspace_premium</span>
+                          <span>Complete & View Credential</span>
+                        </button>
+                        <button type="button" onclick="handleCompleteAndDownloadPdf(); toggleSplitDropdown();" class="btn-tactile px-3 py-2 text-left hover:bg-surface-container-low flex items-center gap-2">
+                          <span class="material-symbols-outlined text-[16px] text-rose-600">picture_as_pdf</span>
+                          <span>Complete & Download PDF</span>
+                        </button>
+                        <button type="button" onclick="copyCertLinkFromOverview(); toggleSplitDropdown();" class="btn-tactile px-3 py-2 text-left hover:bg-surface-container-low flex items-center gap-2">
+                          <span class="material-symbols-outlined text-[16px] text-primary">content_copy</span>
+                          <span>Copy Certificate Link</span>
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- 14-Day Learning Streak Widget -->
+              <div class="w-full bg-surface-container-lowest p-space-md rounded-xl shadow-sm flex items-center justify-between border border-surface-container-high">
+                <div class="flex items-center gap-space-sm">
+                  <div class="w-10 h-10 rounded-full bg-emerald-500/10 flex items-center justify-center text-emerald-600">
+                    <span class="material-symbols-outlined text-[24px]">local_fire_department</span>
+                  </div>
+                  <div class="flex flex-col">
+                    <span class="font-label-md text-label-md font-semibold text-on-surface">14-Day Learning Streak!</span>
+                    <span class="font-label-sm text-label-sm text-on-surface-variant">Top 5% of AI Engineering Cohort</span>
+                  </div>
+                </div>
+                <span class="px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-700 font-label-sm text-label-sm font-bold border border-emerald-200">
+                  +150 XP
+                </span>
+              </div>
+            </aside>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- Floating Mobile Action Toolbar (Visible on screens < lg) -->
+  <div class="lg:hidden fixed bottom-0 left-0 right-0 z-40 bg-white/95 backdrop-blur-md border-t border-surface-container-high px-4 py-2.5 flex items-center justify-between shadow-2xl">
+    <button type="button" onclick="playPreviousVideo();" id="mobilePrevBtn" class="btn-tactile p-2 rounded-lg bg-surface-container text-on-surface hover:bg-surface-container-high flex items-center justify-center border border-surface-container-high" title="Previous Lecture">
+      <span class="material-symbols-outlined text-[20px]">arrow_back</span>
+    </button>
+    <div class="flex flex-col items-center">
+      <span class="text-[10px] text-on-surface-variant font-medium uppercase tracking-wider">Progress</span>
+      <span class="text-xs font-bold text-primary" id="mobileProgressPct">{{ enrollment.progress_pct if enrollment else 0 }}% Complete</span>
+    </div>
+    <div class="flex items-center gap-1.5">
+      <button type="button" id="mobileCompleteBtn" onclick="handleMobileComplete();" class="btn-tactile px-3 py-2 rounded-lg bg-emerald-600 text-white font-semibold text-xs shadow-md flex items-center gap-1">
+        <span class="material-symbols-outlined text-[16px]" id="mobileActionIcon">check_circle</span>
+        <span id="mobileActionLabel">Complete & Next</span>
+      </button>
+      <button type="button" onclick="playNextVideo();" id="mobileNextBtn" class="btn-tactile p-2 rounded-lg bg-primary text-white hover:bg-blue-700 flex items-center justify-center shadow-md" title="Skip to Next">
+        <span class="material-symbols-outlined text-[20px]">arrow_forward</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Course Completed Celebration Modal -->
+  <div id="courseCompletedModal" class="fixed inset-0 z-50 hidden bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="bg-surface-container-lowest max-w-md w-full rounded-2xl shadow-2xl border border-surface-container-high p-6 text-center transform transition-all">
+      <div class="w-16 h-16 rounded-full bg-emerald-100 text-emerald-600 mx-auto flex items-center justify-center mb-4">
+        <span class="material-symbols-outlined text-[36px]">workspace_premium</span>
+      </div>
+      <h3 class="text-xl font-bold text-on-surface mb-2">🎉 Congratulations!</h3>
+      <p class="text-sm text-on-surface-variant mb-4">
+        You have successfully completed <strong>{{ course.title }}</strong>! Your official verified Certificate of Completion has been issued.
+      </p>
+      <div class="bg-surface-container-low p-3 rounded-xl mb-4 border border-surface-container-high">
+        <span class="text-xs text-on-surface-variant font-mono block">Certificate Verification ID</span>
+        <span id="modalCertCode" class="text-sm font-bold text-primary font-mono select-all">{{ enrollment.certificate.code if (enrollment and enrollment.certificate) else 'CERT-PENDING' }}</span>
+      </div>
+      <div class="flex flex-col gap-2">
+        <a id="modalCertBtn" href="{{ url_for('learning.view_certificate', code=enrollment.certificate.code) if (enrollment and enrollment.certificate) else '#' }}" class="btn-tactile w-full py-2.5 px-4 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold rounded-xl transition-colors shadow-md flex items-center justify-center gap-2">
+          <span class="material-symbols-outlined text-[20px]">school</span>
+          <span>View Official Certificate</span>
+        </a>
+        <a id="modalPdfBtn" href="{{ url_for('learning.download_certificate_pdf', code=enrollment.certificate.code) if (enrollment and enrollment.certificate) else '#' }}" class="btn-tactile w-full py-2 px-4 bg-surface-container hover:bg-surface-container-high text-on-surface font-medium rounded-xl transition-colors text-sm flex items-center justify-center gap-2">
+          <span class="material-symbols-outlined text-[18px] text-rose-600">picture_as_pdf</span>
+          <span>Download PDF Certificate</span>
+        </a>
+        <button type="button" onclick="document.getElementById('courseCompletedModal').classList.add('hidden');" class="btn-tactile w-full py-2 px-4 bg-surface-container hover:bg-surface-container-high text-on-surface font-medium rounded-xl transition-colors text-sm">
+          Stay on Course Page
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Real YouTube IFrame API Script -->
+  <script src="https://www.youtube.com/iframe_api"></script>
+
+  <!-- Complete Client-Side Controller -->
+  <script>
+    let currentLessonId = {{ active_lesson.id if active_lesson else 'null' }};
+    let activeLessonId = currentLessonId || 1;
+    const courseId = {{ course.id }};
+    const csrfToken = "{{ csrf_token() }}";
+    let isCourseCompleted = {{ 'true' if (enrollment and enrollment.status == 'completed') else 'false' }};
+    let certificateUrl = "{{ url_for('learning.view_certificate', code=enrollment.certificate.code) if (enrollment and enrollment.certificate) else '' }}";
+    let certificateCode = "{{ enrollment.certificate.code if (enrollment and enrollment.certificate) else '' }}";
+    let ytCinemaPlayer = null;
+    let isAutoplayEnabled = (localStorage.getItem('lms_autoplay') !== 'false');
+
+    // YouTube API Ready Handler
+    function onYouTubeIframeAPIReady() {
+      attachYtPlayer();
+    }
+
+    function attachYtPlayer() {
+      const iframe = document.getElementById('mainCourseVideoPlayer');
+      if (iframe && window.YT && window.YT.Player) {
+        try {
+          if (ytCinemaPlayer && typeof ytCinemaPlayer.destroy === 'function') {
+            ytCinemaPlayer.destroy();
+          }
+        } catch(e) {}
+        try {
+          ytCinemaPlayer = new YT.Player('mainCourseVideoPlayer', {
+            events: {
+              'onReady': onYtPlayerReadyOrChange,
+              'onStateChange': onYtPlayerStateChange
+            }
+          });
+        } catch(e) {}
+      }
+    }
+
+    if (window.YT && window.YT.Player) {
+      attachYtPlayer();
+    }
+
+    function onYtPlayerStateChange(event) {
+      onYtPlayerReadyOrChange(event);
+      const icon = document.getElementById('iconPlayPause');
+      if (window.YT && event.data === window.YT.PlayerState.PLAYING) {
+        if (icon) icon.innerText = 'pause';
+      } else {
+        if (icon) icon.innerText = 'play_arrow';
+      }
+
+      // When video ends, if autoplay is on, switch to next video
+      if (window.YT && event.data === window.YT.PlayerState.ENDED) {
+        if (isAutoplayEnabled) {
+          playNextVideo();
+        }
+      }
+    }
+
+    // PostMessage Duration Listener for Cross-Origin Sync
+    window.addEventListener('message', function(event) {
+      try {
+        if (typeof event.data === 'string' && event.data.includes('infoDelivery')) {
+          const data = JSON.parse(event.data);
+          if (data && data.info && data.info.duration) {
+            const sec = Math.round(data.info.duration);
+            if (sec > 0 && currentLessonId) {
+              const mins = Math.max(1, Math.round(sec / 60));
+              syncUiAndBackendDuration(currentLessonId, mins, sec);
+            }
+          }
+        }
+      } catch(e) {}
+    });
+
+    function onYtPlayerReadyOrChange(event) {
+      if (!ytCinemaPlayer || typeof ytCinemaPlayer.getDuration !== 'function') return;
+      const sec = Math.round(ytCinemaPlayer.getDuration());
+      if (!sec || sec <= 0) return;
+      const mins = Math.max(1, Math.round(sec / 60));
+      syncUiAndBackendDuration(currentLessonId, mins, sec);
+    }
+
+    function formatTimeJs(sec) {
+      if (!sec || sec <= 0) return '0:00';
+      sec = Math.round(sec);
+      const h = Math.floor(sec / 3600);
+      const m = Math.floor((sec % 3600) / 60);
+      const s = sec % 60;
+      if (h > 0) {
+        return `${h}:${m < 10 ? '0' : ''}${m}:${s < 10 ? '0' : ''}${s}`;
+      }
+      return `${m}:${s < 10 ? '0' : ''}${s}`;
+    }
+
+    function syncUiAndBackendDuration(lessonId, mins, sec) {
+      if (!lessonId) return;
+      const formatted = formatTimeJs(sec || (mins * 60));
+
+      // 1. Update the active lecture duration badge in the overview header
+      const badge = document.getElementById('activeLessonDurationBadge');
+      if (badge) {
+        badge.innerHTML = `<span class="material-symbols-outlined text-[14px]">schedule</span> ${formatted}`;
+      }
+
+      // 2. Update player controls total duration
+      const durText = document.getElementById('videoTotalDuration');
+      if (durText) durText.innerText = `/ ${formatted}`;
+
+      // 3. Update the item in the right sidebar playlist IMMEDIATELY!
+      const sidebarItem = document.querySelector(`.playlist-item[data-lesson-id="${lessonId}"]`);
+      if (sidebarItem) {
+        sidebarItem.setAttribute('data-duration', formatted);
+        const durSpan = sidebarItem.querySelector('.sidebar-lesson-duration');
+        if (durSpan) {
+          const isComp = sidebarItem.getAttribute('data-completed') === 'true';
+          durSpan.innerText = `${formatted} • ${isComp ? 'Completed' : 'Lecture'}`;
+        }
+      }
+
+      // 4. Also update by specific ID if available
+      const specificDurEl = document.getElementById(`lessonDurationText${lessonId}`);
+      if (specificDurEl) {
+        const isComp = (sidebarItem && sidebarItem.getAttribute('data-completed') === 'true');
+        specificDurEl.innerText = `${formatted} • ${isComp ? 'Completed' : 'Lecture'}`;
+      }
+
+      // 5. Persist to server in background
+      fetch(`/learn/api/sync_lesson_duration/${lessonId}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRFToken': csrfToken
+        },
+        body: JSON.stringify({ duration_min: mins, duration_sec: sec })
+      }).catch(() => {});
+    }
+
+    // === SWITCH LECTURE VIDEO & METADATA ===
+    function switchCourseVideo(element) {
+      if (!element) return;
+      const videoId = element.getAttribute('data-video-id') || '';
+      const embedUrl = element.getAttribute('data-embed-url') || '';
+      const title = element.getAttribute('data-title') || '';
+      const moduleHeading = element.getAttribute('data-module') || '';
+      const theaterUrl = element.getAttribute('data-theater-url') || '';
+      const toggleUrl = element.getAttribute('data-toggle-url') || '';
+      const isCompleted = element.getAttribute('data-completed') === 'true';
+      const lessonIdStr = element.getAttribute('data-lesson-id');
+      currentLessonId = parseInt(lessonIdStr, 10);
+      activeLessonId = currentLessonId;
+
+      // 1. Switch Video in Player
+      const iframe = document.getElementById('mainCourseVideoPlayer');
+      let targetId = videoId;
+      if (!targetId && embedUrl) {
+        const m = embedUrl.match(/(?:embed\/|watch\?v=)([a-zA-Z0-9_-]{11})/);
+        if (m) targetId = m[1];
+      }
+
+      if (targetId && iframe) {
+        let loadedViaApi = false;
+        if (ytCinemaPlayer && typeof ytCinemaPlayer.loadVideoById === 'function') {
+          try {
+            ytCinemaPlayer.loadVideoById(targetId);
+            loadedViaApi = true;
+          } catch(e) {}
+        }
+        if (!loadedViaApi) {
+          iframe.src = `https://www.youtube.com/embed/${targetId}?autoplay=1&enablejsapi=1&rel=0&modestbranding=1`;
+          iframe.onload = function() { attachYtPlayer(); };
+        }
+        if (window.history && window.history.replaceState) {
+          const url = new URL(window.location.href);
+          url.searchParams.set('lesson', currentLessonId);
+          window.history.replaceState(null, '', url.toString());
+        }
+      }
+
+      // 2. Update Titles & HUD
+      const hTitle = document.getElementById('headerLectureTitle');
+      if (hTitle) hTitle.innerText = title;
+
+      const actTitle = document.getElementById('activeLessonTitle');
+      if (actTitle) actTitle.innerText = title;
+
+      const hudMod = document.getElementById('videoHudModule');
+      if (hudMod) hudMod.innerText = moduleHeading;
+
+      const hudTopic = document.getElementById('videoHudTopic');
+      if (hudTopic) hudTopic.innerText = title;
+
+      const chTitle = document.getElementById('videoChapterTitle');
+      if (chTitle) chTitle.innerText = moduleHeading;
+
+      const ovModBadge = document.getElementById('overviewModuleBadge');
+      if (ovModBadge) ovModBadge.innerText = moduleHeading;
+
+      const durVal = element.getAttribute('data-duration');
+      if (durVal) {
+        const durBadge = document.getElementById('activeLessonDurationBadge');
+        if (durBadge) durBadge.innerHTML = `<span class="material-symbols-outlined text-[14px]">schedule</span> ${durVal}`;
+        const totalDur = document.getElementById('videoTotalDuration');
+        if (totalDur) totalDur.innerText = `/ ${durVal}`;
+      }
+
+      // 3. Update Status Badges
+      const hStatus = document.getElementById('headerLectureStatus');
+      if (hStatus) {
+        hStatus.innerText = isCompleted ? 'Completed' : 'In Progress';
+        hStatus.className = isCompleted ? 'inline-flex items-center px-space-xs rounded-full bg-emerald-100 font-label-sm text-label-sm text-emerald-800 font-medium' : 'inline-flex items-center px-space-xs rounded-full bg-surface-container-high font-label-sm text-label-sm text-primary font-medium';
+      }
+
+      // 4. Update Dynamic Breakdown
+      const breakdownRaw = element.getAttribute('data-breakdown');
+      if (breakdownRaw) {
+        try {
+          const bd = JSON.parse(breakdownRaw);
+          if (bd && typeof bd === 'object') {
+            const overviewEl = document.getElementById('activeLessonOverview');
+            if (overviewEl && bd.overview) overviewEl.innerText = bd.overview;
+
+            const gridEl = document.getElementById('activeComponentsGrid');
+            if (gridEl && Array.isArray(bd.components)) {
+              gridEl.innerHTML = '';
+              bd.components.forEach(comp => {
+                const card = document.createElement('div');
+                card.className = 'p-3 rounded-xl bg-white border border-surface-container-high shadow-sm flex flex-col gap-1';
+                card.innerHTML = `
+                  <div class="flex items-center justify-between">
+                    <span class="text-xs font-bold text-primary">${comp.title}</span>
+                    <span class="text-[10px] px-2 py-0.5 rounded bg-surface-container-high text-on-surface-variant font-semibold">${comp.badge || 'Component'}</span>
+                  </div>
+                  <p class="text-[11px] text-on-surface-variant leading-relaxed mb-0">${comp.desc}</p>
+                `;
+                gridEl.appendChild(card);
+              });
+            }
+
+            const takeawaysEl = document.getElementById('activeTakeawaysList');
+            if (takeawaysEl && Array.isArray(bd.takeaways)) {
+              takeawaysEl.innerHTML = '';
+              bd.takeaways.forEach(t => {
+                const li = document.createElement('li');
+                li.className = 'flex items-start gap-2 p-3 rounded-lg bg-surface-container-low border border-surface-container-high text-xs text-on-surface leading-relaxed';
+                li.innerHTML = `<span class="material-symbols-outlined text-emerald-600 text-[18px] flex-shrink-0 mt-0.5">check_circle</span><span>${t}</span>`;
+                takeawaysEl.appendChild(li);
+              });
+            }
+
+            const compList = document.getElementById('competenciesList');
+            if (compList && Array.isArray(bd.takeaways)) {
+              compList.innerHTML = '';
+              bd.takeaways.slice(0, 4).forEach(t => {
+                const item = document.createElement('div');
+                item.className = 'flex items-start gap-space-sm p-space-sm rounded-lg bg-surface-container-low border border-surface-container-high';
+                item.innerHTML = `<span class="material-symbols-outlined text-emerald-600 text-[20px] flex-shrink-0 mt-0.5">check_circle</span><span class="font-body-sm text-body-sm text-on-surface">${t}</span>`;
+                compList.appendChild(item);
+              });
+            }
+
+            const whyEl = document.getElementById('activeWhyItMattersText');
+            if (whyEl && bd.why_it_matters) whyEl.innerText = bd.why_it_matters;
+          }
+        } catch(e) {}
+      }
+
+      // 5. Update Programming Quiz Data
+      const quizRaw = element.getAttribute('data-quiz');
+      if (quizRaw) {
+        try {
+          const qd = JSON.parse(quizRaw);
+          if (qd && typeof qd === 'object') {
+            currentQuizData = qd;
+            selectDifficulty('basic');
+          }
+        } catch(e) {}
+      }
+
+      // 6. Update Complete Toggle Form
+      const toggleForm = document.getElementById('toggleCompleteForm');
+      if (toggleForm && toggleUrl) toggleForm.action = toggleUrl;
+
+      const toggleBtn = document.getElementById('toggleCompleteBtn');
+      const completeIcon = document.getElementById('completeIcon');
+      const completeText = document.getElementById('completeText');
+      if (toggleBtn && completeText) {
+        if (isCompleted) {
+          toggleBtn.className = 'inline-flex items-center gap-1.5 px-space-md py-1.5 rounded-lg font-label-sm text-label-sm font-semibold transition-colors shadow-sm bg-emerald-600 text-white hover:bg-emerald-700';
+          if (completeIcon) completeIcon.innerText = 'check_circle';
+          completeText.innerText = 'Completed';
+        } else {
+          toggleBtn.className = 'inline-flex items-center gap-1.5 px-space-md py-1.5 rounded-lg font-label-sm text-label-sm font-semibold transition-colors shadow-sm bg-surface-container-low text-emerald-800 border border-emerald-300 hover:bg-emerald-100';
+          if (completeIcon) completeIcon.innerText = 'radio_button_unchecked';
+          completeText.innerText = 'Mark as Complete';
+        }
+      }
+
+      // 7. Update Theater Link
+      const theaterEl = document.getElementById('theaterModeLink');
+      if (theaterEl && theaterUrl) theaterEl.href = theaterUrl;
+
+      // 7b. Update Download Links for Notes & Starter Code
+      const notesBtn = document.getElementById('btnDownloadNotesPdf');
+      if (notesBtn) notesBtn.href = `/learn/lesson/${currentLessonId}/download-notes`;
+
+      const codeBtn = document.getElementById('btnDownloadStarterCode');
+      if (codeBtn) codeBtn.href = `/learn/lesson/${currentLessonId}/download-starter-code`;
+
+      const editChBtn = document.getElementById('editChallengesLink');
+      if (editChBtn) editChBtn.href = `/learn/lesson/${currentLessonId}/challenges`;
+
+      // 8. Update Active Styling in Playlist (Soundwave animated equalizer)
+      document.querySelectorAll('.playlist-item').forEach(el => {
+        el.classList.remove('bg-tertiary/10', 'border-l-4', 'border-tertiary');
+        el.classList.add('hover:bg-surface-container-low');
+        const titleSpan = el.querySelector('.lesson-title-text');
+        if (titleSpan) {
+          titleSpan.classList.remove('text-tertiary');
+          titleSpan.classList.add('text-on-surface');
+        }
+        const iconBox = el.querySelector('.status-icon-box');
+        const wasComp = el.getAttribute('data-completed') === 'true';
+        if (iconBox) {
+          if (wasComp) {
+            iconBox.innerHTML = '<span class="material-symbols-outlined text-emerald-600 text-[18px]" style="font-variation-settings: \'FILL\' 1;">check_circle</span>';
+          } else {
+            iconBox.innerHTML = '<span class="material-symbols-outlined text-on-surface-variant text-[18px]">radio_button_unchecked</span>';
+          }
+        }
+        const badgeBox = el.querySelector('.status-badge-box');
+        if (badgeBox) {
+          badgeBox.innerHTML = '<span class="material-symbols-outlined text-[16px] text-on-surface-variant opacity-0 group-hover:opacity-100 transition-opacity">play_arrow</span>';
+        }
+      });
+
+      element.classList.remove('hover:bg-surface-container-low');
+      element.classList.add('bg-tertiary/10', 'border-l-4', 'border-tertiary');
+      const activeTitleSpan = element.querySelector('.lesson-title-text');
+      if (activeTitleSpan) {
+        activeTitleSpan.classList.remove('text-on-surface');
+        activeTitleSpan.classList.add('text-tertiary');
+      }
+
+      const activeIconBox = element.querySelector('.status-icon-box');
+      if (activeIconBox) {
+        activeIconBox.innerHTML = `
+          <div class="flex items-end gap-0.5 h-3.5 w-3.5">
+            <span class="w-1 bg-tertiary rounded-full wave-bar-1"></span>
+            <span class="w-1 bg-tertiary rounded-full wave-bar-2"></span>
+            <span class="w-1 bg-tertiary rounded-full wave-bar-3"></span>
+          </div>
+        `;
+      }
+
+      const activeBadgeBox = element.querySelector('.status-badge-box');
+      if (activeBadgeBox) {
+        activeBadgeBox.innerHTML = '<span class="px-2 py-0.5 rounded-full bg-tertiary text-on-tertiary font-label-sm text-label-sm font-semibold active-playing-pill">Now Playing</span>';
+      }
+
+      // 9. Auto-expand module accordion if collapsed
+      const parentModuleGroup = element.closest('.module-group');
+      if (parentModuleGroup) {
+        const modId = parentModuleGroup.getAttribute('data-module-id');
+        const lessonsContainer = document.getElementById(`modLessons${modId}`);
+        const arrow = document.getElementById(`modArrow${modId}`);
+        if (lessonsContainer && lessonsContainer.classList.contains('hidden')) {
+          lessonsContainer.classList.remove('hidden');
+          if (arrow) arrow.innerText = 'expand_less';
+        }
+      }
+
+      // 10. Update Prev/Next buttons & Left aside teaser
+      updatePrevNextButtons();
+
+      element.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+
+    // === ACCORDION TOGGLER ===
+    function toggleModuleAccordion(modId) {
+      const container = document.getElementById(`modLessons${modId}`);
+      const arrow = document.getElementById(`modArrow${modId}`);
+      if (container) {
+        const isHidden = container.classList.contains('hidden');
+        if (isHidden) {
+          container.classList.remove('hidden');
+          if (arrow) arrow.innerText = 'expand_less';
+        } else {
+          container.classList.add('hidden');
+          if (arrow) arrow.innerText = 'expand_more';
+        }
+      }
+    }
+
+    // === PREVIOUS / NEXT NAVIGATION ===
+    function playPreviousVideo() {
+      const items = Array.from(document.querySelectorAll('.playlist-item'));
+      const currentIdx = items.findIndex(el => el.getAttribute('data-lesson-id') == currentLessonId);
+      if (currentIdx > 0) {
+        switchCourseVideo(items[currentIdx - 1]);
+      }
+    }
+
+    function playNextVideo() {
+      const items = Array.from(document.querySelectorAll('.playlist-item'));
+      const currentIdx = items.findIndex(el => el.getAttribute('data-lesson-id') == currentLessonId);
+      if (currentIdx >= 0 && currentIdx < items.length - 1) {
+        switchCourseVideo(items[currentIdx + 1]);
+      }
+    }
+
+    function updatePrevNextButtons() {
+      const items = Array.from(document.querySelectorAll('.playlist-item'));
+      const currentIdx = items.findIndex(el => el.getAttribute('data-lesson-id') == currentLessonId);
+
+      const prevBtn = document.getElementById('btnPrevLecture');
+      const nextBtn = document.getElementById('btnNextLecture');
+      const nextLabel = document.getElementById('btnNextLectureLabel');
+      const nextIcon = document.getElementById('btnNextLectureIcon');
+      const comboBtn = document.getElementById('btnCompleteAndNext');
+      const splitWrap = document.getElementById('splitCompleteWrapper');
+      const splitToggle = document.getElementById('btnSplitDropdownToggle');
+      const asideNextTitle = document.getElementById('leftAsideNextTitle');
+      const asideNextContainer = asideNextTitle ? asideNextTitle.closest('[onclick]') : null;
+
+      // Mobile toolbar elements
+      const mobilePrev = document.getElementById('mobilePrevBtn');
+      const mobileNext = document.getElementById('mobileNextBtn');
+      const mobileComplete = document.getElementById('mobileCompleteBtn');
+      const mobileActionLabel = document.getElementById('mobileActionLabel');
+      const mobileActionIcon = document.getElementById('mobileActionIcon');
+      const mobilePct = document.getElementById('mobileProgressPct');
+
+      const pctEl = document.getElementById('playlistProgressPct');
+      if (mobilePct && pctEl) mobilePct.innerText = pctEl.innerText;
+
+      if (prevBtn) prevBtn.disabled = (currentIdx <= 0);
+      if (mobilePrev) mobilePrev.disabled = (currentIdx <= 0);
+
+      const isCurrentCompleted = () => {
+        const activeItem = document.querySelector(`.playlist-item[data-lesson-id="${currentLessonId}"]`);
+        return activeItem && activeItem.getAttribute('data-completed') === 'true';
+      };
+
+      if (currentIdx >= 0 && currentIdx < items.length - 1) {
+        // Intermediate lecture: show Complete & Next combo button
+        const nextItem = items[currentIdx + 1];
+        const nextTitle = nextItem.getAttribute('data-title') || 'Next';
+
+        // 1. Combo button
+        if (comboBtn) {
+          comboBtn.classList.remove('hidden');
+          comboBtn.disabled = false;
+          comboBtn.className = 'btn-tactile flex-1 py-2 px-space-sm rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-label-md text-label-md font-semibold transition-colors flex items-center justify-center gap-1 shadow-sm cursor-pointer';
+          const comboLabel = document.getElementById('btnCompleteAndNextLabel');
+          if (comboLabel) {
+            comboLabel.innerText = isCurrentCompleted() ? 'Next Lecture ➔' : 'Complete & Next';
+          }
+        }
+
+        // 2. Next skip button
+        if (nextBtn) {
+          nextBtn.disabled = false;
+          nextBtn.onclick = function() { playNextVideo(); };
+          nextBtn.className = 'btn-tactile py-2 px-3 rounded-lg bg-primary hover:bg-blue-700 text-on-primary font-label-md text-label-md font-semibold transition-colors flex items-center justify-center gap-1 shadow-md cursor-pointer';
+          nextBtn.title = 'Next Lecture';
+        }
+        if (nextLabel) nextLabel.innerText = 'Next';
+        if (nextIcon) nextIcon.innerText = 'arrow_forward';
+
+        if (splitToggle) splitToggle.classList.add('hidden');
+        if (asideNextTitle) asideNextTitle.innerText = nextTitle;
+        if (asideNextContainer) asideNextContainer.onclick = function() { playNextVideo(); };
+
+        // Mobile toolbar
+        if (mobileNext) mobileNext.classList.remove('hidden');
+        if (mobileComplete) {
+          mobileComplete.className = 'btn-tactile px-3 py-2 rounded-lg bg-emerald-600 text-white font-semibold text-xs shadow-md flex items-center gap-1';
+          if (mobileActionLabel) mobileActionLabel.innerText = isCurrentCompleted() ? 'Next Lecture' : 'Complete & Next';
+          if (mobileActionIcon) mobileActionIcon.innerText = isCurrentCompleted() ? 'arrow_forward' : 'check_circle';
+        }
+      } else {
+        // Final lecture reached (or single-lesson course)
+        if (comboBtn) comboBtn.classList.add('hidden');
+        if (splitToggle) splitToggle.classList.remove('hidden');
+
+        if (nextBtn) {
+          nextBtn.disabled = false;
+        }
+
+        if (isCourseCompleted || certificateUrl) {
+          if (nextBtn) {
+            nextBtn.className = 'btn-tactile flex-1 py-2 px-space-md rounded-l-lg bg-emerald-600 hover:bg-emerald-700 text-white font-label-md text-label-md font-semibold transition-colors flex items-center justify-center gap-1 shadow-md cursor-pointer btn-complete-pulse';
+            nextBtn.title = 'View Official Certificate';
+            nextBtn.onclick = function() {
+              if (certificateUrl) window.location.href = certificateUrl;
+              else handleCompleteCourse();
+            };
+          }
+          if (nextLabel) nextLabel.innerText = 'View Certificate 🎓';
+          if (nextIcon) nextIcon.innerText = 'workspace_premium';
+          if (asideNextTitle) asideNextTitle.innerText = 'View Certificate 🎓';
+          if (asideNextContainer) asideNextContainer.onclick = function() {
+            if (certificateUrl) window.location.href = certificateUrl;
+          };
+
+          // Mobile toolbar
+          if (mobileNext) mobileNext.classList.add('hidden');
+          if (mobileComplete) {
+            mobileComplete.className = 'btn-tactile px-3 py-2 rounded-lg bg-emerald-600 text-white font-semibold text-xs shadow-md flex items-center gap-1 btn-complete-pulse';
+            if (mobileActionLabel) mobileActionLabel.innerText = 'View Certificate 🎓';
+            if (mobileActionIcon) mobileActionIcon.innerText = 'workspace_premium';
+          }
+        } else {
+          if (nextBtn) {
+            nextBtn.className = 'btn-tactile flex-1 py-2 px-space-md rounded-l-lg bg-emerald-600 hover:bg-emerald-700 text-white font-label-md text-label-md font-semibold transition-colors flex items-center justify-center gap-1 shadow-md cursor-pointer btn-complete-pulse';
+            nextBtn.title = 'Complete Course';
+            nextBtn.onclick = function() { handleCompleteCourse(); };
+          }
+          if (nextLabel) nextLabel.innerText = 'Complete Course ✓';
+          if (nextIcon) nextIcon.innerText = 'check_circle';
+          if (asideNextTitle) asideNextTitle.innerText = 'Complete Course ✓';
+          if (asideNextContainer) asideNextContainer.onclick = function() { handleCompleteCourse(); };
+
+          // Mobile toolbar
+          if (mobileNext) mobileNext.classList.add('hidden');
+          if (mobileComplete) {
+            mobileComplete.className = 'btn-tactile px-3 py-2 rounded-lg bg-emerald-600 text-white font-semibold text-xs shadow-md flex items-center gap-1 btn-complete-pulse';
+            if (mobileActionLabel) mobileActionLabel.innerText = 'Complete Course ✓';
+            if (mobileActionIcon) mobileActionIcon.innerText = 'check_circle';
+          }
+        }
+      }
+    }
+
+    // === COMBO COMPLETE & NEXT HANDLER ===
+    function handleCompleteAndNext(triggerBtn) {
+      if (!currentLessonId) return;
+      const activeItem = document.querySelector(`.playlist-item[data-lesson-id="${currentLessonId}"]`);
+      const alreadyCompleted = (activeItem && activeItem.getAttribute('data-completed') === 'true');
+
+      if (triggerBtn) {
+        showFloatingXp(triggerBtn, 50);
+      }
+
+      if (alreadyCompleted) {
+        playNextVideo();
+        return;
+      }
+
+      fetch(`/learn/lesson/${currentLessonId}/complete`, {
+        method: 'POST',
+        headers: {
+          'Accept': 'application/json',
+          'X-CSRFToken': csrfToken
+        }
+      })
+      .then(res => res.json())
+      .then(data => {
+        if (data && data.success) {
+          if (activeItem) {
+            activeItem.setAttribute('data-completed', 'true');
+            const iconBox = activeItem.querySelector('.status-icon-box');
+            if (iconBox && !activeItem.classList.contains('border-tertiary')) {
+              iconBox.innerHTML = '<span class="material-symbols-outlined text-emerald-600 text-[18px]" style="font-variation-settings: \'FILL\' 1;">check_circle</span>';
+            }
+            const durSpan = activeItem.querySelector('.sidebar-lesson-duration');
+            if (durSpan) {
+              const dur = activeItem.getAttribute('data-duration') || 'Lecture';
+              durSpan.innerText = `${dur} • Completed`;
+            }
+          }
+
+          const pctEl = document.getElementById('playlistProgressPct');
+          if (pctEl) pctEl.innerText = `${data.progress_pct}% Complete`;
+          const barEl = document.getElementById('playlistProgressBar');
+          if (barEl) barEl.style.width = `${data.progress_pct}%`;
+
+          const completedCount = document.querySelectorAll('.playlist-item[data-completed="true"]').length;
+          const totalCount = document.querySelectorAll('.playlist-item').length;
+          const badgeEl = document.getElementById('completedLessonsBadge');
+          if (badgeEl) badgeEl.innerText = `${completedCount} / ${totalCount} Done`;
+
+          if (data.status === 'completed' || data.progress_pct >= 100) {
+            isCourseCompleted = true;
+            if (data.certificate_url) certificateUrl = data.certificate_url;
+            if (data.certificate_code) certificateCode = data.certificate_code;
+            showCourseCompletedModal(certificateUrl, certificateCode);
+          } else {
+            setTimeout(() => {
+              playNextVideo();
+            }, 300);
+          }
+          updatePrevNextButtons();
+        } else {
+          playNextVideo();
+        }
+      })
+      .catch(() => {
+        playNextVideo();
+      });
+    }
+
+    // Mobile toolbar complete handler
+    function handleMobileComplete() {
+      const items = Array.from(document.querySelectorAll('.playlist-item'));
+      const currentIdx = items.findIndex(el => el.getAttribute('data-lesson-id') == currentLessonId);
+      if (currentIdx >= items.length - 1) {
+        if (isCourseCompleted && certificateUrl) {
+          window.location.href = certificateUrl;
+        } else {
+          handleCompleteCourse();
+        }
+      } else {
+        handleCompleteAndNext(document.getElementById('mobileCompleteBtn'));
+      }
+    }
+
+    // Split dropdown toggler
+    function toggleSplitDropdown() {
+      const menu = document.getElementById('splitDropdownMenu');
+      if (menu) menu.classList.toggle('hidden');
+    }
+
+    // Complete & Download PDF directly
+    function handleCompleteAndDownloadPdf() {
+      handleCompleteCourse();
+      const checkAndDownload = setInterval(() => {
+        if (certificateCode) {
+          clearInterval(checkAndDownload);
+          window.location.href = `/learn/certificate/${certificateCode}/download`;
+        }
+      }, 350);
+    }
+
+    // Copy certificate verification link from overview
+    function copyCertLinkFromOverview() {
+      if (!certificateUrl) {
+        handleCompleteCourse();
+      }
+      setTimeout(() => {
+        const fullUrl = window.location.origin + (certificateUrl || `/learn/course/${courseId}/certificate`);
+        navigator.clipboard.writeText(fullUrl).then(() => {
+          alert('Certificate link copied to clipboard: ' + fullUrl);
+        }).catch(() => {
+          prompt('Copy certificate link:', fullUrl);
+        });
+      }, 500);
+    }
+
+    // Floating XP Animation
+    function showFloatingXp(targetEl, xpAmount = 50) {
+      if (!targetEl) return;
+      const rect = targetEl.getBoundingClientRect();
+      const pill = document.createElement('div');
+      pill.className = 'floating-xp-pill px-3 py-1 rounded-full bg-amber-400 text-amber-950 font-bold text-xs shadow-xl border border-amber-300 flex items-center gap-1';
+      pill.innerHTML = `<span>🔥 +${xpAmount} XP</span>`;
+      pill.style.left = `${rect.left + (rect.width / 2) - 40}px`;
+      pill.style.top = `${rect.top - 12}px`;
+      document.body.appendChild(pill);
+      setTimeout(() => pill.remove(), 1600);
+    }
+
+    // Code Editor Formatter
+    function formatCodeEditor() {
+      const editor = document.getElementById('codeEditorArea');
+      if (!editor || !editor.value) return;
+      const lines = editor.value.split('\n');
+      let formattedLines = [];
+      let indent = 0;
+      for (let line of lines) {
+        let trimmed = line.trim();
+        if (!trimmed) {
+          formattedLines.push('');
+          continue;
+        }
+        if (trimmed.startsWith('elif ') || trimmed.startsWith('else:') || trimmed.startsWith('except') || trimmed.startsWith('finally:')) {
+          indent = Math.max(0, indent - 1);
+        } else if (trimmed.startsWith('}') || trimmed.startsWith(']')) {
+          indent = Math.max(0, indent - 1);
+        }
+        formattedLines.push('    '.repeat(indent) + trimmed);
+        if (trimmed.endsWith(':') || trimmed.endsWith('{')) {
+          indent += 1;
+        }
+      }
+      editor.value = formattedLines.join('\n');
+      const fmtBtn = document.getElementById('btnFormatCode');
+      if (fmtBtn) {
+        const orig = fmtBtn.innerHTML;
+        fmtBtn.innerHTML = '<span class="material-symbols-outlined text-[16px] text-emerald-500">check</span> <span>Formatted</span>';
+        setTimeout(() => fmtBtn.innerHTML = orig, 1500);
+      }
+    }
+
+    // Download Active Solution
+    function downloadActiveSolution() {
+      const editor = document.getElementById('codeEditorArea');
+      const code = editor ? editor.value : '';
+      if (!code) {
+        alert('Code editor is empty.');
+        return;
+      }
+      const lang = (currentQuizData && currentQuizData.language) || 'python';
+      const ext = (lang === 'javascript') ? 'js' : 'py';
+      const blob = new Blob([code], { type: 'text/plain;charset=utf-8' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `solution_lesson_${currentLessonId}.${ext}`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    }
+
+    function handleCompleteCourse() {
+      const nextBtn = document.getElementById('btnNextLecture');
+      const nextLabel = document.getElementById('btnNextLectureLabel');
+      const nextIcon = document.getElementById('btnNextLectureIcon');
+
+      if (nextBtn) {
+        nextBtn.disabled = true;
+        if (nextLabel) nextLabel.innerText = 'Completing...';
+        if (nextIcon) nextIcon.innerText = 'hourglass_empty';
+      }
+
+      fetch(`/learn/course/${courseId}/complete`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRFToken': csrfToken
+        }
+      })
+      .then(res => res.json())
+      .then(data => {
+        if (data.success) {
+          isCourseCompleted = true;
+          if (data.certificate_url) certificateUrl = data.certificate_url;
+          if (data.certificate_code) certificateCode = data.certificate_code;
+
+          // 1. Mark playlist items completed
+          document.querySelectorAll('.playlist-item').forEach(item => {
+            item.setAttribute('data-completed', 'true');
+            const iconBox = item.querySelector('.status-icon-box');
+            if (iconBox && !item.classList.contains('border-tertiary')) {
+              iconBox.innerHTML = '<span class="material-symbols-outlined text-emerald-600 text-[18px]" style="font-variation-settings: \'FILL\' 1;">check_circle</span>';
+            }
+            const durSpan = item.querySelector('.sidebar-lesson-duration');
+            if (durSpan) {
+              const dur = item.getAttribute('data-duration') || 'Lecture';
+              durSpan.innerText = `${dur} • Completed`;
+            }
+          });
+
+          // 2. Update Progress Bar & Badges
+          const pctEl = document.getElementById('playlistProgressPct');
+          if (pctEl) pctEl.innerText = '100% Complete';
+          const barEl = document.getElementById('playlistProgressBar');
+          if (barEl) barEl.style.width = '100%';
+          const badgeEl = document.getElementById('completedLessonsBadge');
+          const totalItems = document.querySelectorAll('.playlist-item').length;
+          if (badgeEl) badgeEl.innerText = `${totalItems} / ${totalItems} Done`;
+
+          // 3. Update Toggle Complete Form on active lesson
+          const toggleBtn = document.getElementById('toggleCompleteBtn');
+          const completeIcon = document.getElementById('completeIcon');
+          const completeText = document.getElementById('completeText');
+          if (toggleBtn) {
+            toggleBtn.className = 'inline-flex items-center gap-1.5 px-space-md py-1.5 rounded-lg font-label-sm text-label-sm font-semibold transition-colors shadow-sm bg-emerald-600 text-white hover:bg-emerald-700';
+            if (completeIcon) completeIcon.innerText = 'check_circle';
+            if (completeText) completeText.innerText = 'Completed';
+          }
+
+          // 4. Update Header Status
+          const hStatus = document.getElementById('headerLectureStatus');
+          if (hStatus) {
+            hStatus.innerText = 'Completed';
+            hStatus.className = 'inline-flex items-center px-space-xs rounded-full bg-emerald-100 font-label-sm text-label-sm text-emerald-800 font-medium';
+          }
+
+          // 4b. Update Sidebar Certificate Badge Card
+          const sideCard = document.getElementById('sidebarCertCard');
+          const sideCode = document.getElementById('sidebarCertCode');
+          const sideLink = document.getElementById('sidebarCertLink');
+          if (sideCard) {
+            sideCard.classList.remove('hidden');
+            sideCard.classList.add('flex');
+            if (sideCode && certificateCode) sideCode.innerText = certificateCode;
+            if (sideLink && certificateUrl) sideLink.href = certificateUrl;
+          }
+
+          // 5. Update next button to View Certificate
+          if (nextBtn) {
+            nextBtn.disabled = false;
+            nextBtn.className = 'btn-tactile flex-1 py-2 px-space-md rounded-l-lg bg-emerald-600 hover:bg-emerald-700 text-white font-label-md text-label-md font-semibold transition-colors flex items-center justify-center gap-1 shadow-md cursor-pointer btn-complete-pulse';
+            nextBtn.title = 'View Certificate';
+            nextBtn.onclick = function() {
+              if (certificateUrl) window.location.href = certificateUrl;
+            };
+          }
+          if (nextLabel) nextLabel.innerText = 'View Certificate 🎓';
+          if (nextIcon) nextIcon.innerText = 'workspace_premium';
+
+          // 6. Show Celebration Modal
+          showCourseCompletedModal(certificateUrl, certificateCode);
+        } else {
+          alert(data.message || 'Failed to complete course.');
+          if (nextBtn) nextBtn.disabled = false;
+          updatePrevNextButtons();
+        }
+      })
+      .catch(err => {
+        console.error('Error completing course:', err);
+        if (nextBtn) nextBtn.disabled = false;
+        updatePrevNextButtons();
+      });
+    }
+
+    function showCourseCompletedModal(url, code) {
+      const modal = document.getElementById('courseCompletedModal');
+      const codeEl = document.getElementById('modalCertCode');
+      const btnEl = document.getElementById('modalCertBtn');
+      const pdfEl = document.getElementById('modalPdfBtn');
+      if (codeEl && code) codeEl.innerText = code;
+      if (btnEl && url) btnEl.href = url;
+      if (pdfEl && code) pdfEl.href = `/learn/certificate/${code}/download`;
+      if (modal) modal.classList.remove('hidden');
+
+      // Confetti celebratory burst
+      if (typeof confetti === 'function') {
+        confetti({
+          particleCount: 120,
+          spread: 80,
+          origin: { y: 0.6 }
+        });
+        setTimeout(() => {
+          confetti({
+            particleCount: 60,
+            angle: 60,
+            spread: 55,
+            origin: { x: 0 }
+          });
+          confetti({
+            particleCount: 60,
+            angle: 120,
+            spread: 55,
+            origin: { x: 1 }
+          });
+        }, 350);
+      }
+    }
+
+    // === AUTOPLAY TOGGLE ===
+    function toggleAutoplay() {
+      isAutoplayEnabled = !isAutoplayEnabled;
+      localStorage.setItem('lms_autoplay', isAutoplayEnabled);
+      updateAutoplayUi();
+    }
+
+    function updateAutoplayUi() {
+      const btn = document.getElementById('btnAutoplayToggle');
+      const pip = document.getElementById('autoplayPip');
+      if (btn && pip) {
+        if (isAutoplayEnabled) {
+          btn.className = 'w-9 h-5 bg-primary rounded-full relative p-0.5 transition-colors focus:outline-none';
+          pip.className = 'block w-4 h-4 bg-on-primary rounded-full shadow-md ml-auto transition-transform';
+        } else {
+          btn.className = 'w-9 h-5 bg-surface-container-high rounded-full relative p-0.5 transition-colors focus:outline-none';
+          pip.className = 'block w-4 h-4 bg-on-surface-variant rounded-full shadow-md mr-auto transition-transform';
+        }
+      }
+    }
+
+    // === VIDEO PLAYER HELPER CONTROLS ===
+    function togglePlayPauseVideo() {
+      if (!ytCinemaPlayer || typeof ytCinemaPlayer.getPlayerState !== 'function') return;
+      const state = ytCinemaPlayer.getPlayerState();
+      if (state === 1) { // playing
+        ytCinemaPlayer.pauseVideo();
+      } else {
+        ytCinemaPlayer.playVideo();
+      }
+    }
+
+    function seekRelative(seconds) {
+      if (!ytCinemaPlayer || typeof ytCinemaPlayer.getCurrentTime !== 'function') return;
+      const curr = ytCinemaPlayer.getCurrentTime();
+      ytCinemaPlayer.seekTo(Math.max(0, curr + seconds), true);
+    }
+
+    function setPlayerSpeed(rate) {
+      if (!ytCinemaPlayer || typeof ytCinemaPlayer.setPlaybackRate !== 'function') return;
+      ytCinemaPlayer.setPlaybackRate(parseFloat(rate));
+    }
+
+    function toggleMuteVideo() {
+      if (!ytCinemaPlayer || typeof ytCinemaPlayer.isMuted !== 'function') return;
+      const icon = document.getElementById('iconVolume');
+      if (ytCinemaPlayer.isMuted()) {
+        ytCinemaPlayer.unMute();
+        if (icon) icon.innerText = 'volume_up';
+      } else {
+        ytCinemaPlayer.mute();
+        if (icon) icon.innerText = 'volume_off';
+      }
+    }
+
+    function togglePlayerFullscreen() {
+      const el = document.getElementById('cinemaPlayerEnvelope');
+      if (!el) return;
+      if (!document.fullscreenElement) {
+        el.requestFullscreen().catch(() => {});
+      } else {
+        document.exitFullscreen().catch(() => {});
+      }
+    }
+
+    // Time ticker for player controls
+    setInterval(() => {
+      if (ytCinemaPlayer && typeof ytCinemaPlayer.getCurrentTime === 'function') {
+        try {
+          const cur = Math.round(ytCinemaPlayer.getCurrentTime());
+          const mins = Math.floor(cur / 60);
+          const secs = cur % 60;
+          const fmt = `${mins}:${secs < 10 ? '0' : ''}${secs}`;
+          const curEl = document.getElementById('videoCurrentTime');
+          if (curEl) curEl.innerText = fmt;
+
+          const dur = Math.round(ytCinemaPlayer.getDuration() || 0);
+          if (dur > 0) {
+            const pct = Math.min(100, Math.round((cur / dur) * 100));
+            const bar = document.getElementById('videoScrubberBar');
+            if (bar) bar.style.width = `${pct}%`;
+          }
+        } catch(e) {}
+      }
+    }, 1000);
+
+    // === WORKSPACE TAB SWITCHER ===
+    function switchWorkspaceTab(tab) {
+      // Highlight Nav in Left Aside
+      const navIds = { 'code-lab': 'navBtnLab', 'notes': 'navBtnNotes', 'quizzes': 'navBtnQuizzes', 'video-section': 'navBtnVideo' };
+      ['navBtnVideo', 'navBtnLab', 'navBtnNotes', 'navBtnQuizzes'].forEach(id => {
+        const btn = document.getElementById(id);
+        if (btn) {
+          btn.className = 'w-full flex items-center justify-between px-space-sm py-space-sm rounded-lg text-on-surface-variant hover:bg-surface-container-low hover:text-on-surface transition-colors text-left';
+        }
+      });
+      if (navIds[tab]) {
+        const activeNav = document.getElementById(navIds[tab]);
+        if (activeNav) {
+          activeNav.className = 'w-full flex items-center justify-between px-space-sm py-space-sm transition-colors bg-primary-container text-on-primary-container font-semibold rounded-lg text-left';
+        }
+      }
+
+      if (tab === 'video-section') {
+        const stage = document.getElementById('videoStageSection');
+        if (stage) stage.scrollIntoView({ behavior: 'smooth' });
+        return;
+      }
+
+      // Hide all tabs
+      ['tabContentCodeLab', 'tabContentTranscript', 'tabContentNotes', 'tabContentQuizzes', 'tabContentReviews'].forEach(id => {
+        document.getElementById(id)?.classList.add('hidden');
+      });
+
+      // Reset tab button styles
+      ['tabBtnCodeLab', 'tabBtnTranscript', 'tabBtnNotes', 'tabBtnQuizzes', 'tabBtnReviews'].forEach(id => {
+        const b = document.getElementById(id);
+        if (b) {
+          b.className = 'flex items-center gap-2 px-space-md py-3 text-on-surface-variant hover:text-on-surface font-label-md text-label-md rounded-t-lg transition-colors';
+        }
+      });
+
+      const tabMap = {
+        'code-lab': { content: 'tabContentCodeLab', btn: 'tabBtnCodeLab' },
+        'transcript': { content: 'tabContentTranscript', btn: 'tabBtnTranscript' },
+        'notes': { content: 'tabContentNotes', btn: 'tabBtnNotes' },
+        'quizzes': { content: 'tabContentQuizzes', btn: 'tabBtnQuizzes' },
+        'reviews': { content: 'tabContentReviews', btn: 'tabBtnReviews' }
+      };
+
+      const match = tabMap[tab] || tabMap['code-lab'];
+      document.getElementById(match.content)?.classList.remove('hidden');
+      const activeBtn = document.getElementById(match.btn);
+      if (activeBtn) {
+        activeBtn.className = 'flex items-center gap-2 px-space-md py-3 bg-surface-container-lowest text-primary font-label-md text-label-md font-semibold rounded-t-lg shadow-sm border-t-2 border-primary';
+      }
+
+      // Show/hide quick code actions
+      const actions = document.getElementById('quickCodeActions');
+      if (actions) {
+        actions.style.display = (tab === 'code-lab') ? 'flex' : 'none';
+      }
+
+      // Smooth scroll to container
+      const ws = document.getElementById('interactiveWorkspaceContainer');
+      if (ws) ws.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+
+    // === REAL-TIME PLAYLIST SEARCH FILTER ===
+    function filterPlaylistLessons(query) {
+      const q = (query || '').toLowerCase().trim();
+      const wrappers = document.querySelectorAll('.playlist-item-wrapper');
+      
+      wrappers.forEach(wrap => {
+        const title = wrap.getAttribute('data-lesson-title') || '';
+        if (!q || title.includes(q)) {
+          wrap.style.display = '';
+        } else {
+          wrap.style.display = 'none';
+        }
+      });
+
+      // If user is searching, expand all modules so matches are visible
+      if (q) {
+        document.querySelectorAll('[id^="modLessons"]').forEach(el => el.classList.remove('hidden'));
+        document.querySelectorAll('[id^="modArrow"]').forEach(el => el.innerText = 'expand_less');
+      }
+    }
+
+    // === PROGRAMMING QUIZ ENGINE ===
+    let currentQuizData = {{ active_lesson.programming_quiz | tojson if active_lesson else '{}' }};
+    let currentDifficulty = 'basic';
+
+    function selectDifficulty(diff) {
+      currentDifficulty = diff;
+      const challenges = currentQuizData.challenges || {};
+      const ch = challenges[diff] || {};
+
+      // 1. Update Buttons
+      ['basic', 'intermediate', 'advance'].forEach(d => {
+        const btn = document.getElementById('btnDiff' + d.charAt(0).toUpperCase() + d.slice(1));
+        if (btn) {
+          if (d === diff) {
+            btn.className = 'px-3 py-1 text-xs font-semibold bg-emerald-600 text-white transition-colors';
+          } else {
+            btn.className = 'px-3 py-1 text-xs font-semibold text-on-surface hover:bg-surface-container-low transition-colors';
+          }
+        }
+      });
+
+      // 2. Update Statements & Approach
+      const titleEl = document.getElementById('challengeTitle');
+      if (titleEl) titleEl.innerText = ch.title || 'Coding Challenge';
+
+      const apprEl = document.getElementById('challengeApproachBadge');
+      if (apprEl) apprEl.innerText = (ch.approach || 'FUNCTION').toUpperCase();
+
+      const promptEl = document.getElementById('challengePrompt');
+      if (promptEl) promptEl.innerText = ch.prompt || 'Solve the problem according to video principles.';
+
+      const constrEl = document.getElementById('challengeConstraints');
+      if (constrEl) constrEl.innerText = ch.constraints || 'Standard execution';
+
+      // 3. Update Code Editor
+      const editor = document.getElementById('codeEditorArea');
+      if (editor) editor.value = ch.starter_code || '';
+
+      // 4. Update Hint & Solution
+      const hintText = document.getElementById('hintText');
+      if (hintText) hintText.innerText = ch.hint || 'Review the video lecture for syntax cues.';
+
+      const solPre = document.getElementById('solutionPre');
+      if (solPre) solPre.innerText = ch.solution_code || '';
+
+      const expText = document.getElementById('explanationText');
+      if (expText) expText.innerText = ch.explanation || '';
+
+      document.getElementById('hintBox')?.classList.add('hidden');
+      document.getElementById('solutionBox')?.classList.add('hidden');
+      const solBtn = document.getElementById('solutionToggleBtn');
+      if (solBtn) solBtn.innerHTML = '<span class="material-symbols-outlined text-[14px]">visibility</span> Reveal Solution';
+
+      // 5. Reset Terminal Output
+      const term = document.getElementById('terminalOutput');
+      if (term) {
+        term.innerHTML = `
+          <p class="text-outline">$ python3 -m unittest runner.py --difficulty=${diff}</p>
+          <p class="text-surface-dim">[INFO] Loaded ${ch.test_cases ? ch.test_cases.length : 0} automated verification assertions.</p>
+          <div class="mt-1 p-2 rounded bg-surface-container-lowest/5 border border-white/5">
+            <div class="text-emerald-400 font-semibold mb-1">>> Ready for execution (${diff.toUpperCase()})</div>
+            <div class="text-surface-dim text-[11px]">Click <strong class="text-primary-fixed">'Run & Test Code'</strong> to run your solution against the verification suite.</div>
+          </div>
+        `;
+      }
+    }
+
+    function resetStarterCode() {
+      const challenges = currentQuizData.challenges || {};
+      const ch = challenges[currentDifficulty] || {};
+      const editor = document.getElementById('codeEditorArea');
+      if (editor && ch.starter_code) {
+        editor.value = ch.starter_code;
+      }
+    }
+
+    function toggleHint() {
+      const box = document.getElementById('hintBox');
+      if (box) box.classList.toggle('hidden');
+    }
+
+    function toggleSolution() {
+      const box = document.getElementById('solutionBox');
+      const btn = document.getElementById('solutionToggleBtn');
+      if (!box) return;
+      const isHidden = box.classList.contains('hidden');
+      if (isHidden) {
+        box.classList.remove('hidden');
+        if (btn) btn.innerHTML = '<span class="material-symbols-outlined text-[14px]">visibility_off</span> Hide Solution';
+      } else {
+        box.classList.add('hidden');
+        if (btn) btn.innerHTML = '<span class="material-symbols-outlined text-[14px]">visibility</span> Reveal Solution';
+      }
+    }
+
+    function applySolutionToEditor() {
+      const ch = (currentQuizData.challenges || {})[currentDifficulty] || {};
+      const solCode = ch.solution_code || '';
+      const editor = document.getElementById('codeEditorArea');
+      if (editor && solCode) {
+        editor.value = solCode;
+        editor.focus();
+        const applyBtn = document.getElementById('btnApplySolution');
+        if (applyBtn) {
+          const orig = applyBtn.innerHTML;
+          applyBtn.innerText = 'Applied!';
+          setTimeout(() => applyBtn.innerHTML = orig, 1500);
+        }
+      }
+    }
+
+    function copySolutionCode() {
+      const editor = document.getElementById('codeEditorArea');
+      const code = editor ? editor.value : '';
+      if (code) {
+        navigator.clipboard.writeText(code).then(() => {
+          alert('Code copied to clipboard!');
+        }).catch(() => {});
+      }
+    }
+
+    // === RUN CODE VIA API & STREAM INTO LIVE BASH TERMINAL ===
+    function runAndCheckCode() {
+      const editor = document.getElementById('codeEditorArea');
+      const code = editor ? editor.value : '';
+      const runBtn = document.getElementById('runCodeBtn');
+      const runIcon = document.getElementById('runCodeIcon');
+      const runText = document.getElementById('runCodeText');
+      const term = document.getElementById('terminalOutput');
+
+      if (runBtn) runBtn.disabled = true;
+      if (runIcon) runIcon.innerText = 'hourglass_empty';
+      if (runText) runText.innerText = 'Executing...';
+
+      if (term) {
+        term.innerHTML = `
+          <p class="text-outline">$ python3 solution.py --eval-tests</p>
+          <p class="text-amber-400 animate-pulse">[COMPILING] Running AST parser & test harness in sandbox...</p>
+        `;
+      }
+
+      const start = Date.now();
+
+      fetch('/learn/api/evaluate_code', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRFToken': csrfToken
+        },
+        body: JSON.stringify({
+          lesson_id: activeLessonId,
+          difficulty: currentDifficulty,
+          code: code
+        })
+      })
+      .then(res => res.json())
+      .then(data => {
+        const elapsed = (Date.now() - start);
+        if (runBtn) runBtn.disabled = false;
+        if (runIcon) runIcon.innerText = 'play_arrow';
+        if (runText) runText.innerText = 'Run & Test Code';
+
+        const latIndicator = document.getElementById('consoleLatencyIndicator');
+        if (latIndicator) latIndicator.innerText = `LATENCY: ${elapsed}ms TTFT`;
+
+        if (term) {
+          let outHtml = `
+            <p class="text-outline">$ python3 solution.py --eval-tests</p>
+            <p class="text-surface-dim">[INFO] Verification runner completed in ${elapsed}ms.</p>
+            <p class="text-surface-dim">[INFO] Results: ${data.passed_count}/${data.total_count} test assertions passed.</p>
+            <div class="my-2 border-t border-white/10"></div>
+          `;
+
+          if (Array.isArray(data.test_results)) {
+            data.test_results.forEach(tr => {
+              if (tr.passed) {
+                outHtml += `
+                  <div class="p-2 rounded bg-emerald-950/40 border border-emerald-500/20 my-1">
+                    <div class="flex items-center justify-between">
+                      <span class="text-emerald-400 font-bold flex items-center gap-1">
+                        <span class="material-symbols-outlined text-[14px]">check</span> Test ${tr.test_num}: PASSED
+                      </span>
+                      <span class="text-emerald-300 text-[10px] uppercase font-mono">Passed</span>
+                    </div>
+                    <div class="text-slate-400 text-[11px] mt-0.5">${tr.desc}</div>
+                    <div class="text-slate-400 text-[10px] font-mono mt-1">Output: <code class="text-emerald-300">${tr.actual}</code></div>
+                  </div>
+                `;
+              } else {
+                outHtml += `
+                  <div class="p-2 rounded bg-rose-950/40 border border-rose-500/20 my-1">
+                    <div class="flex items-center justify-between">
+                      <span class="text-rose-400 font-bold flex items-center gap-1">
+                        <span class="material-symbols-outlined text-[14px]">close</span> Test ${tr.test_num}: FAILED
+                      </span>
+                      <span class="text-rose-300 text-[10px] uppercase font-mono">Failed</span>
+                    </div>
+                    <div class="text-slate-400 text-[11px] mt-0.5">${tr.desc}</div>
+                    <div class="text-slate-400 text-[10px] font-mono mt-1">
+                      Expected: <code class="text-amber-300">${tr.expected}</code> | Got: <code class="text-rose-300">${tr.actual}</code>
+                    </div>
+                  </div>
+                `;
+              }
+            });
+          }
+
+          if (data.passed) {
+            outHtml += `
+              <div class="mt-2 p-2 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 font-bold flex items-center gap-1.5">
+                <span class="material-symbols-outlined text-[16px]">celebration</span> All test cases passed successfully! Completion credited.
+              </div>
+            `;
+            // Auto-update complete button
+            const toggleBtn = document.getElementById('toggleCompleteBtn');
+            const completeIcon = document.getElementById('completeIcon');
+            const completeText = document.getElementById('completeText');
+            if (toggleBtn && completeText) {
+              toggleBtn.className = 'inline-flex items-center gap-1.5 px-space-md py-1.5 rounded-lg font-label-sm text-label-sm font-semibold transition-colors shadow-sm bg-emerald-600 text-white hover:bg-emerald-700';
+              if (completeIcon) completeIcon.innerText = 'check_circle';
+              completeText.innerText = 'Completed';
+            }
+          } else {
+            outHtml += `
+              <div class="mt-2 p-2 rounded bg-rose-500/20 text-rose-300 border border-rose-500/30 font-medium flex items-center gap-1.5 text-[11px]">
+                <span class="material-symbols-outlined text-[16px]">info</span> Examine the failure output above or click 'Hint' to adjust your logic.
+              </div>
+            `;
+          }
+
+          term.innerHTML = outHtml;
+          term.scrollTop = term.scrollHeight;
+        }
+      })
+      .catch(err => {
+        if (runBtn) runBtn.disabled = false;
+        if (runIcon) runIcon.innerText = 'play_arrow';
+        if (runText) runText.innerText = 'Run & Test Code';
+        if (term) {
+          term.innerHTML += `<p class="text-rose-400">[ERROR] Execution request failed: ${err.message}</p>`;
+        }
+      });
+    }
+
+    // Power Keyboard Shortcuts (Ctrl+Enter, P, N, M, Space, Arrows)
+    document.addEventListener('keydown', function(e) {
+      const tag = (document.activeElement && document.activeElement.tagName) || '';
+      const isInput = (tag === 'INPUT' || tag === 'TEXTAREA');
+
+      // Ctrl+Enter or Cmd+Enter: Run and check code inside code lab editor
+      if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+        e.preventDefault();
+        runAndCheckCode();
+        return;
+      }
+
+      // Do not capture navigation/toggle shortcuts while typing text/code
+      if (isInput) return;
+
+      if (e.key === 'ArrowLeft' || e.key === 'p' || e.key === 'P') {
+        playPreviousVideo();
+      } else if (e.key === 'ArrowRight' || e.key === 'n' || e.key === 'N') {
+        playNextVideo();
+      } else if (e.key === 'm' || e.key === 'M') {
+        e.preventDefault();
+        const toggleForm = document.getElementById('toggleCompleteForm');
+        if (toggleForm) toggleForm.requestSubmit();
+      } else if (e.key === ' ' || e.code === 'Space') {
+        e.preventDefault();
+        togglePlayPauseVideo();
+      }
+    });
+
+    // Initialize state on DOM load
+    document.addEventListener('DOMContentLoaded', function() {
+      updatePrevNextButtons();
+      updateAutoplayUi();
+
+      // Hook up AJAX completion for Mark as Complete form
+      const toggleForm = document.getElementById('toggleCompleteForm');
+      if (toggleForm) {
+        toggleForm.addEventListener('submit', function(e) {
+          e.preventDefault();
+          const actionUrl = toggleForm.action;
+          fetch(actionUrl, {
+            method: 'POST',
+            headers: {
+              'Accept': 'application/json',
+              'X-CSRFToken': csrfToken
+            }
+          })
+          .then(res => res.json())
+          .then(data => {
+            if (data && data.success) {
+              const activeItem = document.querySelector(`.playlist-item[data-lesson-id="${currentLessonId}"]`);
+              if (activeItem) {
+                activeItem.setAttribute('data-completed', data.is_completed ? 'true' : 'false');
+                const iconBox = activeItem.querySelector('.status-icon-box');
+                if (iconBox && !activeItem.classList.contains('border-tertiary')) {
+                  if (data.is_completed) {
+                    iconBox.innerHTML = '<span class="material-symbols-outlined text-emerald-600 text-[18px]" style="font-variation-settings: \'FILL\' 1;">check_circle</span>';
+                  } else {
+                    iconBox.innerHTML = '<span class="material-symbols-outlined text-on-surface-variant text-[18px]">radio_button_unchecked</span>';
+                  }
+                }
+                const durSpan = activeItem.querySelector('.sidebar-lesson-duration');
+                if (durSpan) {
+                  const dur = activeItem.getAttribute('data-duration') || 'Lecture';
+                  durSpan.innerText = `${dur} • ${data.is_completed ? 'Completed' : 'Lecture'}`;
+                }
+              }
+
+              const toggleBtn = document.getElementById('toggleCompleteBtn');
+              const completeIcon = document.getElementById('completeIcon');
+              const completeText = document.getElementById('completeText');
+              if (toggleBtn) {
+                if (data.is_completed) {
+                  toggleBtn.className = 'inline-flex items-center gap-1.5 px-space-md py-1.5 rounded-lg font-label-sm text-label-sm font-semibold transition-colors shadow-sm bg-emerald-600 text-white hover:bg-emerald-700';
+                  if (completeIcon) completeIcon.innerText = 'check_circle';
+                  if (completeText) completeText.innerText = 'Completed';
+                } else {
+                  toggleBtn.className = 'inline-flex items-center gap-1.5 px-space-md py-1.5 rounded-lg font-label-sm text-label-sm font-semibold transition-colors shadow-sm bg-surface-container-low text-emerald-800 border border-emerald-300 hover:bg-emerald-100';
+                  if (completeIcon) completeIcon.innerText = 'radio_button_unchecked';
+                  if (completeText) completeText.innerText = 'Mark as Complete';
+                }
+              }
+
+              const pctEl = document.getElementById('playlistProgressPct');
+              if (pctEl) pctEl.innerText = `${data.progress_pct}% Complete`;
+              const barEl = document.getElementById('playlistProgressBar');
+              if (barEl) barEl.style.width = `${data.progress_pct}%`;
+
+              const completedCount = document.querySelectorAll('.playlist-item[data-completed="true"]').length;
+              const totalCount = document.querySelectorAll('.playlist-item').length;
+              const badgeEl = document.getElementById('completedLessonsBadge');
+              if (badgeEl) badgeEl.innerText = `${completedCount} / ${totalCount} Done`;
+
+              if (data.status === 'completed' || data.progress_pct >= 100) {
+                isCourseCompleted = true;
+                if (data.certificate_url) certificateUrl = data.certificate_url;
+                if (data.certificate_code) certificateCode = data.certificate_code;
+
+                const sideCard = document.getElementById('sidebarCertCard');
+                const sideCode = document.getElementById('sidebarCertCode');
+                const sideLink = document.getElementById('sidebarCertLink');
+                if (sideCard) {
+                  sideCard.classList.remove('hidden');
+                  sideCard.classList.add('flex');
+                  if (sideCode && certificateCode) sideCode.innerText = certificateCode;
+                  if (sideLink && certificateUrl) sideLink.href = certificateUrl;
+                }
+
+                showCourseCompletedModal(certificateUrl, certificateCode);
+              }
+              updatePrevNextButtons();
+            } else {
+              toggleForm.submit();
+            }
+          })
+          .catch(() => {
+            toggleForm.submit();
+          });
+        });
+      }
+
+      // Auto-scroll the curriculum slider to the currently active lesson
+      const activeItem = document.querySelector('.playlist-item.bg-tertiary\\/10') ||
+                         document.querySelector(`.playlist-item[data-lesson-id="${currentLessonId}"]`);
+      if (activeItem) {
+        setTimeout(function() {
+          activeItem.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }, 200);
+      }
+    });
+  </script>
+</body>
+</html>

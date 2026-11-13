@@ -1,0 +1,59 @@
+{% extends 'base.html' %}
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+  <div class="row justify-content-center">
+    <div class="col-lg-8">
+      <div class="card shadow-sm border-0">
+        <div class="card-header bg-white py-3 border-bottom d-flex justify-content-between align-items-center">
+          <h4 class="fw-bold mb-0">{{ title }}</h4>
+          <a href="{{ url_for('learning.manage_course_curriculum', course_id=course.id) }}" class="btn btn-outline-secondary btn-sm">
+            <i class="bi bi-arrow-left me-1"></i> Back to Curriculum
+          </a>
+        </div>
+        <div class="card-body p-4">
+          <form method="POST">
+            {{ form.hidden_tag() }}
+
+            <div class="mb-3">
+              {{ form.title.label(class="form-label fw-semibold") }}
+              {{ form.title(class="form-control" + (" is-invalid" if form.title.errors else ""), placeholder="e.g. Build a RESTful Flask API Project") }}
+              {% for error in form.title.errors %}
+                <div class="invalid-feedback">{{ error }}</div>
+              {% endfor %}
+            </div>
+
+            <div class="row">
+              <div class="col-md-6 mb-3">
+                {{ form.due_date.label(class="form-label fw-semibold") }}
+                {{ form.due_date(class="form-control") }}
+              </div>
+              <div class="col-md-3 mb-3">
+                {{ form.max_points.label(class="form-label fw-semibold") }}
+                {{ form.max_points(class="form-control") }}
+              </div>
+              <div class="col-md-3 mb-3">
+                {{ form.rubric_id.label(class="form-label fw-semibold") }}
+                {{ form.rubric_id(class="form-select") }}
+              </div>
+            </div>
+
+            <div class="mb-4">
+              {{ form.instructions.label(class="form-label fw-semibold") }}
+              {{ form.instructions(class="form-control", rows="6", placeholder="Provide detailed specifications, requirements, submission format, and deliverables...") }}
+              {% for error in form.instructions.errors %}
+                <div class="invalid-feedback">{{ error }}</div>
+              {% endfor %}
+            </div>
+
+            <button type="submit" class="btn btn-primary px-4">
+              <i class="bi bi-check2 me-1"></i> Save Assignment
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

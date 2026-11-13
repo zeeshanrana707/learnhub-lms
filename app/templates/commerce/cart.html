@@ -1,0 +1,101 @@
+{% extends 'base.html' %}
+{% block title %}Shopping Cart{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+  <h2 class="fw-bold mb-1">Shopping Cart</h2>
+  <p class="text-muted mb-4">{{ courses|length }} item(s) in your cart</p>
+
+  {% if courses %}
+    <div class="row g-4">
+      <!-- Items List -->
+      <div class="col-lg-8">
+        <div class="card shadow-sm border-0 mb-4">
+          <div class="list-group list-group-flush">
+            {% for course in courses %}
+              <div class="list-group-item p-3 d-flex justify-content-between align-items-center">
+                <div class="d-flex align-items-center gap-3">
+                  <div class="rounded bg-primary-subtle text-primary p-3 d-flex align-items-center justify-content-center" style="width: 50px; height: 50px;">
+                    <i class="bi bi-book fs-4"></i>
+                  </div>
+                  <div>
+                    <h6 class="fw-bold mb-1">
+                      <a href="{{ url_for('catalog.detail', course_id=course.id) }}" class="text-dark text-decoration-none">
+                        {{ course.title }}
+                      </a>
+                    </h6>
+                    <div class="text-muted small">By {{ course.creator.profile.full_name or course.creator.username }} • {{ course.level }}</div>
+                  </div>
+                </div>
+                <div class="d-flex align-items-center gap-3">
+                  <span class="fw-bold text-dark fs-5">${{ "%.2f"|format(course.price) }}</span>
+                  <form action="{{ url_for('commerce.remove_from_cart', course_id=course.id) }}" method="POST">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                    <button type="submit" class="btn btn-sm btn-outline-danger" title="Remove"><i class="bi bi-trash"></i></button>
+                  </form>
+                </div>
+              </div>
+            {% endfor %}
+          </div>
+        </div>
+      </div>
+
+      <!-- Order Summary Card -->
+      <div class="col-lg-4">
+        <div class="card p-4 shadow-sm border-0 sticky-top" style="top: 80px;">
+          <h5 class="fw-bold mb-3">Order Summary</h5>
+
+          <div class="d-flex justify-content-between mb-2 small text-secondary">
+            <span>Subtotal</span>
+            <span>${{ "%.2f"|format(subtotal) }}</span>
+          </div>
+
+          {% if discount > 0 %}
+            <div class="d-flex justify-content-between mb-2 small text-success fw-semibold">
+              <span>Coupon Discount ({{ coupon.code }})</span>
+              <span>-${{ "%.2f"|format(discount) }}</span>
+            </div>
+          {% endif %}
+
+          <hr class="my-3">
+
+          <div class="d-flex justify-content-between mb-4">
+            <span class="fs-5 fw-bold">Total:</span>
+            <span class="fs-4 fw-bold text-primary">${{ "%.2f"|format(total) }}</span>
+          </div>
+
+          <!-- Promo Code Form -->
+          <div class="mb-4">
+            {% if not coupon %}
+              <form action="{{ url_for('commerce.apply_coupon') }}" method="POST" class="d-flex gap-2">
+                {{ coupon_form.hidden_tag() }}
+                {{ coupon_form.coupon_code(class="form-control form-control-sm", placeholder="Promo code (e.g. WELCOME20)") }}
+                <button type="submit" class="btn btn-sm btn-outline-primary">Apply</button>
+              </form>
+            {% else %}
+              <div class="d-flex justify-content-between align-items-center bg-success-subtle p-2 rounded small text-success">
+                <span>Code <strong>{{ coupon.code }}</strong> applied!</span>
+                <form action="{{ url_for('commerce.remove_coupon') }}" method="POST">
+                  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                  <button type="submit" class="btn btn-sm btn-link text-danger p-0">Remove</button>
+                </form>
+              </div>
+            {% endif %}
+          </div>
+
+          <a href="{{ url_for('commerce.checkout') }}" class="btn btn-primary btn-lg w-100 fw-semibold">
+            Proceed to Checkout <i class="bi bi-arrow-right ms-1"></i>
+          </a>
+        </div>
+      </div>
+    </div>
+  {% else %}
+    <div class="card p-5 text-center shadow-sm border-0">
+      <i class="bi bi-cart-x fs-1 text-muted mb-2"></i>
+      <h4>Your Cart is Empty</h4>
+      <p class="text-muted small">Explore our catalog of online courses to start learning.</p>
+      <div><a href="{{ url_for('catalog.index') }}" class="btn btn-primary">Browse Courses</a></div>
+    </div>
+  {% endif %}
+</div>
+{% endblock %}
