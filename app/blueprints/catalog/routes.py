@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, redirect, url_for, flash, request, abort
+from flask import Blueprint, render_template, redirect, url_for, flash, request, abort, session
 from flask_login import current_user, login_required
 from app.extensions import db
 from app.models.catalog import Course, Department, Category, Tag, CourseTag, CoursePrerequisite, Roadmap, RoadmapStage
@@ -83,7 +83,7 @@ def dashboard_shortcut():
 def home():
     """Home landing page with featured courses, roadmaps, and categories."""
     # When admin is active, redirect to admin dashboard unless preview mode is explicitly requested via Live Site
-    if current_user.is_authenticated and current_user.is_admin and not request.args.get('preview'):
+    if current_user.is_authenticated and current_user.is_admin and not (request.args.get('preview') or session.get('live_preview')):
         return redirect(url_for('admin.dashboard'))
 
     featured_courses = Course.query.filter_by(status='published', is_active=True).order_by(Course.created_at.desc()).limit(6).all()

@@ -1,5 +1,6 @@
 {# Reusable Modern Course Card Partial #}
-{% set is_preview = request.args.get('preview') %}
+{% set is_preview = is_preview if is_preview is defined else (True if (request.args.get('preview') == '1' or session.get('live_preview')) and request.blueprint != 'admin' else False) %}
+{% set preview_qs = preview_qs if preview_qs is defined else ('?preview=1' if is_preview else '') %}
 {% set is_card_auth = current_user.is_authenticated and not is_preview %}
 {% set is_saved = false %}
 {% if is_card_auth %}
@@ -12,7 +13,7 @@
 
 <div class="card h-100 course-card shadow-sm border-0">
   <div class="course-card-thumb-wrap">
-    <a href="{{ url_for('catalog.detail', course_id=course.id) }}" class="d-block w-100 h-100 position-relative text-decoration-none">
+    <a href="{{ url_for('catalog.detail', course_id=course.id) }}{{ preview_qs }}" class="d-block w-100 h-100 position-relative text-decoration-none">
       <img src="{{ course.thumbnail_url }}"
            alt="{{ course.title }}"
            loading="lazy"
@@ -98,7 +99,7 @@
 
   <!-- Card Action Footer -->
   <div class="card-footer bg-transparent border-0 pt-0 pb-3 px-3">
-    <a href="{{ url_for('catalog.detail', course_id=course.id) }}" class="btn btn-course-cta w-100">
+    <a href="{{ url_for('catalog.detail', course_id=course.id) }}{{ preview_qs }}" class="btn btn-course-cta w-100">
       <i class="bi bi-play-circle-fill me-1"></i> Watch Video Course
     </a>
   </div>

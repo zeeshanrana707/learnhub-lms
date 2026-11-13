@@ -10,6 +10,7 @@
     </div>
     <div class="col-md-6">
       <form method="GET" action="{{ url_for('catalog.index') }}" class="d-flex gap-2">
+        {% if is_preview %}<input type="hidden" name="preview" value="1">{% endif %}
         <input type="text" name="q" value="{{ search_q }}" class="form-control" placeholder="Search by title, topic, or keyword...">
         <button type="submit" class="btn btn-primary px-4"><i class="bi bi-search"></i></button>
       </form>
@@ -22,10 +23,11 @@
       <div class="card p-3 shadow-sm border-0 mb-4">
         <div class="d-flex justify-content-between align-items-center mb-3">
           <h5 class="fw-bold mb-0"><i class="bi bi-sliders me-1"></i> Filters</h5>
-          <a href="{{ url_for('catalog.index') }}" class="small text-decoration-none">Reset</a>
+          <a href="{{ url_for('catalog.index') }}{{ preview_qs }}" class="small text-decoration-none">Reset</a>
         </div>
 
         <form method="GET" action="{{ url_for('catalog.index') }}">
+          {% if is_preview %}<input type="hidden" name="preview" value="1">{% endif %}
           {% if search_q %}<input type="hidden" name="q" value="{{ search_q }}">{% endif %}
           {% if selected_tag %}<input type="hidden" name="tag" value="{{ selected_tag }}">{% endif %}
 
@@ -83,7 +85,7 @@
         <h6 class="fw-bold mb-2">Popular Tags</h6>
         <div class="d-flex flex-wrap gap-1">
           {% for t in tags %}
-            <a href="{{ url_for('catalog.index', tag=t.id) }}" class="badge {% if selected_tag == t.id %}bg-primary text-white{% else %}bg-light text-secondary border{% endif %} text-decoration-none py-1 px-2">
+            <a href="{{ url_for('catalog.index', tag=t.id, preview=1 if is_preview else None) }}" class="badge {% if selected_tag == t.id %}bg-primary text-white{% else %}bg-light text-secondary border{% endif %} text-decoration-none py-1 px-2">
               #{{ t.name }}
             </a>
           {% endfor %}
@@ -117,7 +119,7 @@
             <ul class="pagination justify-content-center">
               {% if courses.has_prev %}
                 <li class="page-item">
-                  <a class="page-link" href="{{ url_for('catalog.index', page=courses.prev_num, q=search_q, category=selected_category, department=selected_department, level=selected_level, price=selected_price) }}">Previous</a>
+                  <a class="page-link" href="{{ url_for('catalog.index', page=courses.prev_num, q=search_q, category=selected_category, department=selected_department, level=selected_level, price=selected_price, preview=1 if is_preview else None) }}">Previous</a>
                 </li>
               {% else %}
                 <li class="page-item disabled"><span class="page-link">Previous</span></li>
@@ -126,7 +128,7 @@
               {% for p in courses.iter_pages(left_edge=1, right_edge=1, left_current=2, right_current=2) %}
                 {% if p %}
                   <li class="page-item {% if p == courses.page %}active{% endif %}">
-                    <a class="page-link" href="{{ url_for('catalog.index', page=p, q=search_q, category=selected_category, department=selected_department, level=selected_level, price=selected_price) }}">{{ p }}</a>
+                    <a class="page-link" href="{{ url_for('catalog.index', page=p, q=search_q, category=selected_category, department=selected_department, level=selected_level, price=selected_price, preview=1 if is_preview else None) }}">{{ p }}</a>
                   </li>
                 {% else %}
                   <li class="page-item disabled"><span class="page-link">…</span></li>
@@ -135,7 +137,7 @@
 
               {% if courses.has_next %}
                 <li class="page-item">
-                  <a class="page-link" href="{{ url_for('catalog.index', page=courses.next_num, q=search_q, category=selected_category, department=selected_department, level=selected_level, price=selected_price) }}">Next</a>
+                  <a class="page-link" href="{{ url_for('catalog.index', page=courses.next_num, q=search_q, category=selected_category, department=selected_department, level=selected_level, price=selected_price, preview=1 if is_preview else None) }}">Next</a>
                 </li>
               {% else %}
                 <li class="page-item disabled"><span class="page-link">Next</span></li>
@@ -150,7 +152,7 @@
           <h4>No Courses Found</h4>
           <p class="text-muted">No courses matched your search or filter criteria. Try adjusting your search query.</p>
           <div>
-            <a href="{{ url_for('catalog.index') }}" class="btn btn-primary">Clear Filters</a>
+            <a href="{{ url_for('catalog.index') }}{{ preview_qs }}" class="btn btn-primary">Clear Filters</a>
           </div>
         </div>
       {% endif %}

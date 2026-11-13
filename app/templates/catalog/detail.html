@@ -218,7 +218,7 @@
             </form>
           {% endif %}
 
-          {% if current_user.is_authenticated %}
+          {% if current_user.is_authenticated and not is_preview %}
             <form action="{{ url_for('learning.toggle_wishlist', course_id=course.id) }}" method="POST">
               <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
               <button type="submit" class="btn btn-outline-secondary w-100">
@@ -237,7 +237,7 @@
           <li><i class="bi bi-chat-dots text-secondary me-2"></i>Course discussion forums</li>
         </ul>
 
-        {% if current_user.is_authenticated and (current_user.is_admin or course.is_instructor(current_user.id)) %}
+        {% if current_user.is_authenticated and not is_preview and (current_user.is_admin or course.is_instructor(current_user.id)) %}
           <hr>
           <div class="text-center">
             <span class="badge bg-warning-subtle text-warning mb-2">Instructor Access</span>

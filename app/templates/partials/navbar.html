@@ -1,12 +1,13 @@
-{% set is_preview = request.args.get('preview') %}
-{% set is_admin_panel = (request.blueprint == 'admin') and not is_preview %}
-{% set is_user_logged_in = current_user.is_authenticated and not is_preview %}
-{% set is_admin_user = current_user.is_authenticated and current_user.is_admin and not is_preview %}
+{% set is_preview = is_preview if is_preview is defined else (True if (request.args.get('preview') == '1' or session.get('live_preview')) and request.blueprint != 'admin' else False) %}
+{% set preview_qs = preview_qs if preview_qs is defined else ('?preview=1' if is_preview else '') %}
+{% set is_admin_panel = (request.blueprint == 'admin') %}
+{% set is_user_logged_in = current_user.is_authenticated and not (is_preview and not is_admin_panel) %}
+{% set is_admin_user = current_user.is_authenticated and current_user.is_admin and not (is_preview and not is_admin_panel) %}
 
 <nav class="navbar navbar-expand-lg navbar-glass sticky-top py-2">
   <div class="container-fluid px-xl-5 px-lg-4 px-3">
     <!-- Brand Logo & Name -->
-    <a class="navbar-brand d-flex align-items-center gap-2 text-decoration-none me-2" href="{{ url_for('admin.dashboard') if (is_admin_panel or is_admin_user) else url_for('catalog.home') }}">
+    <a class="navbar-brand d-flex align-items-center gap-2 text-decoration-none me-2" href="{{ url_for('admin.dashboard') if (is_admin_panel or is_admin_user) else (url_for('catalog.home') ~ preview_qs) }}">
       <div class="brand-logo-squircle">
         <i class="bi bi-mortarboard-fill"></i>
       </div>
@@ -28,7 +29,7 @@
           <span class="text-uppercase fw-bold text-muted small" style="font-size: 0.72rem; letter-spacing: 0.05em;">Career Tracks & Specializations</span>
         </div>
         <div class="d-flex flex-column gap-1">
-          <a href="{{ url_for('catalog.roadmap_detail', slug='ai-engineer-roadmap') }}" class="explore-item">
+          <a href="{{ url_for('catalog.roadmap_detail', slug='ai-engineer-roadmap') }}{{ preview_qs }}" class="explore-item">
             <div class="explore-icon-box" style="background: rgba(99, 102, 241, 0.12); color: #6366f1;">
               <i class="bi bi-cpu-fill"></i>
             </div>
@@ -37,7 +38,7 @@
               <div class="text-muted" style="font-size: 0.75rem;">Machine Learning, PyTorch, LLMs & LangChain</div>
             </div>
           </a>
-          <a href="{{ url_for('catalog.roadmap_detail', slug='full-stack-web-roadmap') }}" class="explore-item">
+          <a href="{{ url_for('catalog.roadmap_detail', slug='full-stack-web-roadmap') }}{{ preview_qs }}" class="explore-item">
             <div class="explore-icon-box" style="background: rgba(14, 165, 233, 0.12); color: #0ea5e9;">
               <i class="bi bi-code-slash"></i>
             </div>
@@ -46,7 +47,7 @@
               <div class="text-muted" style="font-size: 0.75rem;">Modern JS, Python Flask, React 18, APIs</div>
             </div>
           </a>
-          <a href="{{ url_for('catalog.roadmap_detail', slug='cloud-devops-roadmap') }}" class="explore-item">
+          <a href="{{ url_for('catalog.roadmap_detail', slug='cloud-devops-roadmap') }}{{ preview_qs }}" class="explore-item">
             <div class="explore-icon-box" style="background: rgba(5, 150, 105, 0.12); color: #059669;">
               <i class="bi bi-cloud-check-fill"></i>
             </div>
@@ -55,7 +56,7 @@
               <div class="text-muted" style="font-size: 0.75rem;">Linux Systems, Docker, CI/CD, Kubernetes</div>
             </div>
           </a>
-          <a href="{{ url_for('catalog.roadmap_detail', slug='cybersecurity-roadmap') }}" class="explore-item">
+          <a href="{{ url_for('catalog.roadmap_detail', slug='cybersecurity-roadmap') }}{{ preview_qs }}" class="explore-item">
             <div class="explore-icon-box" style="background: rgba(220, 38, 38, 0.12); color: #dc2626;">
               <i class="bi bi-shield-lock-fill"></i>
             </div>
@@ -64,7 +65,7 @@
               <div class="text-muted" style="font-size: 0.75rem;">Ethical Hacking, OWASP Top 10, PenTesting</div>
             </div>
           </a>
-          <a href="{{ url_for('catalog.roadmap_detail', slug='data-engineering-roadmap') }}" class="explore-item">
+          <a href="{{ url_for('catalog.roadmap_detail', slug='data-engineering-roadmap') }}{{ preview_qs }}" class="explore-item">
             <div class="explore-icon-box" style="background: rgba(217, 119, 6, 0.12); color: #d97706;">
               <i class="bi bi-database-fill-gear"></i>
             </div>
@@ -73,7 +74,7 @@
               <div class="text-muted" style="font-size: 0.75rem;">SQL Architecture, Redis Caching, Kafka</div>
             </div>
           </a>
-          <a href="{{ url_for('catalog.roadmap_detail', slug='cs-foundations-roadmap') }}" class="explore-item">
+          <a href="{{ url_for('catalog.roadmap_detail', slug='cs-foundations-roadmap') }}{{ preview_qs }}" class="explore-item">
             <div class="explore-icon-box" style="background: rgba(139, 92, 246, 0.12); color: #8b5cf6;">
               <i class="bi bi-mortarboard-fill"></i>
             </div>
@@ -85,10 +86,10 @@
         </div>
         <div class="dropdown-divider my-2"></div>
         <div class="d-flex justify-content-between align-items-center px-2 py-1">
-          <a href="{{ url_for('catalog.roadmaps') }}" class="text-primary text-decoration-none small fw-semibold">
+          <a href="{{ url_for('catalog.roadmaps') }}{{ preview_qs }}" class="text-primary text-decoration-none small fw-semibold">
             <i class="bi bi-signpost-split me-1"></i>All 6 Roadmaps
           </a>
-          <a href="{{ url_for('catalog.index') }}" class="text-secondary text-decoration-none small">
+          <a href="{{ url_for('catalog.index') }}{{ preview_qs }}" class="text-secondary text-decoration-none small">
             Browse Full Catalog <i class="bi bi-arrow-right small ms-0.5"></i>
           </a>
         </div>
@@ -98,6 +99,7 @@
     <!-- Central Omnisearch Bar with Live Search Dropdown (Desktop) -->
     <div class="d-none d-lg-block mx-2 my-0 flex-grow-1 search-form-header nav-search-wrapper" style="max-width: 300px; min-width: 160px;">
       <form action="{{ url_for('catalog.index') }}" method="GET" class="m-0" role="search" id="desktopSearchForm">
+        {% if is_preview %}<input type="hidden" name="preview" value="1">{% endif %}
         <div class="position-relative">
           <i class="bi bi-search position-absolute top-50 start-0 translate-middle-y ms-3 text-muted"></i>
           <input type="search" 
@@ -202,6 +204,7 @@
         {% if not is_admin_panel and not is_admin_user %}
         <div class="d-lg-none mb-3 w-100 nav-search-wrapper">
           <form action="{{ url_for('catalog.index') }}" method="GET" role="search" id="mobileSearchForm">
+            {% if is_preview %}<input type="hidden" name="preview" value="1">{% endif %}
             <div class="position-relative">
               <i class="bi bi-search position-absolute top-50 start-0 translate-middle-y ms-3 text-muted"></i>
               <input type="search" 
@@ -244,11 +247,11 @@
           <!-- 2. Learning & Catalog Section (Students & Non-Admin) -->
           {% if not is_admin_panel and not is_admin_user %}
           <div class="mobile-nav-heading">Learning Hub</div>
-          <a href="{{ url_for('catalog.index') }}" class="mobile-nav-link {% if request.endpoint == 'catalog.index' %}active{% endif %}">
+          <a href="{{ url_for('catalog.index') }}{{ preview_qs }}" class="mobile-nav-link {% if request.endpoint == 'catalog.index' %}active{% endif %}">
             <i class="bi bi-grid-fill text-primary"></i>
             <span>Browse All Courses</span>
           </a>
-          <a href="{{ url_for('catalog.roadmaps') }}" class="mobile-nav-link {% if request.endpoint in ['catalog.roadmaps', 'catalog.roadmap_detail'] %}active{% endif %}">
+          <a href="{{ url_for('catalog.roadmaps') }}{{ preview_qs }}" class="mobile-nav-link {% if request.endpoint in ['catalog.roadmaps', 'catalog.roadmap_detail'] %}active{% endif %}">
             <i class="bi bi-signpost-split-fill text-info"></i>
             <span>Career Roadmaps</span>
           </a>
@@ -265,27 +268,27 @@
 
           <!-- 3. Career Tracks Accordion (Mobile) -->
           <div class="mobile-nav-heading mt-3">Career Pathways</div>
-          <a href="{{ url_for('catalog.roadmap_detail', slug='ai-engineer-roadmap') }}" class="mobile-nav-link">
+          <a href="{{ url_for('catalog.roadmap_detail', slug='ai-engineer-roadmap') }}{{ preview_qs }}" class="mobile-nav-link">
             <i class="bi bi-cpu-fill" style="color: #6366f1;"></i>
             <span>Artificial Intelligence</span>
           </a>
-          <a href="{{ url_for('catalog.roadmap_detail', slug='full-stack-web-roadmap') }}" class="mobile-nav-link">
+          <a href="{{ url_for('catalog.roadmap_detail', slug='full-stack-web-roadmap') }}{{ preview_qs }}" class="mobile-nav-link">
             <i class="bi bi-code-slash" style="color: #0ea5e9;"></i>
             <span>Full-Stack Web Dev</span>
           </a>
-          <a href="{{ url_for('catalog.roadmap_detail', slug='cloud-devops-roadmap') }}" class="mobile-nav-link">
+          <a href="{{ url_for('catalog.roadmap_detail', slug='cloud-devops-roadmap') }}{{ preview_qs }}" class="mobile-nav-link">
             <i class="bi bi-cloud-check-fill" style="color: #059669;"></i>
             <span>Cloud & DevOps</span>
           </a>
-          <a href="{{ url_for('catalog.roadmap_detail', slug='cybersecurity-roadmap') }}" class="mobile-nav-link">
+          <a href="{{ url_for('catalog.roadmap_detail', slug='cybersecurity-roadmap') }}{{ preview_qs }}" class="mobile-nav-link">
             <i class="bi bi-shield-lock-fill" style="color: #dc2626;"></i>
             <span>Cybersecurity</span>
           </a>
-          <a href="{{ url_for('catalog.roadmap_detail', slug='data-engineering-roadmap') }}" class="mobile-nav-link">
+          <a href="{{ url_for('catalog.roadmap_detail', slug='data-engineering-roadmap') }}{{ preview_qs }}" class="mobile-nav-link">
             <i class="bi bi-database-fill-gear" style="color: #d97706;"></i>
             <span>Data Engineering</span>
           </a>
-          <a href="{{ url_for('catalog.roadmap_detail', slug='cs-foundations-roadmap') }}" class="mobile-nav-link">
+          <a href="{{ url_for('catalog.roadmap_detail', slug='cs-foundations-roadmap') }}{{ preview_qs }}" class="mobile-nav-link">
             <i class="bi bi-mortarboard-fill" style="color: #8b5cf6;"></i>
             <span>CS Foundations</span>
           </a>
@@ -502,13 +505,13 @@
             <!-- Standard Catalog & Role Links (Non-Admin Panel) -->
             {% if not is_admin_user %}
             <li class="nav-item">
-              <a class="nav-link nav-pill-link {% if request.endpoint in ['catalog.roadmaps', 'catalog.roadmap_detail'] %}active{% endif %}" href="{{ url_for('catalog.roadmaps') }}">
+              <a class="nav-link nav-pill-link {% if request.endpoint in ['catalog.roadmaps', 'catalog.roadmap_detail'] %}active{% endif %}" href="{{ url_for('catalog.roadmaps') }}{{ preview_qs }}">
                 <i class="bi bi-signpost-split-fill me-1.5 text-primary"></i>
                 <span>Career Roadmaps</span>
               </a>
             </li>
             <li class="nav-item">
-              <a class="nav-link nav-pill-link {% if request.endpoint in ['catalog.index', 'catalog.detail'] %}active{% endif %}" href="{{ url_for('catalog.index') }}">
+              <a class="nav-link nav-pill-link {% if request.endpoint in ['catalog.index', 'catalog.detail'] %}active{% endif %}" href="{{ url_for('catalog.index') }}{{ preview_qs }}">
                 <i class="bi bi-grid-fill me-1.5 text-secondary"></i>
                 <span>Course Catalog</span>
               </a>

@@ -8,8 +8,8 @@
     <!-- Breadcrumb -->
     <nav aria-label="breadcrumb" class="mb-3">
       <ol class="breadcrumb small mb-0">
-        <li class="breadcrumb-item"><a href="{{ url_for('catalog.home') }}" class="text-white opacity-75 text-decoration-none">Home</a></li>
-        <li class="breadcrumb-item"><a href="{{ url_for('catalog.roadmaps') }}" class="text-white opacity-75 text-decoration-none">Career Roadmaps</a></li>
+        <li class="breadcrumb-item"><a href="{{ url_for('catalog.home') }}{{ preview_qs }}" class="text-white opacity-75 text-decoration-none">Home</a></li>
+        <li class="breadcrumb-item"><a href="{{ url_for('catalog.roadmaps') }}{{ preview_qs }}" class="text-white opacity-75 text-decoration-none">Career Roadmaps</a></li>
         <li class="breadcrumb-item active text-white fw-bold" aria-current="page">{{ category.name }}</li>
       </ol>
     </nav>
@@ -95,7 +95,7 @@
             </span>
 
             <!-- Star / Wishlist Toggle Button -->
-            {% if current_user.is_authenticated %}
+            {% if current_user.is_authenticated and not is_preview %}
               <button type="button" 
                       class="btn btn-sm btn-link p-1 position-absolute top-0 end-0 mt-1 me-2 text-decoration-none btn-star-course" 
                       data-course-id="{{ course.id }}"
@@ -192,7 +192,7 @@
               <i class="bi bi-play-circle-fill"></i>
               <span>Watch in Video Player</span>
             </a>
-            <a href="{{ url_for('catalog.detail', course_id=course.id) }}" class="btn-modern-secondary">
+            <a href="{{ url_for('catalog.detail', course_id=course.id) }}{{ preview_qs }}" class="btn-modern-secondary">
               <i class="bi bi-info-circle"></i>
               <span>Course Details</span>
             </a>

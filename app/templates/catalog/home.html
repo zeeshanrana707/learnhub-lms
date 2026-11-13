@@ -8,7 +8,7 @@
     <div class="row justify-content-center">
       <div class="col-lg-8">
         <div class="mb-3">
-          <a href="{{ url_for('catalog.roadmaps') }}" class="hero-badge text-decoration-none d-inline-flex align-items-center gap-2 rounded-pill">
+          <a href="{{ url_for('catalog.roadmaps') }}{{ preview_qs }}" class="hero-badge text-decoration-none d-inline-flex align-items-center gap-2 rounded-pill">
             <span class="hero-badge-tag"><i class="bi bi-stars me-1"></i>Career Roadmaps</span>
             <span class="hero-badge-text">Extend the Possibilities & Limits of Learning</span>
             <i class="bi bi-arrow-right-short hero-badge-arrow fs-5"></i>
@@ -19,10 +19,10 @@
           Explore structured modules, hands-on assignments, timed quizzes, interactive forums, and verifiable certificates.
         </p>
         <div class="d-flex justify-content-center gap-3">
-          <a href="{{ url_for('catalog.index') }}" class="btn btn-primary btn-lg px-4 shadow">
+          <a href="{{ url_for('catalog.index') }}{{ preview_qs }}" class="btn btn-primary btn-lg px-4 shadow">
             <i class="bi bi-compass me-2"></i> Browse All Courses
           </a>
-          {% if not current_user.is_authenticated %}
+          {% if not current_user.is_authenticated or is_preview %}
             <a href="{{ url_for('auth.register') }}" class="btn btn-outline-light btn-lg px-4">
               Get Started Free
             </a>
@@ -67,7 +67,7 @@
       <h2 class="fw-bold mb-1">Career Field Roadmaps</h2>
       <p class="text-muted mb-0">Explore progressive learning paths with topic-by-topic YouTube video lectures from Beginner to Advanced.</p>
     </div>
-    <a href="{{ url_for('catalog.roadmaps') }}" class="btn btn-outline-primary btn-sm">
+    <a href="{{ url_for('catalog.roadmaps') }}{{ preview_qs }}" class="btn btn-outline-primary btn-sm">
       View All Roadmaps <i class="bi bi-arrow-right ms-1"></i>
     </a>
   </div>
@@ -112,7 +112,7 @@
                 {% endif %}
               </div>
             </div>
-            <a href="{{ url_for('catalog.roadmap_detail', slug=cat.slug) }}" class="btn btn-outline-primary btn-sm w-100 mt-auto">
+            <a href="{{ url_for('catalog.roadmap_detail', slug=cat.slug) }}{{ preview_qs }}" class="btn btn-outline-primary btn-sm w-100 mt-auto">
               Explore Roadmap <i class="bi bi-arrow-right ms-1"></i>
             </a>
           </div>
@@ -129,7 +129,7 @@
       <h2 class="fw-bold mb-1">Featured Courses</h2>
       <p class="text-muted mb-0">Handpicked courses designed to advance your web and software engineering career</p>
     </div>
-    <a href="{{ url_for('catalog.index') }}" class="btn btn-outline-primary btn-sm">
+    <a href="{{ url_for('catalog.index') }}{{ preview_qs }}" class="btn btn-outline-primary btn-sm">
       View All <i class="bi bi-arrow-right ms-1"></i>
     </a>
   </div>
@@ -149,7 +149,7 @@
   <div class="row g-3">
     {% for cat in categories %}
       <div class="col-md-3 col-6">
-        <a href="{{ url_for('catalog.index', category=cat.id) }}" class="card text-decoration-none p-3 h-100 border text-center hover-card">
+        <a href="{{ url_for('catalog.index', category=cat.id, preview=1 if is_preview else None) }}" class="card text-decoration-none p-3 h-100 border text-center hover-card">
           <i class="bi bi-folder2-open fs-2 text-primary mb-2"></i>
           <h6 class="fw-bold text-dark mb-1">{{ cat.name }}</h6>
           <span class="text-muted small">{{ cat.courses|length }} courses</span>

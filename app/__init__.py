@@ -1,6 +1,6 @@
 import os
 from datetime import datetime, timezone
-from flask import Flask, render_template, session
+from flask import Flask, render_template, session, request
 from sqlalchemy import event
 from sqlalchemy.engine import Engine
 
@@ -86,6 +86,13 @@ def create_app(config_name: str = None) -> Flask:
             return f"{hours} hr" if hours == 1 else f"{hours} hrs"
         return f"{hours}h {rem}m"
 
+    @app.before_request
+    def check_live_preview():
+        if request.args.get('preview') == '1':
+            session['live_preview'] = True
+        elif request.args.get('exit_preview') == '1':
+            session.pop('live_preview', None)
+
     # Context processors for global navbar indicators
     @app.context_processor
     def inject_global_data():
@@ -93,6 +100,8 @@ def create_app(config_name: str = None) -> Flask:
         from flask import url_for
         from app.models.catalog import Course, Category, Roadmap
         from app.models.content import Wishlist
+        is_preview = bool((request.args.get('preview') == '1' or session.get('live_preview')) and request.blueprint != 'admin')
+        preview_qs = '?preview=1' if is_preview else ''
         cart_count = len(session.get('cart', []))
         unread_notifs = 0
         unread_msgs = 0
@@ -168,6 +177,8 @@ def create_app(config_name: str = None) -> Flask:
         except Exception:
             navbar_roadmaps = []
         return {
+            'is_preview': is_preview,
+            'preview_qs': preview_qs,
             'cart_count': cart_count,
             'wishlist_count': wishlist_count,
             'unread_notifications_count': unread_notifs,

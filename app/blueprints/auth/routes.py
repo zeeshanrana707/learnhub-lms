@@ -1,5 +1,5 @@
 from datetime import datetime, timezone
-from flask import Blueprint, render_template, redirect, url_for, flash, request, current_app
+from flask import Blueprint, render_template, redirect, url_for, flash, request, current_app, session
 from flask_login import login_user, logout_user, login_required, current_user
 from itsdangerous import URLSafeTimedSerializer, SignatureExpired, BadSignature
 from app.extensions import db
@@ -118,6 +118,7 @@ def redirect_by_role(user):
 @login_required
 def logout():
     log_action(current_user, 'logout', 'User', current_user.id, f"User {current_user.username} logged out")
+    session.pop('live_preview', None)
     logout_user()
     flash('You have been logged out successfully.', 'info')
     return redirect(url_for('catalog.index'))
