@@ -3,22 +3,6 @@
 {% set is_user_logged_in = current_user.is_authenticated and not is_preview %}
 {% set is_admin_user = current_user.is_authenticated and current_user.is_admin and not is_preview %}
 
-{% if is_preview %}
-<!-- Guest Live Preview Banner -->
-<div class="guest-preview-banner py-2 px-3 text-white d-flex align-items-center justify-content-between" style="background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); border-bottom: 1px solid rgba(255,255,255,0.12); position: sticky; top: 0; z-index: 1040;">
-  <div class="container-fluid px-xl-5 px-lg-4 px-3 d-flex align-items-center justify-content-between">
-    <div class="d-flex align-items-center gap-2">
-      <span class="badge bg-primary text-white px-2 py-1 fw-bold"><i class="bi bi-eye-fill me-1"></i>Guest Live Preview</span>
-      <span class="small text-light d-none d-sm-inline">Viewing the live website as an external visitor (guest mode &mdash; no admin or student credentials).</span>
-    </div>
-    <a href="{{ url_for('admin.dashboard') }}" class="btn btn-outline-light btn-sm rounded-pill px-3 py-1 fw-semibold d-flex align-items-center gap-1.5" style="font-size: 0.78rem;">
-      <i class="bi bi-arrow-left"></i>
-      <span>Back to Admin Panel</span>
-    </a>
-  </div>
-</div>
-{% endif %}
-
 <nav class="navbar navbar-expand-lg navbar-glass sticky-top py-2">
   <div class="container-fluid px-xl-5 px-lg-4 px-3">
     <!-- Brand Logo & Name -->
