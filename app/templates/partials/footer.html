@@ -1,17 +1,19 @@
-<footer class="bg-white border-top py-2.5 mt-auto footer-slim">
+<footer class="bg-white border-top py-4 mt-auto footer-standard">
   <div class="container">
-    <div class="d-flex flex-column flex-md-row align-items-center justify-content-between gap-2 text-muted" style="font-size: 0.82rem;">
-      <div class="d-flex align-items-center gap-2">
-        <div class="brand-logo-squircle" style="width: 24px; height: 24px; font-size: 0.75rem; border-radius: 6px;">
+    <div class="d-flex flex-column flex-md-row align-items-center justify-content-between gap-3 text-muted" style="font-size: 0.88rem;">
+      <div class="d-flex align-items-center gap-2.5">
+        <div class="brand-logo-squircle" style="width: 30px; height: 30px; font-size: 0.9rem; border-radius: 8px;">
           <i class="bi bi-mortarboard-fill"></i>
         </div>
-        <span class="fw-bold text-dark">LearnHub<span class="text-primary">.</span></span>
-        <span class="text-muted d-none d-sm-inline opacity-75">| Free Career Roadmaps & Interactive Learning</span>
+        <div>
+          <span class="fw-bold text-dark fs-6">LearnHub<span class="text-primary">.</span></span>
+          <span class="text-muted small ms-2 d-none d-sm-inline opacity-75">Free Career Roadmaps & Interactive Learning</span>
+        </div>
       </div>
-      <div class="d-flex align-items-center gap-3">
+      <div class="d-flex align-items-center gap-3 flex-wrap justify-content-center">
         <a href="{{ url_for('catalog.index') }}" class="text-secondary text-decoration-none">Courses</a>
         <span class="opacity-40">•</span>
-        <a href="{{ url_for('catalog.roadmaps') }}" class="text-secondary text-decoration-none">Roadmaps</a>
+        <a href="{{ url_for('catalog.roadmaps') }}" class="text-secondary text-decoration-none">Career Roadmaps</a>
         <span class="opacity-40">•</span>
         {% if current_user.is_authenticated %}
           <a href="{{ url_for('learning.my_learning') }}" class="text-secondary text-decoration-none">My Learning</a>
@@ -19,7 +21,7 @@
           <a href="{{ url_for('auth.login') }}" class="text-secondary text-decoration-none">Sign In</a>
         {% endif %}
         <span class="opacity-40">•</span>
-        <span>&copy; {{ current_year }} LearnHub</span>
+        <span class="text-muted">&copy; {{ current_year }} LearnHub</span>
       </div>
     </div>
   </div>

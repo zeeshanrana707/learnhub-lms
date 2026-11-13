@@ -1583,17 +1583,20 @@ main {
   color: #f8fafc !important;
 }
 
-/* Slim Footer Styling */
-.footer-slim {
+/* Standard Footer Styling */
+.footer-standard {
+  min-height: 72px;
+  display: flex;
+  align-items: center;
   transition: background-color 0.2s ease, border-color 0.2s ease;
 }
 
-[data-bs-theme="dark"] .footer-slim {
+[data-bs-theme="dark"] .footer-standard {
   background-color: #0b1329 !important;
   border-color: #1e293b !important;
 }
 
-[data-bs-theme="dark"] .footer-slim .text-dark {
+[data-bs-theme="dark"] .footer-standard .text-dark {
   color: #f8fafc !important;
 }
 
