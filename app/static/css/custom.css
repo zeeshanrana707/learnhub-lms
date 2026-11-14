@@ -589,11 +589,11 @@ main {
    ======================================================== */
 
 .navbar-glass {
-  background-color: rgba(255, 255, 255, 0.92) !important;
+  background-color: #f1f5f9 !important;
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
-  border-bottom: 1px solid rgba(226, 232, 240, 0.85);
-  box-shadow: 0 4px 20px -4px rgba(15, 23, 42, 0.05);
+  border-bottom: 1px solid #e2e8f0 !important;
+  box-shadow: 0 4px 20px -4px rgba(15, 23, 42, 0.06);
   transition: background-color 0.2s ease, box-shadow 0.2s ease;
   min-height: 64px;
 }
@@ -625,8 +625,8 @@ main {
 
 /* Central Omnisearch */
 .nav-search-control {
-  background-color: #f1f5f9;
-  border: 1px solid transparent;
+  background-color: #ffffff;
+  border: 1px solid #cbd5e1;
   color: #1e293b;
   font-size: 0.875rem;
   transition: all 0.2s ease;
@@ -634,8 +634,8 @@ main {
 
 .nav-search-control:focus {
   background-color: #ffffff;
-  border-color: #93c5fd;
-  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+  border-color: #818cf8;
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15);
   outline: none;
 }
 
@@ -672,7 +672,7 @@ main {
 }
 
 .nav-pill-link:hover {
-  background-color: #f1f5f9;
+  background-color: #e2e8f0;
   color: #0f172a !important;
 }
 
@@ -749,7 +749,7 @@ main {
 }
 
 .btn-nav-icon:hover {
-  background-color: #f1f5f9;
+  background-color: #e2e8f0;
   color: #0f172a;
   transform: scale(1.06);
 }
