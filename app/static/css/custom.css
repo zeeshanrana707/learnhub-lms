@@ -330,26 +330,137 @@ main {
   border-radius: 20px;
 }
 
-/* Roadmap Key Skill Pills - High Contrast & Crisp */
+/* Roadmap Key Skill Pills - Realistic Tactile Design & Smooth Hover */
 .skill-pill {
-  background-color: #ffffff !important;
+  background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%) !important;
   color: #0f172a !important;
-  border: 1px solid rgba(226, 232, 240, 0.9) !important;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12) !important;
+  border: 1px solid rgba(226, 232, 240, 0.95) !important;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08), 0 1px 2px -1px rgba(0, 0, 0, 0.06), inset 0 1px 0 rgba(255, 255, 255, 0.9) !important;
   font-weight: 600 !important;
   font-size: 0.85rem !important;
   display: inline-flex !important;
   align-items: center !important;
-  padding: 0.45rem 0.9rem !important;
+  padding: 0.45rem 0.95rem !important;
   border-radius: 50rem !important;
   line-height: 1.2 !important;
   text-decoration: none !important;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1) !important;
+  cursor: pointer;
+  user-select: none;
+  position: relative;
+  will-change: transform, box-shadow;
+}
+
+.skill-pill-text {
+  color: #0f172a !important;
+  font-weight: 600;
+  transition: color 0.2s ease;
 }
 
 .skill-pill i {
   color: #2563eb !important;
-  margin-right: 0.35rem !important;
-  font-size: 0.9rem !important;
+  margin-right: 0.4rem !important;
+  font-size: 0.95rem !important;
+  transition: transform 0.28s cubic-bezier(0.34, 1.56, 0.64, 1), color 0.2s ease !important;
+  display: inline-block;
+}
+
+/* Realistic Hover State */
+.skill-pill:hover {
+  background: linear-gradient(180deg, #ffffff 0%, #eff6ff 100%) !important;
+  border-color: #818cf8 !important;
+  transform: translateY(-3px) scale(1.03) !important;
+  box-shadow: 0 10px 22px -3px rgba(99, 102, 241, 0.22), 0 4px 6px -2px rgba(15, 23, 42, 0.08), inset 0 1px 0 #ffffff !important;
+}
+
+.skill-pill:hover .skill-pill-text {
+  color: #312e81 !important;
+}
+
+.skill-pill:hover i {
+  color: #4f46e5 !important;
+  transform: scale(1.22) rotate(6deg);
+}
+
+/* Active / Pressed state */
+.skill-pill:active {
+  transform: translateY(-1px) scale(0.99) !important;
+  box-shadow: 0 3px 8px -1px rgba(99, 102, 241, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.8) !important;
+}
+
+/* Key Skills Label Badge Glassmorphism */
+.key-skills-label-badge {
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  transition: all 0.25s ease !important;
+  cursor: default;
+  user-select: none;
+}
+
+.key-skills-label-badge:hover {
+  background: rgba(0, 0, 0, 0.55) !important;
+  border-color: rgba(255, 255, 255, 0.5) !important;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.3) !important;
+}
+
+.key-skills-label-badge i {
+  transition: transform 0.25s ease;
+  display: inline-block;
+}
+
+.key-skills-label-badge:hover i {
+  transform: rotate(-15deg) scale(1.1);
+}
+
+/* Small Skill Pills in Roadmaps List */
+.skill-pill-sm {
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1) !important;
+  cursor: pointer;
+  user-select: none;
+}
+
+.skill-pill-sm:hover {
+  transform: translateY(-2px) scale(1.04) !important;
+  background-color: #dbeafe !important;
+  border-color: #60a5fa !important;
+  color: #1d4ed8 !important;
+  box-shadow: 0 4px 10px -2px rgba(37, 99, 235, 0.2) !important;
+}
+
+.skill-pill-sm:hover i {
+  transform: scale(1.15);
+  display: inline-block;
+}
+
+/* Dark Mode Support for Skill Pills */
+[data-bs-theme="dark"] .skill-pill {
+  background: linear-gradient(180deg, #1e293b 0%, #0f172a 100%) !important;
+  color: #f1f5f9 !important;
+  border-color: rgba(51, 65, 85, 0.8) !important;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.08) !important;
+}
+
+[data-bs-theme="dark"] .skill-pill .skill-pill-text {
+  color: #f1f5f9 !important;
+}
+
+[data-bs-theme="dark"] .skill-pill i {
+  color: #60a5fa !important;
+}
+
+[data-bs-theme="dark"] .skill-pill:hover {
+  background: linear-gradient(180deg, #312e81 0%, #1e1b4b 100%) !important;
+  border-color: #818cf8 !important;
+  box-shadow: 0 10px 22px -3px rgba(0, 0, 0, 0.6), 0 0 15px rgba(99, 102, 241, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.15) !important;
+}
+
+[data-bs-theme="dark"] .skill-pill:hover .skill-pill-text {
+  color: #ffffff !important;
+}
+
+[data-bs-theme="dark"] .skill-pill:hover i {
+  color: #a5b4fc !important;
 }
 
 /* Certificate styling */
