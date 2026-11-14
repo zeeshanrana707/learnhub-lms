@@ -1544,6 +1544,82 @@ main {
   box-sizing: border-box;
 }
 
+/* Progression Track Smooth Hover & Transitions */
+.progression-track-link {
+  display: block;
+  text-decoration: none !important;
+  color: inherit !important;
+}
+
+.progression-track-item {
+  background-color: #f8fafc !important;
+  border: 1px solid #e2e8f0 !important;
+  border-radius: 0.5rem !important;
+  transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1) !important;
+  cursor: pointer;
+  position: relative;
+}
+
+.progression-track-title {
+  color: #334155 !important;
+  font-weight: 500;
+  transition: color 0.2s ease, font-weight 0.2s ease;
+}
+
+.progression-track-badge {
+  transition: transform 0.22s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.22s ease !important;
+}
+
+.progression-track-meta {
+  transition: color 0.2s ease;
+}
+
+/* Progression Track Hover State */
+.progression-track-item:hover {
+  background-color: #eff6ff !important;
+  border-color: #818cf8 !important;
+  transform: translateX(4px);
+  box-shadow: 0 4px 12px -2px rgba(99, 102, 241, 0.18) !important;
+}
+
+.progression-track-item:hover .progression-track-title {
+  color: #4338ca !important;
+  font-weight: 600 !important;
+}
+
+.progression-track-item:hover .progression-track-badge {
+  transform: scale(1.08);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15) !important;
+}
+
+.progression-track-item:hover .progression-track-meta {
+  color: #1e293b !important;
+}
+
+/* Dark Mode Compatibility for Progression Tracks */
+[data-bs-theme="dark"] .progression-track-item {
+  background-color: #0f172a !important;
+  border-color: rgba(51, 65, 85, 0.8) !important;
+}
+
+[data-bs-theme="dark"] .progression-track-title {
+  color: #cbd5e1 !important;
+}
+
+[data-bs-theme="dark"] .progression-track-item:hover {
+  background-color: #1e1b4b !important;
+  border-color: #6366f1 !important;
+  box-shadow: 0 4px 14px -2px rgba(99, 102, 241, 0.35) !important;
+}
+
+[data-bs-theme="dark"] .progression-track-item:hover .progression-track-title {
+  color: #c7d2fe !important;
+}
+
+[data-bs-theme="dark"] .progression-track-item:hover .progression-track-meta {
+  color: #e2e8f0 !important;
+}
+
 /* Course Detail Sticky Sidebar & Highlight Card */
 @media (min-width: 992px) {
   .course-detail-sticky {
