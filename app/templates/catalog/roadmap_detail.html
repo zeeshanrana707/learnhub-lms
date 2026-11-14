@@ -94,15 +94,26 @@
 
 <div class="container pb-5">
   <!-- Interactive Visual Stepper -->
-  <div class="card shadow-sm border-0 p-4 mb-5 bg-light">
-    <h5 class="fw-bold mb-3"><i class="bi bi-signpost-2-fill text-primary me-2"></i>Roadmap Learning Path Stages</h5>
+  <div class="card border-0 p-4 mb-5 roadmap-stages-container">
+    <div class="d-flex align-items-center justify-content-between mb-4 flex-wrap gap-2">
+      <div class="d-flex align-items-center gap-2">
+        <div class="brand-logo-squircle" style="width: 32px; height: 32px; font-size: 0.95rem;">
+          <i class="bi bi-cpu-fill"></i>
+        </div>
+        <h5 class="fw-bold mb-0 text-dark">Roadmap Learning Path Stages</h5>
+      </div>
+      <span class="badge tech-badge-count">
+        <i class="bi bi-terminal-fill me-1"></i>{{ courses|length }} SEQUENTIAL STAGES
+      </span>
+    </div>
+
     <div class="row g-3 text-center">
       {% for course in courses %}
         {% set st = student_status.get(course.id, {}) if student_status else {} %}
         <div class="col-md-{{ 12 // courses|length if courses|length <= 4 else 3 }}">
-          <div class="card h-100 p-3 shadow-sm position-relative stage-card-hover">
-            <span class="position-absolute top-0 start-50 translate-middle badge rounded-pill bg-dark text-white shadow-sm px-2.5 py-1">
-              Stage {{ loop.index }}
+          <div class="card h-100 p-3 stage-card-computing">
+            <span class="stage-tech-badge">
+              STAGE 0{{ loop.index }}
             </span>
 
             <!-- Star / Wishlist Toggle Button -->
@@ -111,37 +122,48 @@
                       class="btn btn-sm btn-link p-1 position-absolute top-0 end-0 mt-1 me-2 text-decoration-none btn-star-course" 
                       data-course-id="{{ course.id }}"
                       onclick="toggleCourseStar(this, {{ course.id }})" 
-                      title="{% if st.get('is_wishlisted') %}Starred course (click to unstar){% else %}Star this course{% endif %}">
+                      title="{% if st.get('is_wishlisted') %}Starred course (click to unstar){% else %}Star this course{% endif %}"
+                      style="z-index: 5;">
                 <i class="bi {% if st.get('is_wishlisted') %}bi-star-fill text-warning{% else %}bi-star text-secondary opacity-50{% endif %} fs-5"></i>
               </button>
             {% else %}
               <a href="{{ url_for('auth.login', next=request.path) }}"
                  class="btn btn-sm btn-link p-1 position-absolute top-0 end-0 mt-1 me-2 text-decoration-none" 
-                 title="Log in to star course">
+                 title="Log in to star course"
+                 style="z-index: 5;">
                 <i class="bi bi-star text-secondary opacity-50 fs-5"></i>
               </a>
             {% endif %}
 
-            <div class="mt-2 mb-2">
-              <h6 class="fw-bold text-dark mb-1">{{ course.title }}</h6>
-              <div class="text-muted small"><i class="bi bi-person-fill text-primary me-1"></i>{{ course.instructor_name }}</div>
-              <div class="text-muted small"><i class="bi bi-people-fill text-info me-1"></i>{{ course.total_enrolled_students }} {{ 'student' if course.total_enrolled_students == 1 else 'students' }} • {{ course.total_lessons }} topics</div>
+            <div class="mt-2 mb-3">
+              <h6 class="stage-card-title mb-2 text-start">{{ course.title }}</h6>
+              <div class="stage-card-meta text-start d-flex flex-column gap-1">
+                <div class="d-flex align-items-center gap-1.5 text-truncate">
+                  <i class="bi bi-person-badge text-primary"></i>
+                  <span>{{ course.instructor_name }}</span>
+                </div>
+                <div class="d-flex align-items-center gap-1.5 text-truncate">
+                  <i class="bi bi-play-circle text-danger"></i>
+                  <span>{{ course.total_lessons }} Topics • {{ course.total_enrolled_students }} {{ 'student' if course.total_enrolled_students == 1 else 'students' }}</span>
+                </div>
+              </div>
             </div>
+
             <div class="mt-auto">
               {% if st.get('completed') %}
-                <a href="{{ url_for('learning.course_overview', course_id=course.id) }}" class="btn btn-sm btn-outline-success w-100 py-1.5 fw-semibold d-flex align-items-center justify-content-center gap-1 shadow-sm btn-tactile">
+                <a href="{{ url_for('learning.course_overview', course_id=course.id) }}" class="btn-stage-action btn-stage-action-success w-100 shadow-sm">
                   <i class="bi bi-check-circle-fill"></i> Completed (100%)
                 </a>
               {% elif st.get('enrolled') %}
-                <a href="{{ url_for('learning.course_overview', course_id=course.id) }}" class="btn btn-sm btn-hero-primary w-100 py-1.5 fw-semibold d-flex align-items-center justify-content-center gap-1 shadow-sm">
+                <a href="{{ url_for('learning.course_overview', course_id=course.id) }}" class="btn-stage-action btn-stage-action-primary w-100 shadow-sm">
                   <i class="bi bi-play-circle-fill"></i> Continue ({{ st.progress_pct|int }}%)
                 </a>
               {% elif st.get('prereqs_met') == False %}
-                <button type="button" class="btn btn-sm btn-secondary w-100 py-1.5 fw-semibold d-flex align-items-center justify-content-center gap-1 opacity-75" disabled title="Complete previous stages to unlock">
+                <button type="button" class="btn btn-sm btn-secondary w-100 py-2 fw-semibold d-flex align-items-center justify-content-center gap-1 opacity-75 rounded-3" disabled title="Complete previous stages to unlock">
                   <i class="bi bi-lock-fill"></i> Locked
                 </button>
               {% else %}
-                <a href="{{ url_for('learning.start_course', course_id=course.id) }}" class="btn btn-sm btn-hero-primary w-100 py-1.5 fw-semibold d-flex align-items-center justify-content-center gap-1 shadow-sm">
+                <a href="{{ url_for('learning.start_course', course_id=course.id) }}" class="btn-stage-action btn-stage-action-primary w-100 shadow-sm">
                   <i class="bi bi-play-fill fs-6"></i> Ready to Start
                 </a>
               {% endif %}
