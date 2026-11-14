@@ -1585,8 +1585,8 @@ main {
 
 /* Standard Footer Styling */
 .footer-standard {
-  min-height: 60px;
-  padding: 12px 14px 20px 14px !important;
+  min-height: auto !important;
+  padding: 12px 14px 0px 14px !important;
   display: flex;
   align-items: center;
   transition: background-color 0.2s ease, border-color 0.2s ease;
