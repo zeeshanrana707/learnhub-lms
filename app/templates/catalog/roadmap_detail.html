@@ -47,32 +47,43 @@
 
       <!-- Quick Summary Box -->
       <div class="col-lg-4 text-center mt-4 mt-lg-0">
-        <div class="card p-4 rounded-4 shadow border-0 bg-white text-dark text-start">
-          <h6 class="fw-bold text-uppercase text-muted small mb-2">Target Job Outcomes</h6>
+        <div class="card p-4 shadow border-0 text-dark text-start roadmap-summary-card">
+          <div class="d-flex align-items-center gap-2 mb-2.5">
+            <i class="bi bi-briefcase-fill text-primary fs-6"></i>
+            <h6 class="fw-bold text-uppercase text-secondary small mb-0" style="letter-spacing: 0.05em; font-size: 0.76rem;">Target Job Outcomes</h6>
+          </div>
           <div class="d-flex flex-column gap-2 mb-3">
             {% for r in meta.target_roles %}
-              <div class="d-flex align-items-center gap-2 small">
-                <i class="bi bi-check-circle-fill text-success"></i>
-                <span class="fw-semibold">{{ r }}</span>
+              <div class="d-flex align-items-center gap-2 p-1.5 px-2.5 rounded-3 job-outcome-item">
+                <i class="bi bi-check-circle-fill text-success fs-6 flex-shrink-0"></i>
+                <span class="fw-semibold job-outcome-title" style="font-size: 0.88rem;">{{ r }}</span>
               </div>
             {% endfor %}
           </div>
-          <hr class="my-2">
-          <h6 class="fw-bold text-uppercase text-muted small mb-2">Skills You'll Master</h6>
-          <div class="d-flex flex-wrap gap-1 mb-3">
+          <div class="roadmap-summary-divider my-2.5"></div>
+          <div class="d-flex align-items-center gap-2 mb-2.5">
+            <i class="bi bi-stars text-primary fs-6"></i>
+            <h6 class="fw-bold text-uppercase text-secondary small mb-0" style="letter-spacing: 0.05em; font-size: 0.76rem;">Skills You'll Master</h6>
+          </div>
+          <div class="d-flex flex-wrap gap-1.5 mb-3">
             {% for sk in meta.skills %}
-              <span class="badge bg-primary-subtle text-primary border border-primary-subtle small fw-semibold px-2 py-1">
-                <i class="bi bi-check2 me-1"></i>{{ sk }}
+              <span class="skill-tag-pill">
+                <i class="bi bi-check2 text-primary"></i>{{ sk }}
               </span>
             {% endfor %}
           </div>
-          <hr class="my-2">
-          <div class="small text-muted mb-3">
+          <div class="roadmap-summary-divider my-2.5"></div>
+          <div class="roadmap-guide-tip p-2.5 mb-3">
+            <i class="bi bi-info-circle-fill text-primary me-1.5"></i>
             Follow this roadmap in order. Complete each stage's topic videos and quizzes to unlock the next level!
           </div>
           {% if courses %}
-            <a href="{{ url_for('learning.start_course', course_id=courses[0].id) }}" class="btn btn-primary w-100 fw-semibold shadow-sm btn-tactile">
-              <i class="bi bi-play-fill me-1"></i> Start Stage 1
+            <a href="{{ url_for('learning.start_course', course_id=courses[0].id) }}" class="btn-stage-launch w-100">
+              <span class="btn-stage-launch-icon">
+                <i class="bi bi-play-fill"></i>
+              </span>
+              <span>Start Stage 1</span>
+              <i class="bi bi-arrow-right btn-stage-launch-arrow ms-auto"></i>
             </a>
           {% endif %}
         </div>
@@ -89,7 +100,7 @@
       {% for course in courses %}
         {% set st = student_status.get(course.id, {}) if student_status else {} %}
         <div class="col-md-{{ 12 // courses|length if courses|length <= 4 else 3 }}">
-          <div class="card h-100 border p-3 bg-white shadow-sm position-relative stage-card-hover">
+          <div class="card h-100 p-3 shadow-sm position-relative stage-card-hover">
             <span class="position-absolute top-0 start-50 translate-middle badge rounded-pill bg-dark text-white shadow-sm px-2.5 py-1">
               Stage {{ loop.index }}
             </span>
@@ -122,7 +133,7 @@
                   <i class="bi bi-check-circle-fill"></i> Completed (100%)
                 </a>
               {% elif st.get('enrolled') %}
-                <a href="{{ url_for('learning.course_overview', course_id=course.id) }}" class="btn btn-sm btn-primary w-100 py-1.5 fw-semibold d-flex align-items-center justify-content-center gap-1 shadow-sm btn-tactile">
+                <a href="{{ url_for('learning.course_overview', course_id=course.id) }}" class="btn btn-sm btn-hero-primary w-100 py-1.5 fw-semibold d-flex align-items-center justify-content-center gap-1 shadow-sm">
                   <i class="bi bi-play-circle-fill"></i> Continue ({{ st.progress_pct|int }}%)
                 </a>
               {% elif st.get('prereqs_met') == False %}
@@ -130,7 +141,7 @@
                   <i class="bi bi-lock-fill"></i> Locked
                 </button>
               {% else %}
-                <a href="{{ url_for('learning.start_course', course_id=course.id) }}" class="btn btn-sm btn-primary w-100 py-1.5 fw-semibold d-flex align-items-center justify-content-center gap-1 shadow-sm btn-tactile">
+                <a href="{{ url_for('learning.start_course', course_id=course.id) }}" class="btn btn-sm btn-hero-primary w-100 py-1.5 fw-semibold d-flex align-items-center justify-content-center gap-1 shadow-sm">
                   <i class="bi bi-play-fill fs-6"></i> Ready to Start
                 </a>
               {% endif %}

@@ -543,6 +543,206 @@ main {
   color: #eab308 !important;
 }
 
+/* ========================================================
+   Roadmap Summary Card & Enhanced Launch Button
+   ======================================================== */
+
+.roadmap-summary-card {
+  background-color: #f1f5f9 !important;
+  border: 1px solid #e2e8f0 !important;
+  border-radius: 1.25rem !important;
+  box-shadow: 0 14px 35px -8px rgba(15, 23, 42, 0.12), 0 0 0 1px rgba(226, 232, 240, 0.8) !important;
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.3s ease !important;
+}
+
+.roadmap-summary-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 20px 42px -8px rgba(15, 23, 42, 0.16), 0 0 0 1px rgba(99, 102, 241, 0.25) !important;
+}
+
+.roadmap-summary-divider {
+  border-top: 1px solid #e2e8f0;
+}
+
+.job-outcome-item {
+  background-color: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 0.5rem;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+}
+
+.job-outcome-item:hover {
+  background-color: #eff6ff !important;
+  border-color: #818cf8 !important;
+  transform: translateX(3px);
+  box-shadow: 0 3px 8px -1px rgba(99, 102, 241, 0.15);
+}
+
+.job-outcome-item:hover .job-outcome-title {
+  color: #4338ca !important;
+}
+
+.job-outcome-title {
+  color: #1e293b;
+  transition: color 0.2s ease;
+}
+
+.skill-tag-pill {
+  background: #ffffff !important;
+  border: 1px solid #cbd5e1 !important;
+  color: #334155 !important;
+  font-size: 0.78rem !important;
+  font-weight: 600 !important;
+  padding: 0.25rem 0.65rem !important;
+  border-radius: 50rem !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 0.3rem !important;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04) !important;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1) !important;
+  cursor: default;
+  user-select: none;
+}
+
+.skill-tag-pill:hover {
+  background: #eff6ff !important;
+  border-color: #818cf8 !important;
+  color: #312e81 !important;
+  transform: translateY(-2px) scale(1.04);
+  box-shadow: 0 4px 12px -2px rgba(99, 102, 241, 0.2) !important;
+}
+
+.roadmap-guide-tip {
+  background: rgba(255, 255, 255, 0.7);
+  border: 1px solid #e2e8f0;
+  border-radius: 0.65rem;
+  font-size: 0.8rem;
+  line-height: 1.45;
+  color: #475569;
+}
+
+/* Enhanced Stage 1 Action Button */
+.btn-stage-launch {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 0.65rem !important;
+  padding: 0.8rem 1.4rem !important;
+  border-radius: 0.85rem !important;
+  background: linear-gradient(135deg, #4f46e5 0%, #6366f1 50%, #7c3aed 100%) !important;
+  color: #ffffff !important;
+  border: 1px solid rgba(255, 255, 255, 0.25) !important;
+  font-weight: 700 !important;
+  font-size: 0.98rem !important;
+  letter-spacing: -0.01em !important;
+  box-shadow: 0 8px 24px -4px rgba(99, 102, 241, 0.5), 0 2px 6px rgba(0, 0, 0, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.3) !important;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1) !important;
+  text-decoration: none !important;
+  cursor: pointer !important;
+  position: relative;
+  overflow: hidden;
+}
+
+.btn-stage-launch-icon {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.22);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.05rem;
+  flex-shrink: 0;
+  transition: transform 0.25s ease, background 0.25s ease;
+}
+
+.btn-stage-launch-arrow {
+  font-size: 1.05rem;
+  transition: transform 0.25s ease;
+}
+
+.btn-stage-launch:hover {
+  transform: translateY(-2px) scale(1.02) !important;
+  box-shadow: 0 14px 34px -4px rgba(99, 102, 241, 0.65), 0 0 0 1px rgba(129, 140, 248, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.4) !important;
+  color: #ffffff !important;
+}
+
+.btn-stage-launch:hover .btn-stage-launch-icon {
+  transform: scale(1.15);
+  background: rgba(255, 255, 255, 0.35);
+}
+
+.btn-stage-launch:hover .btn-stage-launch-arrow {
+  transform: translateX(4px);
+}
+
+.btn-stage-launch:active {
+  transform: translateY(0px) scale(0.99) !important;
+  box-shadow: 0 4px 14px rgba(99, 102, 241, 0.4) !important;
+}
+
+/* Stage Cards in the Roadmap Stepper also light grey */
+.stage-card-hover {
+  background-color: #f1f5f9 !important;
+  border: 1px solid #e2e8f0 !important;
+  border-radius: 1rem !important;
+  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.25s ease !important;
+}
+
+.stage-card-hover:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 24px -4px rgba(15, 23, 42, 0.12), 0 0 0 1px rgba(99, 102, 241, 0.2) !important;
+}
+
+/* Dark Mode Overrides */
+[data-bs-theme="dark"] .roadmap-summary-card,
+[data-bs-theme="dark"] .stage-card-hover {
+  background-color: #131c31 !important;
+  border-color: rgba(51, 65, 85, 0.7) !important;
+  box-shadow: 0 14px 35px -8px rgba(0, 0, 0, 0.5) !important;
+}
+
+[data-bs-theme="dark"] .roadmap-summary-divider {
+  border-top-color: rgba(51, 65, 85, 0.7);
+}
+
+[data-bs-theme="dark"] .job-outcome-item {
+  background-color: #0f172a;
+  border-color: rgba(51, 65, 85, 0.7);
+}
+
+[data-bs-theme="dark"] .job-outcome-item:hover {
+  background-color: #1e1b4b !important;
+  border-color: #6366f1 !important;
+}
+
+[data-bs-theme="dark"] .job-outcome-title {
+  color: #f1f5f9;
+}
+
+[data-bs-theme="dark"] .job-outcome-item:hover .job-outcome-title {
+  color: #c7d2fe !important;
+}
+
+[data-bs-theme="dark"] .skill-tag-pill {
+  background-color: #0f172a !important;
+  border-color: rgba(51, 65, 85, 0.8) !important;
+  color: #cbd5e1 !important;
+}
+
+[data-bs-theme="dark"] .skill-tag-pill:hover {
+  background-color: #1e1b4b !important;
+  border-color: #6366f1 !important;
+  color: #ffffff !important;
+}
+
+[data-bs-theme="dark"] .roadmap-guide-tip {
+  background: rgba(15, 23, 42, 0.6);
+  border-color: rgba(51, 65, 85, 0.7);
+  color: #94a3b8;
+}
+
 .stage-card-hover {
   transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
