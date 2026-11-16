@@ -149,10 +149,7 @@
 
   <!-- Interactive Visual Stepper -->
   <div class="card shadow-sm border p-4 mb-5 bg-white rounded-4">
-    <div class="d-flex flex-wrap justify-content-between align-items-center mb-3">
-      <h5 class="fw-bold mb-0"><i class="bi bi-signpost-2-fill text-primary me-2"></i>Roadmap Learning Path Stages</h5>
-      <span class="small text-muted"><i class="bi bi-arrow-right me-1"></i>Follow sequence from left to right</span>
-    </div>
+    <h5 class="fw-bold mb-3"><i class="bi bi-signpost-2-fill text-primary me-2"></i>Roadmap Learning Path Stages</h5>
     <div class="row g-3 text-center position-relative stage-cards-row">
       {% for course in courses %}
         {% set st = student_status.get(course.id, {}) if student_status else {} %}
