@@ -148,8 +148,8 @@
   {% endif %}
 
   <!-- Interactive Visual Stepper -->
-  <div class="card shadow-sm border p-4 mb-5 bg-white rounded-4">
-    <h5 class="fw-bold mb-3"><i class="bi bi-signpost-2-fill text-primary me-2"></i>Roadmap Learning Path Stages</h5>
+  <div class="card shadow-sm p-4 mb-5 rounded-4 roadmap-stages-box">
+    <h5 class="fw-bold mb-3 roadmap-stages-box-title"><i class="bi bi-signpost-2-fill me-2"></i>Roadmap Learning Path Stages</h5>
     <div class="row g-3 text-center position-relative stage-cards-row">
       {% for course in courses %}
         {% set st = student_status.get(course.id, {}) if student_status else {} %}
