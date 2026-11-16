@@ -100,31 +100,32 @@
       {% for course in courses %}
         {% set st = student_status.get(course.id, {}) if student_status else {} %}
         <div class="col-md-{{ 12 // courses|length if courses|length <= 4 else 3 }}">
-          <div class="card h-100 border p-3 shadow-sm position-relative stage-card-hover">
-            <span class="position-absolute top-0 start-50 translate-middle badge rounded-pill bg-dark text-white shadow-sm px-2.5 py-1" style="z-index: 5;">
-              Stage {{ loop.index }}
-            </span>
+          <div class="card h-100 border p-3 shadow-sm position-relative stage-card-hover d-flex flex-column">
+            <!-- Top Header Row: Stage Pill & Wishlist Star -->
+            <div class="d-flex align-items-center justify-content-between mb-2">
+              <span class="stage-step-pill">
+                Stage {{ loop.index }}
+              </span>
 
-            <!-- Star / Wishlist Toggle Button -->
-            {% if current_user.is_authenticated %}
-              <button type="button" 
-                      class="btn btn-sm btn-link p-1 position-absolute top-0 end-0 mt-1 me-2 text-decoration-none btn-star-course" 
-                      data-course-id="{{ course.id }}"
-                      onclick="toggleCourseStar(this, {{ course.id }})" 
-                      title="{% if st.get('is_wishlisted') %}Starred course (click to unstar){% else %}Star this course{% endif %}"
-                      style="z-index: 5;">
-                <i class="bi {% if st.get('is_wishlisted') %}bi-star-fill text-warning{% else %}bi-star text-secondary opacity-50{% endif %} fs-5"></i>
-              </button>
-            {% else %}
-              <a href="{{ url_for('auth.login', next=request.path) }}"
-                 class="btn btn-sm btn-link p-1 position-absolute top-0 end-0 mt-1 me-2 text-decoration-none" 
-                 title="Log in to star course"
-                 style="z-index: 5;">
-                <i class="bi bi-star text-secondary opacity-50 fs-5"></i>
-              </a>
-            {% endif %}
+              <!-- Star / Wishlist Toggle Button -->
+              {% if current_user.is_authenticated %}
+                <button type="button" 
+                        class="btn btn-sm btn-link p-0 text-decoration-none btn-star-course" 
+                        data-course-id="{{ course.id }}"
+                        onclick="toggleCourseStar(this, {{ course.id }})" 
+                        title="{% if st.get('is_wishlisted') %}Starred course (click to unstar){% else %}Star this course{% endif %}">
+                  <i class="bi {% if st.get('is_wishlisted') %}bi-star-fill text-warning{% else %}bi-star text-secondary opacity-50{% endif %} fs-5"></i>
+                </button>
+              {% else %}
+                <a href="{{ url_for('auth.login', next=request.path) }}"
+                   class="btn btn-sm btn-link p-0 text-decoration-none" 
+                   title="Log in to star course">
+                  <i class="bi bi-star text-secondary opacity-50 fs-5"></i>
+                </a>
+              {% endif %}
+            </div>
 
-            <div class="mt-2 mb-2">
+            <div class="mb-3">
               <h6 class="fw-bold text-dark mb-1 stage-course-title">{{ course.title }}</h6>
               <div class="text-muted small stage-course-instructor"><i class="bi bi-person-fill text-primary me-1"></i>{{ course.instructor_name }}</div>
               <div class="text-muted small stage-course-stats"><i class="bi bi-people-fill text-info me-1"></i>{{ course.total_enrolled_students }} {{ 'student' if course.total_enrolled_students == 1 else 'students' }} • {{ course.total_lessons }} topics</div>
