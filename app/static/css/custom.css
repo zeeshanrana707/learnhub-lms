@@ -596,20 +596,7 @@ main {
   will-change: transform, box-shadow;
 }
 
-/* Digital Accent Top Bar */
-.stage-card-computing::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: 12px;
-  right: 12px;
-  height: 3px;
-  background: linear-gradient(90deg, #6366f1 0%, #38bdf8 50%, #a855f7 100%);
-  border-radius: 3px;
-  opacity: 0.4;
-  transition: opacity 0.28s ease, height 0.28s ease, left 0.28s ease, right 0.28s ease, box-shadow 0.28s ease;
-  z-index: 2;
-}
+
 
 /* High-Tech Terminal Stage Badge */
 .stage-tech-badge {
@@ -662,14 +649,7 @@ main {
   box-shadow: 0 0 25px -4px rgba(99, 102, 241, 0.35), 0 18px 36px -8px rgba(15, 23, 42, 0.14) !important;
 }
 
-.stage-card-computing:hover::before {
-  opacity: 1;
-  height: 4px;
-  left: 0;
-  right: 0;
-  border-radius: 1.1rem 1.1rem 0 0;
-  box-shadow: 0 0 16px rgba(99, 102, 241, 0.8);
-}
+
 
 .stage-card-computing:hover .stage-tech-badge {
   transform: translate(-50%, -60%) scale(1.08) !important;
@@ -745,9 +725,9 @@ main {
 
 [data-bs-theme="dark"] .stage-card-computing:hover,
 [data-bs-theme="dark"] .stage-card-hover:hover {
-  background-color: #1e293b !important;
-  border-color: #475569 !important;
-  box-shadow: -8px 0 18px -2px rgba(0, 0, 0, 0.45), 8px 0 18px -2px rgba(0, 0, 0, 0.45), 0 6px 16px -3px rgba(0, 0, 0, 0.4) !important;
+  background: linear-gradient(135deg, #1e293b 0%, #172554 100%) !important;
+  border-color: #60a5fa !important;
+  box-shadow: -10px 0 24px -4px rgba(59, 130, 246, 0.35), 10px 0 24px -4px rgba(59, 130, 246, 0.35), 0 10px 25px -4px rgba(0, 0, 0, 0.5) !important;
 }
 
 [data-bs-theme="dark"] .stage-card-title {
@@ -884,23 +864,56 @@ main {
   box-shadow: 0 4px 14px rgba(99, 102, 241, 0.4) !important;
 }
 
-/* Stage Cards in the Roadmap Stepper: Pure Light Grey with Crisp Neutral Side Shadows */
+/* Stage Cards in the Roadmap Stepper: Light Grey & Mix of Grey-Blue Hover */
 .stage-card-hover,
 .stage-card-computing {
   background-color: #f1f5f9 !important;
   border: 1px solid #e2e8f0 !important;
   border-radius: 1rem !important;
-  transition: transform 0.25s ease, box-shadow 0.25s ease, background-color 0.25s ease, border-color 0.25s ease !important;
-  -webkit-font-smoothing: antialiased;
-  backface-visibility: hidden;
+  position: relative !important;
+  overflow: visible !important;
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.3s cubic-bezier(0.16, 1, 0.3, 1), background 0.3s ease, border-color 0.3s ease !important;
+  will-change: transform, box-shadow;
+}
+
+/* Dark blue line across the top of card that follows / traces on hover */
+.stage-card-hover::before,
+.stage-card-computing::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background-color: #1e40af !important; /* rich dark blue */
+  border-top-left-radius: 1rem;
+  border-top-right-radius: 1rem;
+  opacity: 0;
+  transform: scaleX(0);
+  transform-origin: center;
+  transition: transform 0.32s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.25s ease !important;
+  z-index: 2;
+  box-shadow: 0 1px 6px rgba(30, 64, 175, 0.35);
 }
 
 .stage-card-hover:hover,
 .stage-card-computing:hover {
-  transform: translateY(-3px) !important;
-  background-color: #e2e8f0 !important;
-  border-color: #cbd5e1 !important;
-  box-shadow: -8px 0 16px -2px rgba(15, 23, 42, 0.09), 8px 0 16px -2px rgba(15, 23, 42, 0.09), 0 6px 16px -3px rgba(15, 23, 42, 0.08) !important;
+  transform: translateY(-4px) scale(1.015);
+  background: linear-gradient(135deg, #eef2f7 0%, #e0eafc 50%, #dbeafe 100%) !important;
+  border-color: #93c5fd !important;
+  box-shadow: -10px 0 20px -4px rgba(59, 130, 246, 0.18), 10px 0 20px -4px rgba(59, 130, 246, 0.18), 0 10px 25px -4px rgba(15, 23, 42, 0.08) !important;
+}
+
+.stage-card-hover:hover::before,
+.stage-card-computing:hover::before {
+  opacity: 1;
+  transform: scaleX(1);
+}
+
+[data-bs-theme="dark"] .stage-card-hover::before,
+[data-bs-theme="dark"] .stage-card-computing::before {
+  background-color: #3b82f6 !important;
+  box-shadow: 0 0 12px rgba(59, 130, 246, 0.6);
 }
 
 /* Dark Mode Overrides */
