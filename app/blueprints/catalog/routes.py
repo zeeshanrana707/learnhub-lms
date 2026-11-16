@@ -192,6 +192,11 @@ def roadmap_detail(slug):
 
     # If student is logged in, determine enrollment, completed, and unlock status
     student_status = {}
+    completed_stages_count = 0
+    enrolled_stages_count = 0
+    next_stage_id = None
+    all_stages_completed = False
+
     if current_user.is_authenticated:
         from app.models.content import Enrollment, Wishlist
         user_enrollments = {e.course_id: e for e in Enrollment.query.filter_by(user_id=current_user.id).all()}
@@ -206,13 +211,31 @@ def roadmap_detail(slug):
                     if not req_enroll or req_enroll.status != 'completed':
                         prereqs_met = False
                         break
+            is_completed = bool(enrollment and enrollment.status == 'completed')
+            if is_completed:
+                completed_stages_count += 1
+            if enrollment:
+                enrolled_stages_count += 1
+            elif next_stage_id is None and prereqs_met:
+                next_stage_id = c.id
+
             student_status[c.id] = {
                 'enrolled': bool(enrollment),
-                'completed': bool(enrollment and enrollment.status == 'completed'),
+                'completed': is_completed,
                 'progress_pct': enrollment.progress_pct if enrollment else 0.0,
                 'prereqs_met': prereqs_met,
                 'is_wishlisted': c.id in user_wishlists
             }
+
+        if courses and completed_stages_count == len(courses):
+            all_stages_completed = True
+        if next_stage_id is None and courses:
+            for c in courses:
+                if not student_status.get(c.id, {}).get('completed'):
+                    next_stage_id = c.id
+                    break
+
+    roadmap_progress_pct = round((completed_stages_count / len(courses)) * 100) if courses else 0
 
     return render_template(
         'catalog/roadmap_detail.html',
@@ -220,7 +243,12 @@ def roadmap_detail(slug):
         courses=courses,
         meta=meta,
         student_status=student_status,
-        total_hours=roadmap.total_hours
+        total_hours=roadmap.total_hours,
+        completed_stages_count=completed_stages_count,
+        enrolled_stages_count=enrolled_stages_count,
+        next_stage_id=next_stage_id,
+        all_stages_completed=all_stages_completed,
+        roadmap_progress_pct=roadmap_progress_pct
     )
 
 

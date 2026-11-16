@@ -43,6 +43,41 @@
             </span>
           {% endfor %}
         </div>
+
+        <!-- Master Actions & Roadmap Progress -->
+        <div class="d-flex flex-wrap align-items-center gap-3 mt-4 pt-2">
+          {% if current_user.is_authenticated %}
+            <form action="{{ url_for('learning.enroll_all_roadmap', slug=category.slug) }}" method="POST" class="d-inline m-0">
+              <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+              <button type="submit" class="btn btn-warning btn-roadmap-master-enroll px-3.5 py-2 rounded-pill fw-bold d-inline-flex align-items-center gap-2 btn-shimmer">
+                <i class="bi bi-lightning-charge-fill"></i>
+                <span>Enroll in Entire Roadmap (All Stages)</span>
+              </button>
+            </form>
+          {% else %}
+            <a href="{{ url_for('auth.login', next=request.path) }}" class="btn btn-warning btn-roadmap-master-enroll px-3.5 py-2 rounded-pill fw-bold d-inline-flex align-items-center gap-2 btn-shimmer">
+              <i class="bi bi-lightning-charge-fill"></i>
+              <span>Enroll in Entire Roadmap (All Stages)</span>
+            </a>
+          {% endif %}
+
+          <button type="button" class="btn btn-outline-light px-3 py-2 rounded-pill fw-semibold d-inline-flex align-items-center gap-2" onclick="shareRoadmap('{{ category.name }}')">
+            <i class="bi bi-share-fill"></i>
+            <span>Share Roadmap</span>
+          </button>
+        </div>
+
+        {% if current_user.is_authenticated and enrolled_stages_count > 0 %}
+          <div class="mt-4 p-3 rounded-3" style="background: rgba(0, 0, 0, 0.3); border: 1px solid rgba(255, 255, 255, 0.2); max-width: 580px;">
+            <div class="d-flex justify-content-between align-items-center mb-1.5 small text-white">
+              <span class="fw-semibold"><i class="bi bi-trophy-fill text-warning me-1.5"></i>Your Roadmap Journey</span>
+              <span class="fw-bold">{{ completed_stages_count }} of {{ courses|length }} stages completed ({{ roadmap_progress_pct }}%)</span>
+            </div>
+            <div class="progress" style="height: 8px; border-radius: 999px; background-color: rgba(255, 255, 255, 0.2);">
+              <div class="progress-bar {% if all_stages_completed %}bg-success{% else %}bg-warning{% endif %} progress-bar-striped progress-bar-animated" role="progressbar" style="width: {{ roadmap_progress_pct }}%"></div>
+            </div>
+          </div>
+        {% endif %}
       </div>
 
       <!-- Quick Summary Box -->
@@ -93,13 +128,35 @@
 </div>
 
 <div class="container pb-5">
+  <!-- Celebration Milestone Banner (When all stages are completed) -->
+  {% if all_stages_completed %}
+    <div class="alert border-0 shadow-sm rounded-4 p-4 mb-4 d-flex flex-wrap align-items-center justify-content-between gap-3" style="background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%); border-left: 6px solid #10b981 !important;">
+      <div class="d-flex align-items-center gap-3">
+        <div class="rounded-circle bg-success text-white p-3 d-flex align-items-center justify-content-center shadow-sm flex-shrink-0" style="width: 52px; height: 52px; font-size: 1.5rem;">
+          <i class="bi bi-award-fill"></i>
+        </div>
+        <div>
+          <h5 class="fw-bold text-success mb-1">🎉 Roadmap Mastered! All Stages Completed</h5>
+          <p class="mb-0 text-success-emphasis small">You have successfully mastered every stage of the <strong>{{ category.name }}</strong> career path. Celebrate your accomplishment or share your verified certificate!</p>
+        </div>
+      </div>
+      <button type="button" class="btn btn-success fw-bold px-3.5 py-2 rounded-pill shadow-sm d-inline-flex align-items-center gap-1.5 btn-shimmer" onclick="triggerConfetti()">
+        <i class="bi bi-stars"></i>
+        <span>Celebrate</span>
+      </button>
+    </div>
+  {% endif %}
+
   <!-- Interactive Visual Stepper -->
   <div class="card shadow-sm border p-4 mb-5 bg-white rounded-4">
-    <h5 class="fw-bold mb-3"><i class="bi bi-signpost-2-fill text-primary me-2"></i>Roadmap Learning Path Stages</h5>
-    <div class="row g-3 text-center">
+    <div class="d-flex flex-wrap justify-content-between align-items-center mb-3">
+      <h5 class="fw-bold mb-0"><i class="bi bi-signpost-2-fill text-primary me-2"></i>Roadmap Learning Path Stages</h5>
+      <span class="small text-muted"><i class="bi bi-arrow-right me-1"></i>Follow sequence from left to right</span>
+    </div>
+    <div class="row g-3 text-center position-relative stage-cards-row">
       {% for course in courses %}
         {% set st = student_status.get(course.id, {}) if student_status else {} %}
-        <div class="col-md-{{ 12 // courses|length if courses|length <= 4 else 3 }}">
+        <div class="col-md-{{ 12 // courses|length if courses|length <= 4 else 3 }} stage-card-wrapper">
           <div class="card h-100 border p-3 shadow-sm position-relative stage-card-hover d-flex flex-column">
             <!-- Top Header Row: Stage Pill & Wishlist Star -->
             <div class="d-flex align-items-center justify-content-between mb-2">
@@ -107,49 +164,105 @@
                 Stage {{ loop.index }}
               </span>
 
-              <!-- Star / Wishlist Toggle Button -->
-              {% if current_user.is_authenticated %}
-                <button type="button" 
-                        class="btn btn-sm btn-link p-0 text-decoration-none btn-star-course" 
-                        data-course-id="{{ course.id }}"
-                        onclick="toggleCourseStar(this, {{ course.id }})" 
-                        title="{% if st.get('is_wishlisted') %}Starred course (click to unstar){% else %}Star this course{% endif %}">
-                  <i class="bi {% if st.get('is_wishlisted') %}bi-star-fill text-warning{% else %}bi-star text-secondary opacity-50{% endif %} fs-5"></i>
-                </button>
-              {% else %}
-                <a href="{{ url_for('auth.login', next=request.path) }}"
-                   class="btn btn-sm btn-link p-0 text-decoration-none" 
-                   title="Log in to star course">
-                  <i class="bi bi-star text-secondary opacity-50 fs-5"></i>
-                </a>
-              {% endif %}
+              <div class="d-flex align-items-center gap-1.5">
+                {% if st.get('completed') %}
+                  <span class="badge-completed-pill" title="Stage Completed!">
+                    <i class="bi bi-check-lg"></i> Done
+                  </span>
+                {% elif course.id == next_stage_id %}
+                  <span class="badge-next-up" title="Recommended next stage">
+                    <i class="bi bi-lightning-fill"></i> Next Up
+                  </span>
+                {% endif %}
+
+                <!-- Star / Wishlist Toggle Button -->
+                {% if current_user.is_authenticated %}
+                  <button type="button" 
+                          class="btn btn-sm btn-link p-0 text-decoration-none btn-star-course" 
+                          data-course-id="{{ course.id }}"
+                          onclick="toggleCourseStar(this, {{ course.id }})" 
+                          title="{% if st.get('is_wishlisted') %}Starred course (click to unstar){% else %}Star this course{% endif %}">
+                    <i class="bi {% if st.get('is_wishlisted') %}bi-star-fill text-warning{% else %}bi-star text-secondary opacity-50{% endif %} fs-5"></i>
+                  </button>
+                {% else %}
+                  <a href="{{ url_for('auth.login', next=request.path) }}"
+                     class="btn btn-sm btn-link p-0 text-decoration-none" 
+                     title="Log in to star course">
+                    <i class="bi bi-star text-secondary opacity-50 fs-5"></i>
+                  </a>
+                {% endif %}
+              </div>
             </div>
 
             <div class="mb-3">
               <h6 class="fw-bold text-dark mb-1 stage-course-title">{{ course.title }}</h6>
               <div class="text-muted small stage-course-instructor"><i class="bi bi-person-fill text-primary me-1"></i>{{ course.instructor_name }}</div>
               <div class="text-muted small stage-course-stats"><i class="bi bi-people-fill text-info me-1"></i>{{ course.total_enrolled_students }} {{ 'student' if course.total_enrolled_students == 1 else 'students' }} • {{ course.total_lessons }} topics</div>
+
+              <!-- Metadata Pills: Level & Duration -->
+              <div class="d-flex flex-wrap align-items-center justify-content-center gap-1 mt-2 pt-2 border-top border-light-subtle">
+                <span class="badge bg-light text-secondary border px-2 py-0.5 rounded-pill" style="font-size: 0.68rem;">
+                  <i class="bi bi-bar-chart-fill text-primary me-1"></i>{{ course.level }}
+                </span>
+                <span class="badge bg-light text-secondary border px-2 py-0.5 rounded-pill" style="font-size: 0.68rem;">
+                  <i class="bi bi-clock me-1"></i>~{{ (course.total_lessons * 0.75)|round|int if course.total_lessons else 2 }}h
+                </span>
+                <span class="badge bg-light text-secondary border px-2 py-0.5 rounded-pill" style="font-size: 0.68rem;">
+                  <i class="bi bi-collection-play me-1"></i>{{ course.total_lessons }} topics
+                </span>
+              </div>
             </div>
+
             <div class="mt-auto">
               {% if st.get('completed') %}
+                <div class="mb-2">
+                  <div class="d-flex justify-content-between align-items-center small text-success mb-1" style="font-size: 0.72rem;">
+                    <span class="fw-bold"><i class="bi bi-check-circle-fill me-1"></i>Finished</span>
+                    <span class="fw-bold">100%</span>
+                  </div>
+                  <div class="progress stage-mini-progress">
+                    <div class="progress-bar bg-success" role="progressbar" style="width: 100%;"></div>
+                  </div>
+                </div>
                 <a href="{{ url_for('learning.course_overview', course_id=course.id) }}" class="btn btn-sm btn-outline-success w-100 py-1.5 fw-semibold d-flex align-items-center justify-content-center gap-1 shadow-sm btn-tactile">
                   <i class="bi bi-check-circle-fill"></i> Completed (100%)
                 </a>
               {% elif st.get('enrolled') %}
-                <a href="{{ url_for('learning.course_overview', course_id=course.id) }}" class="btn btn-sm btn-primary w-100 py-1.5 fw-semibold d-flex align-items-center justify-content-center gap-1 shadow-sm btn-tactile">
-                  <i class="bi bi-play-circle-fill"></i> Continue ({{ st.progress_pct|int }}%)
+                <div class="mb-2">
+                  <div class="d-flex justify-content-between align-items-center small text-muted mb-1" style="font-size: 0.72rem;">
+                    <span class="fw-semibold text-primary"><i class="bi bi-clock-history me-1"></i>Progress</span>
+                    <span class="fw-bold text-dark">{{ st.progress_pct|int }}%</span>
+                  </div>
+                  <div class="progress stage-mini-progress">
+                    <div class="progress-bar bg-primary progress-bar-striped progress-bar-animated" role="progressbar" style="width: {{ st.progress_pct }}%"></div>
+                  </div>
+                </div>
+                <a href="{{ url_for('learning.course_overview', course_id=course.id) }}" class="btn btn-sm btn-primary w-100 py-1.5 fw-semibold d-flex align-items-center justify-content-center gap-1 shadow-sm btn-tactile btn-shimmer">
+                  <i class="bi bi-play-circle-fill"></i> Continue Learning
                 </a>
               {% elif st.get('prereqs_met') == False %}
                 <button type="button" class="btn btn-sm btn-secondary w-100 py-1.5 fw-semibold d-flex align-items-center justify-content-center gap-1 opacity-75" disabled title="Complete previous stages to unlock">
-                  <i class="bi bi-lock-fill"></i> Locked
+                  <i class="bi bi-lock-fill"></i> Locked (Prereqs Needed)
                 </button>
               {% else %}
-                <a href="{{ url_for('learning.start_course', course_id=course.id) }}" class="btn btn-sm btn-primary w-100 py-1.5 fw-semibold d-flex align-items-center justify-content-center gap-1 shadow-sm btn-tactile">
+                <a href="{{ url_for('learning.start_course', course_id=course.id) }}" class="btn btn-sm btn-primary w-100 py-1.5 fw-semibold d-flex align-items-center justify-content-center gap-1 shadow-sm btn-tactile btn-shimmer">
                   <i class="bi bi-play-fill fs-6"></i> Ready to Start
                 </a>
               {% endif %}
+
+              <!-- Preview Syllabus Modal Trigger -->
+              <button type="button" class="btn btn-link btn-sm text-decoration-none text-muted py-0 mt-1 w-100" style="font-size: 0.74rem;" data-bs-toggle="modal" data-bs-target="#syllabusModal{{ course.id }}">
+                <i class="bi bi-list-check me-1"></i>Preview Syllabus
+              </button>
             </div>
           </div>
+
+          <!-- Step Path Connector (Between stages on desktop) -->
+          {% if not loop.last %}
+            <div class="stage-path-connector d-none d-lg-flex" title="Next Stage in Sequence">
+              <i class="bi bi-chevron-right"></i>
+            </div>
+          {% endif %}
         </div>
       {% endfor %}
     </div>
@@ -284,25 +397,188 @@
       </div>
     {% endfor %}
   </div>
+
+  <!-- Syllabus Preview Modals -->
+  {% for course in courses %}
+    <div class="modal fade" id="syllabusModal{{ course.id }}" tabindex="-1" aria-labelledby="syllabusModalLabel{{ course.id }}" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content rounded-4 shadow border-0">
+          <div class="modal-header border-bottom py-3 px-4">
+            <div>
+              <span class="badge bg-primary-subtle text-primary mb-1">Stage {{ loop.index }} Syllabus</span>
+              <h5 class="modal-title fw-bold text-dark" id="syllabusModalLabel{{ course.id }}">{{ course.title }}</h5>
+            </div>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body p-4">
+            <div class="d-flex align-items-center gap-2 mb-3 text-muted small">
+              <span><i class="bi bi-person-fill text-primary me-1"></i>{{ course.instructor_name }}</span>
+              <span>•</span>
+              <span><i class="bi bi-collection-play me-1"></i>{{ course.modules|length }} Chapters</span>
+              <span>•</span>
+              <span><i class="bi bi-play-circle me-1"></i>{{ course.total_lessons }} Topics</span>
+            </div>
+            <div class="accordion" id="modalAccordion{{ course.id }}">
+              {% for mod in course.modules %}
+                <div class="accordion-item mb-2 border rounded overflow-hidden">
+                  <h2 class="accordion-header" id="headingModalMod{{ mod.id }}">
+                    <button class="accordion-button {% if not loop.first %}collapsed{% endif %} py-2 px-3 fw-semibold small bg-light" type="button" data-bs-toggle="collapse" data-bs-target="#collapseModalMod{{ mod.id }}">
+                      <i class="bi bi-folder2-open text-primary me-2"></i>{{ mod.title }}
+                      <span class="badge bg-white text-secondary border ms-auto me-2">{{ mod.lessons|length }} lessons</span>
+                    </button>
+                  </h2>
+                  <div id="collapseModalMod{{ mod.id }}" class="accordion-collapse collapse {% if loop.first %}show{% endif %}" data-bs-parent="#modalAccordion{{ course.id }}">
+                    <div class="accordion-body p-0">
+                      <div class="list-group list-group-flush small">
+                        {% for les in mod.lessons %}
+                          <div class="list-group-item d-flex justify-content-between align-items-center py-2 px-3">
+                            <span class="text-dark"><i class="bi bi-play-circle text-danger me-2"></i>{{ les.title }}</span>
+                            <span class="text-muted" style="font-size: 0.72rem;">{{ les.duration_min | format_duration }}</span>
+                          </div>
+                        {% else %}
+                          <div class="p-2 text-muted text-center small">No topics in this chapter.</div>
+                        {% endfor %}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              {% endfor %}
+            </div>
+          </div>
+          <div class="modal-footer border-top py-2.5 px-4 bg-light d-flex justify-content-between">
+            <button type="button" class="btn btn-outline-secondary btn-sm rounded-pill px-3" data-bs-dismiss="modal">Close</button>
+            <a href="{{ url_for('learning.start_course', course_id=course.id) }}" class="btn btn-primary btn-sm rounded-pill px-3 fw-semibold btn-shimmer">
+              <i class="bi bi-play-fill me-1"></i>Open Stage
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  {% endfor %}
+
+  <!-- Toast Notification Container -->
+  <div class="position-fixed bottom-0 end-0 p-3" style="z-index: 1080;">
+    <div id="roadmapToast" class="toast align-items-center text-bg-dark border-0 rounded-3 shadow" role="alert" aria-live="assertive" aria-atomic="true">
+      <div class="d-flex">
+        <div class="toast-body d-flex align-items-center gap-2" id="roadmapToastMsg">
+          <i class="bi bi-check-circle-fill text-success fs-5"></i>
+          <span>Link copied to clipboard!</span>
+        </div>
+        <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+      </div>
+    </div>
+  </div>
 </div>
 {% endblock %}
 
 {% block extra_scripts %}
 <script>
+function showToast(message) {
+  const toastEl = document.getElementById('roadmapToast');
+  const toastMsg = document.getElementById('roadmapToastMsg');
+  if (toastEl && toastMsg) {
+    toastMsg.innerHTML = `<i class="bi bi-check-circle-fill text-success fs-5"></i><span>${message}</span>`;
+    const toast = new bootstrap.Toast(toastEl, { delay: 3000 });
+    toast.show();
+  }
+}
+
+function shareRoadmap(roadmapTitle) {
+  const url = window.location.href;
+  if (navigator.clipboard) {
+    navigator.clipboard.writeText(url).then(() => {
+      showToast(`Copied roadmap link for "${roadmapTitle}"!`);
+    }).catch(() => {
+      prompt("Copy roadmap link:", url);
+    });
+  } else {
+    prompt("Copy roadmap link:", url);
+  }
+}
+
+function triggerConfetti() {
+  const canvas = document.createElement('canvas');
+  canvas.style.position = 'fixed';
+  canvas.style.top = '0';
+  canvas.style.left = '0';
+  canvas.style.width = '100vw';
+  canvas.style.height = '100vh';
+  canvas.style.pointerEvents = 'none';
+  canvas.style.zIndex = '99999';
+  document.body.appendChild(canvas);
+
+  const ctx = canvas.getContext('2d');
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+
+  const particles = [];
+  const colors = ['#3b82f6', '#10b981', '#f59e0b', '#ec4899', '#8b5cf6', '#06b6d4'];
+
+  for (let i = 0; i < 90; i++) {
+    particles.push({
+      x: window.innerWidth / 2,
+      y: window.innerHeight / 2,
+      vx: (Math.random() - 0.5) * 18,
+      vy: (Math.random() - 0.5) * 18 - 4,
+      size: Math.random() * 8 + 4,
+      color: colors[Math.floor(Math.random() * colors.length)],
+      alpha: 1,
+      rotation: Math.random() * 360,
+      vRot: (Math.random() - 0.5) * 10
+    });
+  }
+
+  let startTime = Date.now();
+  function animate() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    const elapsed = Date.now() - startTime;
+
+    particles.forEach(p => {
+      p.x += p.vx;
+      p.y += p.vy;
+      p.vy += 0.35; // gravity
+      p.rotation += p.vRot;
+      p.alpha = Math.max(0, 1 - (elapsed / 2500));
+
+      ctx.save();
+      ctx.globalAlpha = p.alpha;
+      ctx.translate(p.x, p.y);
+      ctx.rotate((p.rotation * Math.PI) / 180);
+      ctx.fillStyle = p.color;
+      ctx.fillRect(-p.size / 2, -p.size / 2, p.size, p.size);
+      ctx.restore();
+    });
+
+    if (elapsed < 2500) {
+      requestAnimationFrame(animate);
+    } else {
+      canvas.remove();
+    }
+  }
+  requestAnimationFrame(animate);
+}
+
+{% if all_stages_completed %}
+document.addEventListener('DOMContentLoaded', () => {
+  setTimeout(triggerConfetti, 600);
+});
+{% endif %}
+
 function toggleCourseStar(btn, courseId) {
   const icon = btn.querySelector('i');
   const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
   
-  // Optimistic UI toggle & bounce animation
+  // Optimistic UI toggle & tactile pop animation
   const wasWishlisted = icon.classList.contains('bi-star-fill');
+  icon.classList.add('star-anim-pop');
+  setTimeout(() => { icon.classList.remove('star-anim-pop'); }, 400);
+
   if (wasWishlisted) {
-    icon.className = 'bi bi-star text-secondary opacity-50 fs-5';
+    icon.className = 'bi bi-star text-secondary opacity-50 fs-5 star-anim-pop';
     btn.title = 'Star this course';
   } else {
-    icon.className = 'bi bi-star-fill text-warning fs-5';
+    icon.className = 'bi bi-star-fill text-warning fs-5 star-anim-pop';
     btn.title = 'Starred course (click to unstar)';
-    icon.style.transform = 'scale(1.35)';
-    setTimeout(() => { icon.style.transform = ''; }, 200);
   }
 
   fetch(`/learn/wishlist/toggle/${courseId}`, {
@@ -326,7 +602,6 @@ function toggleCourseStar(btn, courseId) {
   })
   .catch(err => {
     console.error('Wishlist toggle error:', err);
-    // Revert on failure
     if (wasWishlisted) {
       icon.className = 'bi bi-star-fill text-warning fs-5';
     } else {

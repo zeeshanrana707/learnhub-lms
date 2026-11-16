@@ -152,6 +152,47 @@ def start_course(course_id):
     return redirect(url_for('learning.course_overview', course_id=course.id))
 
 
+@learning_bp.route('/roadmap/<slug>/enroll-all', methods=['POST'])
+@login_required
+def enroll_all_roadmap(slug):
+    """Enroll the current user in all eligible free stages of this career roadmap."""
+    from app.models.catalog import Roadmap, Category
+    roadmap = Roadmap.query.filter_by(slug=slug, is_active=True).first()
+    if not roadmap:
+        cat = Category.query.filter_by(slug=slug).first()
+        if cat:
+            roadmap = Roadmap.query.filter_by(slug=cat.slug).first()
+    if not roadmap:
+        flash('Roadmap not found.', 'danger')
+        return redirect(url_for('catalog.roadmaps'))
+
+    courses = roadmap.courses
+    user_enrollments = {e.course_id: e for e in Enrollment.query.filter_by(user_id=current_user.id).all()}
+    enrolled_count = 0
+
+    for course in courses:
+        if course.id not in user_enrollments and course.is_free and course.is_active and course.status == 'published':
+            enrollment = Enrollment(
+                user_id=current_user.id,
+                course_id=course.id,
+                status='active',
+                progress_pct=0.0,
+                enrolled_at=datetime.now(timezone.utc)
+            )
+            db.session.add(enrollment)
+            Wishlist.query.filter_by(user_id=current_user.id, course_id=course.id).delete()
+            enrolled_count += 1
+
+    if enrolled_count > 0:
+        db.session.commit()
+        log_action(current_user, 'enroll_roadmap', 'Roadmap', roadmap.id, f"Enrolled in {enrolled_count} courses of roadmap '{roadmap.title}'")
+        flash(f"🎉 Great choice! You are now enrolled in all {enrolled_count} stages of {roadmap.title}.", 'success')
+    else:
+        flash(f"You are already enrolled in all active stages of this roadmap!", 'info')
+
+    return redirect(url_for('catalog.roadmap_detail', slug=slug))
+
+
 @learning_bp.route('/course/<int:course_id>')
 @login_required
 def course_overview(course_id):

@@ -149,3 +149,8 @@ def test_start_course_and_star_wishlist(client, auth, app):
         res_rm = client.get(f'/roadmaps/{roadmap_slug}')
         assert res_rm.status_code == 200
         assert b'Ready to Start' in res_rm.data or b'Stage 1' in res_rm.data
+
+        # Test enroll-all roadmap route
+        res_enroll_all = client.post(f'/learn/roadmap/{roadmap_slug}/enroll-all', follow_redirects=False)
+        assert res_enroll_all.status_code == 302
+        assert f'/roadmaps/{roadmap_slug}' in res_enroll_all.headers['Location']
