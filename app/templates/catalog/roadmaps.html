@@ -80,7 +80,7 @@
               <h6 class="fw-bold small text-uppercase text-muted mb-2">Roadmap Stages (Beginner to Advanced)</h6>
               <div class="d-flex flex-column gap-2">
                 {% for course in rm.courses %}
-                  <a href="{{ url_for('catalog.course_detail', slug=course.slug) }}{{ preview_qs }}" class="progression-track-link" title="{{ course.title }}">
+                  <a href="{{ url_for('catalog.detail', course_id=course.id) }}{{ preview_qs }}" class="progression-track-link" title="{{ course.title }}">
                     <div class="d-flex align-items-center justify-content-between p-2 rounded small progression-track-item">
                       <div class="d-flex align-items-center gap-2">
                         <span class="badge progression-track-badge {% if course.level == 'Beginner' %}bg-success{% elif course.level == 'Intermediate' %}bg-primary{% else %}bg-purple text-white{% endif %}" style="{% if course.level == 'Advanced' %}background-color: #7c3aed;{% endif %}">

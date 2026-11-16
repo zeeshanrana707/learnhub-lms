@@ -356,6 +356,16 @@ def detail(course_id):
     )
 
 
+@catalog_bp.route('/courses/by-slug/<slug>')
+@catalog_bp.route('/course/<slug>')
+def course_detail(slug):
+    """Course detail alias supporting slug lookup."""
+    course = Course.query.filter_by(slug=slug).first()
+    if not course:
+        abort(404)
+    return redirect(url_for('catalog.detail', course_id=course.id))
+
+
 @catalog_bp.route('/instructor/dashboard')
 @login_required
 @instructor_or_admin_required
