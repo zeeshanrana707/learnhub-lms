@@ -867,7 +867,7 @@ main {
 /* Stage Cards in the Roadmap Stepper: Option 3 - Adaptive Dual-Mode Theme */
 .stage-card-hover,
 .stage-card-computing {
-  background-color: #f1f5f9 !important; /* Clean modern light grey */
+  background-color: #ffffff !important; /* Crisp white default */
   border: 1px solid #e2e8f0 !important;
   border-radius: 1rem !important;
   position: relative !important;
@@ -899,7 +899,7 @@ main {
 .stage-card-hover:hover,
 .stage-card-computing:hover {
   transform: translateY(-4px);
-  background-color: #f1f5f9 !important;
+  background-color: #e2e8f0 !important; /* Smooth grey on hover */
   border-color: #cbd5e1 !important;
   box-shadow: -10px 0 20px -4px rgba(59, 130, 246, 0.18), 10px 0 20px -4px rgba(59, 130, 246, 0.18), 0 10px 25px -4px rgba(15, 23, 42, 0.08) !important;
 }
@@ -909,7 +909,7 @@ main {
   transform: scaleX(1);
 }
 
-/* Typography on Light Card */
+/* Typography on Light Card: when hovered text turns blue */
 .stage-card-hover .stage-course-title,
 .stage-card-hover h6 {
   color: #0f172a !important; /* Crisp dark charcoal */
@@ -925,12 +925,14 @@ main {
 
 .stage-card-hover:hover .stage-course-title,
 .stage-card-hover:hover h6 {
-  color: #1d4ed8 !important; /* Dark blue on hover */
+  color: #1d4ed8 !important; /* Rich dark blue on hover */
 }
 
 .stage-card-hover:hover .stage-course-instructor,
 .stage-card-hover:hover .stage-course-stats,
-.stage-card-hover:hover .text-muted {
+.stage-card-hover:hover .text-muted,
+.stage-card-hover:hover .stage-course-instructor i,
+.stage-card-hover:hover .stage-course-stats i {
   color: #2563eb !important; /* Vibrant blue on hover */
 }
 
