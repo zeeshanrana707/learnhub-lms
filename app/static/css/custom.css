@@ -864,37 +864,85 @@ main {
   box-shadow: 0 4px 14px rgba(99, 102, 241, 0.4) !important;
 }
 
-/* Stage Cards in the Roadmap Stepper: Light Grey & Mix of Grey-Blue Hover */
+/* Stage Cards in the Roadmap Stepper: Light Grey with Smooth Top Line & Content Turning Blue */
 .stage-card-hover,
 .stage-card-computing {
   background-color: #f1f5f9 !important;
   border: 1px solid #e2e8f0 !important;
-  border-top: 3.5px solid #e2e8f0 !important;
   border-radius: 1rem !important;
   position: relative !important;
   overflow: visible !important;
-  transition: transform 0.25s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.25s ease, background 0.25s ease, border-color 0.25s ease !important;
+  transition: transform 0.25s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.25s ease, background-color 0.25s ease, border-color 0.25s ease !important;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+/* Horizontal dark blue line starting at top-left flat edge and ending at top-right flat edge */
+.stage-card-hover::before,
+.stage-card-computing::before {
+  content: "";
+  position: absolute;
+  top: -1px;
+  left: 1rem;
+  right: 1rem;
+  height: 3px;
+  background-color: #1d4ed8 !important; /* rich dark blue */
+  border-radius: 3px;
+  transform: scaleX(0);
+  transform-origin: left center;
+  transition: transform 0.35s cubic-bezier(0.25, 1, 0.5, 1) !important;
+  z-index: 2;
+  pointer-events: none;
 }
 
 .stage-card-hover:hover,
 .stage-card-computing:hover {
   transform: translateY(-4px);
-  background: linear-gradient(135deg, #eef2f7 0%, #e0eafc 50%, #dbeafe 100%) !important;
-  border-color: #93c5fd !important;
-  border-top-color: #1d4ed8 !important;
+  background-color: #f1f5f9 !important; /* card stays light grey */
+  border-color: #cbd5e1 !important;
   box-shadow: -10px 0 20px -4px rgba(59, 130, 246, 0.18), 10px 0 20px -4px rgba(59, 130, 246, 0.18), 0 10px 25px -4px rgba(15, 23, 42, 0.08) !important;
 }
 
-[data-bs-theme="dark"] .stage-card-hover,
-[data-bs-theme="dark"] .stage-card-computing {
-  border-top: 3.5px solid rgba(51, 65, 85, 0.8) !important;
+.stage-card-hover:hover::before,
+.stage-card-computing:hover::before {
+  transform: scaleX(1);
 }
 
-[data-bs-theme="dark"] .stage-card-hover:hover,
-[data-bs-theme="dark"] .stage-card-computing:hover {
-  border-top-color: #3b82f6 !important;
+/* On hover, card content becomes blue */
+.stage-card-hover .stage-course-title,
+.stage-card-hover h6,
+.stage-card-hover .stage-course-instructor,
+.stage-card-hover .stage-course-stats,
+.stage-card-hover .text-muted {
+  transition: color 0.25s ease !important;
+}
+
+.stage-card-hover:hover .stage-course-title,
+.stage-card-hover:hover h6 {
+  color: #1d4ed8 !important; /* dark blue */
+}
+
+.stage-card-hover:hover .stage-course-instructor,
+.stage-card-hover:hover .stage-course-stats,
+.stage-card-hover:hover .text-muted {
+  color: #2563eb !important; /* vibrant blue */
+}
+
+[data-bs-theme="dark"] .stage-card-hover::before,
+[data-bs-theme="dark"] .stage-card-computing::before {
+  background-color: #3b82f6 !important;
+  box-shadow: 0 0 10px rgba(59, 130, 246, 0.6);
+}
+
+[data-bs-theme="dark"] .stage-card-hover:hover .stage-course-title,
+[data-bs-theme="dark"] .stage-card-hover:hover h6 {
+  color: #93c5fd !important;
+}
+
+[data-bs-theme="dark"] .stage-card-hover:hover .stage-course-instructor,
+[data-bs-theme="dark"] .stage-card-hover:hover .stage-course-stats,
+[data-bs-theme="dark"] .stage-card-hover:hover .text-muted {
+  color: #60a5fa !important;
 }
 
 /* Dark Mode Overrides */
