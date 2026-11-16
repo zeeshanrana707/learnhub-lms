@@ -864,21 +864,23 @@ main {
   box-shadow: 0 4px 14px rgba(99, 102, 241, 0.4) !important;
 }
 
-/* Stage Cards in the Roadmap Stepper: Option 1 - Deep Slate & Sapphire Glow */
+/* Stage Cards in the Roadmap Stepper: Option 2 - Frosted Glassmorphism Dark Cards */
 .stage-card-hover,
 .stage-card-computing {
-  background-color: #0f172a !important; /* Deep midnight slate */
-  border: 1px solid rgba(59, 130, 246, 0.25) !important;
+  background: rgba(15, 23, 42, 0.88) !important; /* Smoky dark glass */
+  backdrop-filter: blur(16px) !important;
+  -webkit-backdrop-filter: blur(16px) !important;
+  border: 1px solid rgba(255, 255, 255, 0.12) !important;
   border-radius: 1rem !important;
   position: relative !important;
   overflow: visible !important;
-  box-shadow: 0 4px 18px rgba(15, 23, 42, 0.35) !important;
-  transition: transform 0.25s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.25s ease, background-color 0.25s ease, border-color 0.25s ease !important;
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.15) !important;
+  transition: transform 0.25s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.25s ease, background 0.25s ease, border-color 0.25s ease !important;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* Horizontal sapphire glowing line starting at top-left flat edge and ending at top-right flat edge */
+/* Horizontal frosted edge glow line starting at top-left flat edge and ending at top-right flat edge */
 .stage-card-hover::before,
 .stage-card-computing::before {
   content: "";
@@ -887,83 +889,85 @@ main {
   left: 1rem;
   right: 1rem;
   height: 3px;
-  background: linear-gradient(90deg, #3b82f6 0%, #60a5fa 100%) !important;
+  background: linear-gradient(90deg, rgba(255, 255, 255, 0.9) 0%, rgba(96, 165, 250, 0.9) 100%) !important;
   border-radius: 3px;
   transform: scaleX(0);
   transform-origin: left center;
   transition: transform 0.35s cubic-bezier(0.25, 1, 0.5, 1) !important;
   z-index: 2;
   pointer-events: none;
-  box-shadow: 0 0 10px rgba(59, 130, 246, 0.8);
+  box-shadow: 0 0 12px rgba(255, 255, 255, 0.7);
 }
 
 .stage-card-hover:hover,
 .stage-card-computing:hover {
   transform: translateY(-4px);
-  background-color: #141e33 !important; /* Elevated slate with subtle navy tint */
-  border-color: rgba(96, 165, 250, 0.6) !important;
-  box-shadow: 0 14px 32px -4px rgba(15, 23, 42, 0.6), 0 0 22px rgba(37, 99, 235, 0.3) !important; /* Electric sapphire ambient glow */
+  background: rgba(30, 41, 59, 0.92) !important; /* Subtle illuminated frosted glass */
+  border-color: rgba(255, 255, 255, 0.28) !important;
+  box-shadow: 0 16px 36px -4px rgba(0, 0, 0, 0.4), 0 0 24px rgba(96, 165, 250, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.3) !important;
 }
 
 .stage-card-hover:hover::before,
 .stage-card-computing:hover::before {
   transform: scaleX(1);
-  box-shadow: 0 0 14px rgba(96, 165, 250, 1);
+  box-shadow: 0 0 16px rgba(255, 255, 255, 0.9);
 }
 
-/* Typography on Deep Slate Card */
+/* Typography on Frosted Glass Card */
 .stage-card-hover .stage-course-title,
 .stage-card-hover h6 {
-  color: #f8fafc !important; /* Crisp pure white */
+  color: #ffffff !important;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.35);
   transition: color 0.25s ease !important;
 }
 
 .stage-card-hover .stage-course-instructor,
 .stage-card-hover .stage-course-stats,
 .stage-card-hover .text-muted {
-  color: #94a3b8 !important; /* Cool soft slate */
+  color: #cbd5e1 !important; /* Frosted white/silver */
   transition: color 0.25s ease !important;
 }
 
 .stage-card-hover:hover .stage-course-title,
 .stage-card-hover:hover h6 {
-  color: #60a5fa !important; /* Electric sky blue on hover */
+  color: #93c5fd !important; /* Soft ice blue on hover */
 }
 
 .stage-card-hover:hover .stage-course-instructor,
 .stage-card-hover:hover .stage-course-stats,
 .stage-card-hover:hover .text-muted {
-  color: #93c5fd !important;
+  color: #e2e8f0 !important;
 }
 
-/* Metadata badges in card */
+/* Metadata badges in card (Frosted translucent tags) */
 .stage-card-hover .badge.bg-light,
 .stage-card-hover .stage-meta-badge {
-  background-color: rgba(30, 41, 59, 0.8) !important;
-  border-color: rgba(59, 130, 246, 0.25) !important;
-  color: #cbd5e1 !important;
+  background: rgba(255, 255, 255, 0.08) !important;
+  border-color: rgba(255, 255, 255, 0.14) !important;
+  color: #e2e8f0 !important;
+  backdrop-filter: blur(8px) !important;
   transition: all 0.2s ease;
 }
 
 .stage-card-hover:hover .badge.bg-light,
 .stage-card-hover:hover .stage-meta-badge {
-  background-color: rgba(30, 58, 138, 0.4) !important;
-  border-color: rgba(96, 165, 250, 0.5) !important;
-  color: #e2e8f0 !important;
+  background: rgba(59, 130, 246, 0.2) !important;
+  border-color: rgba(96, 165, 250, 0.45) !important;
+  color: #ffffff !important;
 }
 
 .stage-card-hover .stage-syllabus-link {
-  color: #94a3b8 !important;
+  color: #cbd5e1 !important;
   transition: color 0.2s ease !important;
 }
 
 .stage-card-hover:hover .stage-syllabus-link,
 .stage-card-hover .stage-syllabus-link:hover {
-  color: #60a5fa !important;
+  color: #93c5fd !important;
 }
 
 .stage-card-hover .border-light-subtle {
-  border-color: rgba(51, 65, 85, 0.6) !important;
+  border-color: rgba(255, 255, 255, 0.12) !important;
 }
 
 [data-bs-theme="dark"] .stage-card-hover::before,
@@ -983,46 +987,48 @@ main {
   color: #60a5fa !important;
 }
 
-/* Stage Step Pill (Modern Bordered Slate/Blue Pill) */
+/* Stage Step Pill (Frosted Translucent Glass Pill) */
 .stage-step-pill {
   display: inline-flex;
   align-items: center;
   gap: 0.35rem;
-  background-color: #0f172a !important; /* deep slate */
-  color: #93c5fd !important; /* soft sky blue */
-  border: 1px solid rgba(59, 130, 246, 0.45) !important;
+  background: rgba(255, 255, 255, 0.1) !important;
+  color: #ffffff !important;
+  border: 1px solid rgba(255, 255, 255, 0.22) !important;
+  backdrop-filter: blur(8px) !important;
+  -webkit-backdrop-filter: blur(8px) !important;
   font-size: 0.72rem !important;
   font-weight: 700 !important;
   letter-spacing: 0.04em !important;
   padding: 0.2rem 0.65rem !important;
   border-radius: 50rem !important;
   line-height: 1.2 !important;
-  box-shadow: 0 1px 4px rgba(15, 23, 42, 0.15) !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25) !important;
   transition: all 0.28s cubic-bezier(0.16, 1, 0.3, 1) !important;
   user-select: none;
 }
 
-/* On Card Hover: Turn Badge Blue with Soft Glow (Option 1) */
+/* On Card Hover: Turn Badge Blue with Frosted Glow */
 .stage-card-hover:hover .stage-step-pill,
 .stage-card-computing:hover .stage-step-pill {
-  background: linear-gradient(135deg, #1d4ed8 0%, #2563eb 100%) !important;
-  border-color: #60a5fa !important;
+  background: linear-gradient(135deg, rgba(37, 99, 235, 0.9) 0%, rgba(29, 78, 216, 0.95) 100%) !important;
+  border-color: rgba(255, 255, 255, 0.45) !important;
   color: #ffffff !important;
-  box-shadow: 0 0 12px rgba(37, 99, 235, 0.5) !important;
+  box-shadow: 0 0 16px rgba(59, 130, 246, 0.65) !important;
 }
 
 [data-bs-theme="dark"] .stage-step-pill {
-  background-color: #0b1120 !important;
-  color: #60a5fa !important;
-  border-color: rgba(96, 165, 250, 0.4) !important;
+  background: rgba(255, 255, 255, 0.08) !important;
+  color: #ffffff !important;
+  border-color: rgba(255, 255, 255, 0.2) !important;
 }
 
 [data-bs-theme="dark"] .stage-card-hover:hover .stage-step-pill,
 [data-bs-theme="dark"] .stage-card-computing:hover .stage-step-pill {
-  background: linear-gradient(135deg, #2563eb 0%, #3b82f6 100%) !important;
-  border-color: #93c5fd !important;
+  background: linear-gradient(135deg, rgba(37, 99, 235, 0.9) 0%, rgba(59, 130, 246, 0.95) 100%) !important;
+  border-color: rgba(255, 255, 255, 0.5) !important;
   color: #ffffff !important;
-  box-shadow: 0 0 14px rgba(59, 130, 246, 0.7) !important;
+  box-shadow: 0 0 16px rgba(96, 165, 250, 0.8) !important;
 }
 
 /* Stage Path Stepper Connectors (Between stages on desktop) */
@@ -1037,26 +1043,28 @@ main {
   transform: translateY(-50%);
   width: 26px;
   height: 26px;
-  background: #0f172a;
-  border: 1px solid rgba(59, 130, 246, 0.45);
+  background: rgba(15, 23, 42, 0.85);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #60a5fa;
+  color: #e2e8f0;
   font-size: 0.8rem;
-  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.35);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
   z-index: 10;
   pointer-events: none;
   transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .stage-card-wrapper:hover .stage-path-connector {
-  border-color: #60a5fa;
-  background: #1e293b;
+  border-color: rgba(255, 255, 255, 0.45);
+  background: rgba(30, 41, 59, 0.95);
   color: #93c5fd;
   transform: translateY(-50%) translateX(2px);
-  box-shadow: 0 0 12px rgba(59, 130, 246, 0.6);
+  box-shadow: 0 0 16px rgba(96, 165, 250, 0.5);
 }
 
 [data-bs-theme="dark"] .stage-path-connector {
