@@ -221,8 +221,9 @@
                     <div class="progress-bar bg-success" role="progressbar" style="width: 100%;"></div>
                   </div>
                 </div>
-                <a href="{{ url_for('learning.course_overview', course_id=course.id) }}" class="btn btn-sm btn-outline-success w-100 py-1.5 fw-semibold d-flex align-items-center justify-content-center gap-1 shadow-sm btn-tactile">
-                  <i class="bi bi-check-circle-fill"></i> Completed (100%)
+                <a href="{{ url_for('learning.course_overview', course_id=course.id) }}" class="btn-stage-action btn-stage-completed w-100 btn-shimmer">
+                  <span class="btn-stage-action-text">Review Stage</span>
+                  <i class="bi bi-patch-check-fill btn-stage-action-icon"></i>
                 </a>
               {% elif st.get('enrolled') %}
                 <div class="mb-2">
@@ -234,16 +235,19 @@
                     <div class="progress-bar bg-primary progress-bar-striped progress-bar-animated" role="progressbar" style="width: {{ st.progress_pct }}%"></div>
                   </div>
                 </div>
-                <a href="{{ url_for('learning.course_overview', course_id=course.id) }}" class="btn btn-sm btn-primary w-100 py-1.5 fw-semibold d-flex align-items-center justify-content-center gap-1 shadow-sm btn-tactile btn-shimmer">
-                  <i class="bi bi-play-circle-fill"></i> Continue Learning
+                <a href="{{ url_for('learning.course_overview', course_id=course.id) }}" class="btn-stage-action btn-stage-continue w-100 btn-shimmer">
+                  <span class="btn-stage-action-text">Continue Learning</span>
+                  <i class="bi bi-arrow-right-short btn-stage-action-icon fs-5"></i>
                 </a>
               {% elif st.get('prereqs_met') == False %}
-                <button type="button" class="btn btn-sm btn-secondary w-100 py-1.5 fw-semibold d-flex align-items-center justify-content-center gap-1 opacity-75" disabled title="Complete previous stages to unlock">
-                  <i class="bi bi-lock-fill"></i> Locked (Prereqs Needed)
+                <button type="button" class="btn-stage-action btn-stage-locked w-100" disabled title="Complete previous stages to unlock">
+                  <span class="btn-stage-action-text">Locked</span>
+                  <i class="bi bi-lock-fill btn-stage-action-icon"></i>
                 </button>
               {% else %}
-                <a href="{{ url_for('learning.start_course', course_id=course.id) }}" class="btn btn-sm btn-primary w-100 py-1.5 fw-semibold d-flex align-items-center justify-content-center gap-1 shadow-sm btn-tactile btn-shimmer">
-                  <i class="bi bi-play-fill fs-6"></i> Ready to Start
+                <a href="{{ url_for('learning.start_course', course_id=course.id) }}" class="btn-stage-action btn-stage-start w-100 btn-shimmer">
+                  <span class="btn-stage-action-text">Ready to Start</span>
+                  <i class="bi bi-play-fill btn-stage-action-icon"></i>
                 </a>
               {% endif %}
 

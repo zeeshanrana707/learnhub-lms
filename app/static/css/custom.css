@@ -1130,6 +1130,127 @@ main {
   color: #ffffff !important;
 }
 
+/* Stage Action Buttons (Pill shape + Gradient + Ambient Glow + Arrow hover shift) */
+.btn-stage-action {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 0.45rem !important;
+  padding: 0.52rem 1.15rem !important;
+  border-radius: 50rem !important;
+  font-size: 0.82rem !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.02em !important;
+  border: 1px solid transparent !important;
+  text-decoration: none !important;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  user-select: none;
+  transition: all 0.28s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+
+.btn-stage-action-icon {
+  font-size: 0.95rem !important;
+  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1) !important;
+  display: inline-block;
+}
+
+/* Variant 1: Ready to Start (Vibrant Royal Blue Gradient) */
+.btn-stage-start {
+  background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%) !important;
+  color: #ffffff !important;
+  box-shadow: 0 4px 14px rgba(37, 99, 235, 0.35) !important;
+}
+
+.btn-stage-start:hover,
+.stage-card-hover:hover .btn-stage-start {
+  background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%) !important;
+  color: #ffffff !important;
+  box-shadow: 0 6px 20px rgba(37, 99, 235, 0.52) !important;
+  transform: translateY(-2px);
+}
+
+.btn-stage-start:hover .btn-stage-action-icon,
+.stage-card-hover:hover .btn-stage-start .btn-stage-action-icon {
+  transform: translateX(3px) scale(1.15);
+}
+
+/* Variant 2: Continue Learning (Indigo / Deep Blue Gradient) */
+.btn-stage-continue {
+  background: linear-gradient(135deg, #4f46e5 0%, #3730a3 100%) !important;
+  color: #ffffff !important;
+  box-shadow: 0 4px 14px rgba(79, 70, 229, 0.35) !important;
+}
+
+.btn-stage-continue:hover,
+.stage-card-hover:hover .btn-stage-continue {
+  background: linear-gradient(135deg, #6366f1 0%, #4338ca 100%) !important;
+  color: #ffffff !important;
+  box-shadow: 0 6px 20px rgba(79, 70, 229, 0.52) !important;
+  transform: translateY(-2px);
+}
+
+.btn-stage-continue:hover .btn-stage-action-icon,
+.stage-card-hover:hover .btn-stage-continue .btn-stage-action-icon {
+  transform: translateX(3px) scale(1.15);
+}
+
+/* Variant 3: Completed (Emerald Green) */
+.btn-stage-completed {
+  background: linear-gradient(135deg, #059669 0%, #047857 100%) !important;
+  color: #ffffff !important;
+  box-shadow: 0 4px 14px rgba(5, 150, 105, 0.3) !important;
+}
+
+.btn-stage-completed:hover,
+.stage-card-hover:hover .btn-stage-completed {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%) !important;
+  color: #ffffff !important;
+  box-shadow: 0 6px 20px rgba(16, 185, 129, 0.45) !important;
+  transform: translateY(-2px);
+}
+
+.btn-stage-completed:hover .btn-stage-action-icon,
+.stage-card-hover:hover .btn-stage-completed .btn-stage-action-icon {
+  transform: scale(1.2);
+}
+
+/* Variant 4: Locked (Slate Subtle) */
+.btn-stage-locked {
+  background: #64748b !important;
+  color: #e2e8f0 !important;
+  box-shadow: none !important;
+  cursor: not-allowed !important;
+  opacity: 0.8 !important;
+}
+
+/* Click Press Physics */
+.btn-stage-action:active {
+  transform: translateY(0) scale(0.98) !important;
+}
+
+/* Dark Mode Adjustments */
+[data-bs-theme="dark"] .btn-stage-start {
+  background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%) !important;
+  box-shadow: 0 4px 16px rgba(59, 130, 246, 0.4) !important;
+}
+
+[data-bs-theme="dark"] .btn-stage-start:hover,
+[data-bs-theme="dark"] .stage-card-hover:hover .btn-stage-start {
+  box-shadow: 0 6px 22px rgba(59, 130, 246, 0.6) !important;
+}
+
+[data-bs-theme="dark"] .btn-stage-continue {
+  background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%) !important;
+  box-shadow: 0 4px 16px rgba(99, 102, 241, 0.4) !important;
+}
+
+[data-bs-theme="dark"] .btn-stage-continue:hover,
+[data-bs-theme="dark"] .stage-card-hover:hover .btn-stage-continue {
+  box-shadow: 0 6px 22px rgba(99, 102, 241, 0.6) !important;
+}
+
 /* Dark Mode Overrides */
 [data-bs-theme="dark"] .roadmap-summary-card,
 [data-bs-theme="dark"] .stage-card-hover {
