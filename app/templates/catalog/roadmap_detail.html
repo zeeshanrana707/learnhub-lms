@@ -179,13 +179,13 @@
                           data-course-id="{{ course.id }}"
                           onclick="toggleCourseStar(this, {{ course.id }})" 
                           title="{% if st.get('is_wishlisted') %}Starred course (click to unstar){% else %}Star this course{% endif %}">
-                    <i class="bi {% if st.get('is_wishlisted') %}bi-star-fill text-warning{% else %}bi-star text-light opacity-60{% endif %} fs-5"></i>
+                    <i class="bi {% if st.get('is_wishlisted') %}bi-star-fill text-warning{% else %}bi-star text-secondary opacity-50{% endif %} fs-5"></i>
                   </button>
                 {% else %}
                   <a href="{{ url_for('auth.login', next=request.path) }}"
                      class="btn btn-sm btn-link p-0 text-decoration-none" 
                      title="Log in to star course">
-                    <i class="bi bi-star text-light opacity-60 fs-5"></i>
+                    <i class="bi bi-star text-secondary opacity-50 fs-5"></i>
                   </a>
                 {% endif %}
               </div>

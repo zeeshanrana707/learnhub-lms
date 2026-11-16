@@ -864,23 +864,21 @@ main {
   box-shadow: 0 4px 14px rgba(99, 102, 241, 0.4) !important;
 }
 
-/* Stage Cards in the Roadmap Stepper: Option 2 - Frosted Glassmorphism Dark Cards */
+/* Stage Cards in the Roadmap Stepper: Option 3 - Adaptive Dual-Mode Theme */
 .stage-card-hover,
 .stage-card-computing {
-  background: rgba(15, 23, 42, 0.88) !important; /* Smoky dark glass */
-  backdrop-filter: blur(16px) !important;
-  -webkit-backdrop-filter: blur(16px) !important;
-  border: 1px solid rgba(255, 255, 255, 0.12) !important;
+  background-color: #f1f5f9 !important; /* Clean modern light grey */
+  border: 1px solid #e2e8f0 !important;
   border-radius: 1rem !important;
   position: relative !important;
   overflow: visible !important;
-  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.15) !important;
-  transition: transform 0.25s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.25s ease, background 0.25s ease, border-color 0.25s ease !important;
+  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.05) !important;
+  transition: transform 0.25s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.25s ease, background-color 0.25s ease, border-color 0.25s ease !important;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* Horizontal frosted edge glow line starting at top-left flat edge and ending at top-right flat edge */
+/* Horizontal dark blue line starting at top-left flat edge and ending at top-right flat edge */
 .stage-card-hover::before,
 .stage-card-computing::before {
   content: "";
@@ -889,91 +887,113 @@ main {
   left: 1rem;
   right: 1rem;
   height: 3px;
-  background: linear-gradient(90deg, rgba(255, 255, 255, 0.9) 0%, rgba(96, 165, 250, 0.9) 100%) !important;
+  background-color: #1d4ed8 !important; /* Rich dark blue */
   border-radius: 3px;
   transform: scaleX(0);
   transform-origin: left center;
   transition: transform 0.35s cubic-bezier(0.25, 1, 0.5, 1) !important;
   z-index: 2;
   pointer-events: none;
-  box-shadow: 0 0 12px rgba(255, 255, 255, 0.7);
 }
 
 .stage-card-hover:hover,
 .stage-card-computing:hover {
   transform: translateY(-4px);
-  background: rgba(30, 41, 59, 0.92) !important; /* Subtle illuminated frosted glass */
-  border-color: rgba(255, 255, 255, 0.28) !important;
-  box-shadow: 0 16px 36px -4px rgba(0, 0, 0, 0.4), 0 0 24px rgba(96, 165, 250, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.3) !important;
+  background-color: #f1f5f9 !important;
+  border-color: #cbd5e1 !important;
+  box-shadow: -10px 0 20px -4px rgba(59, 130, 246, 0.18), 10px 0 20px -4px rgba(59, 130, 246, 0.18), 0 10px 25px -4px rgba(15, 23, 42, 0.08) !important;
 }
 
 .stage-card-hover:hover::before,
 .stage-card-computing:hover::before {
   transform: scaleX(1);
-  box-shadow: 0 0 16px rgba(255, 255, 255, 0.9);
 }
 
-/* Typography on Frosted Glass Card */
+/* Typography on Light Card */
 .stage-card-hover .stage-course-title,
 .stage-card-hover h6 {
-  color: #ffffff !important;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.35);
+  color: #0f172a !important; /* Crisp dark charcoal */
   transition: color 0.25s ease !important;
 }
 
 .stage-card-hover .stage-course-instructor,
 .stage-card-hover .stage-course-stats,
 .stage-card-hover .text-muted {
-  color: #cbd5e1 !important; /* Frosted white/silver */
+  color: #64748b !important; /* Slate grey */
   transition: color 0.25s ease !important;
 }
 
 .stage-card-hover:hover .stage-course-title,
 .stage-card-hover:hover h6 {
-  color: #93c5fd !important; /* Soft ice blue on hover */
+  color: #1d4ed8 !important; /* Dark blue on hover */
 }
 
 .stage-card-hover:hover .stage-course-instructor,
 .stage-card-hover:hover .stage-course-stats,
 .stage-card-hover:hover .text-muted {
-  color: #e2e8f0 !important;
+  color: #2563eb !important; /* Vibrant blue on hover */
 }
 
-/* Metadata badges in card (Frosted translucent tags) */
+/* Metadata badges in card */
 .stage-card-hover .badge.bg-light,
 .stage-card-hover .stage-meta-badge {
-  background: rgba(255, 255, 255, 0.08) !important;
-  border-color: rgba(255, 255, 255, 0.14) !important;
-  color: #e2e8f0 !important;
-  backdrop-filter: blur(8px) !important;
+  background-color: #ffffff !important;
+  border-color: #e2e8f0 !important;
+  color: #475569 !important;
   transition: all 0.2s ease;
 }
 
 .stage-card-hover:hover .badge.bg-light,
 .stage-card-hover:hover .stage-meta-badge {
-  background: rgba(59, 130, 246, 0.2) !important;
-  border-color: rgba(96, 165, 250, 0.45) !important;
-  color: #ffffff !important;
+  background-color: #eff6ff !important;
+  border-color: #bfdbfe !important;
+  color: #1d4ed8 !important;
 }
 
 .stage-card-hover .stage-syllabus-link {
-  color: #cbd5e1 !important;
+  color: #64748b !important;
   transition: color 0.2s ease !important;
 }
 
 .stage-card-hover:hover .stage-syllabus-link,
 .stage-card-hover .stage-syllabus-link:hover {
-  color: #93c5fd !important;
+  color: #2563eb !important;
 }
 
 .stage-card-hover .border-light-subtle {
-  border-color: rgba(255, 255, 255, 0.12) !important;
+  border-color: #e2e8f0 !important;
+}
+
+/* Dark Mode Overrides (Adaptive) */
+[data-bs-theme="dark"] .stage-card-hover,
+[data-bs-theme="dark"] .stage-card-computing {
+  background-color: #131c31 !important;
+  border-color: rgba(51, 65, 85, 0.7) !important;
+  box-shadow: 0 14px 35px -8px rgba(0, 0, 0, 0.5) !important;
+}
+
+[data-bs-theme="dark"] .stage-card-hover:hover,
+[data-bs-theme="dark"] .stage-card-computing:hover {
+  background-color: #1a2542 !important;
+  border-color: #3b82f6 !important;
+  box-shadow: 0 16px 36px -4px rgba(0, 0, 0, 0.6), 0 0 20px rgba(59, 130, 246, 0.3) !important;
 }
 
 [data-bs-theme="dark"] .stage-card-hover::before,
 [data-bs-theme="dark"] .stage-card-computing::before {
   background-color: #3b82f6 !important;
   box-shadow: 0 0 10px rgba(59, 130, 246, 0.6);
+}
+
+[data-bs-theme="dark"] .stage-card-hover .stage-course-title,
+[data-bs-theme="dark"] .stage-card-hover h6 {
+  color: #f1f5f9 !important;
+}
+
+[data-bs-theme="dark"] .stage-card-hover .stage-course-instructor,
+[data-bs-theme="dark"] .stage-card-hover .stage-course-stats,
+[data-bs-theme="dark"] .stage-card-hover .text-muted {
+  color: #94a3b8 !important;
 }
 
 [data-bs-theme="dark"] .stage-card-hover:hover .stage-course-title,
@@ -987,48 +1007,72 @@ main {
   color: #60a5fa !important;
 }
 
-/* Stage Step Pill (Frosted Translucent Glass Pill) */
+[data-bs-theme="dark"] .stage-card-hover .badge.bg-light,
+[data-bs-theme="dark"] .stage-card-hover .stage-meta-badge {
+  background-color: #0f172a !important;
+  border-color: rgba(51, 65, 85, 0.8) !important;
+  color: #cbd5e1 !important;
+}
+
+[data-bs-theme="dark"] .stage-card-hover:hover .badge.bg-light,
+[data-bs-theme="dark"] .stage-card-hover:hover .stage-meta-badge {
+  background-color: #1e293b !important;
+  border-color: #60a5fa !important;
+  color: #ffffff !important;
+}
+
+[data-bs-theme="dark"] .stage-card-hover .stage-syllabus-link {
+  color: #94a3b8 !important;
+}
+
+[data-bs-theme="dark"] .stage-card-hover:hover .stage-syllabus-link {
+  color: #60a5fa !important;
+}
+
+[data-bs-theme="dark"] .stage-card-hover .border-light-subtle {
+  border-color: rgba(51, 65, 85, 0.7) !important;
+}
+
+/* Stage Step Pill (Modern Bordered Slate/Blue Pill) */
 .stage-step-pill {
   display: inline-flex;
   align-items: center;
   gap: 0.35rem;
-  background: rgba(255, 255, 255, 0.1) !important;
-  color: #ffffff !important;
-  border: 1px solid rgba(255, 255, 255, 0.22) !important;
-  backdrop-filter: blur(8px) !important;
-  -webkit-backdrop-filter: blur(8px) !important;
+  background-color: #0f172a !important; /* deep slate */
+  color: #93c5fd !important; /* soft sky blue */
+  border: 1px solid rgba(59, 130, 246, 0.45) !important;
   font-size: 0.72rem !important;
   font-weight: 700 !important;
   letter-spacing: 0.04em !important;
   padding: 0.2rem 0.65rem !important;
   border-radius: 50rem !important;
   line-height: 1.2 !important;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25) !important;
+  box-shadow: 0 1px 4px rgba(15, 23, 42, 0.15) !important;
   transition: all 0.28s cubic-bezier(0.16, 1, 0.3, 1) !important;
   user-select: none;
 }
 
-/* On Card Hover: Turn Badge Blue with Frosted Glow */
+/* On Card Hover: Turn Badge Blue with Soft Glow */
 .stage-card-hover:hover .stage-step-pill,
 .stage-card-computing:hover .stage-step-pill {
-  background: linear-gradient(135deg, rgba(37, 99, 235, 0.9) 0%, rgba(29, 78, 216, 0.95) 100%) !important;
-  border-color: rgba(255, 255, 255, 0.45) !important;
+  background: linear-gradient(135deg, #1d4ed8 0%, #2563eb 100%) !important;
+  border-color: #60a5fa !important;
   color: #ffffff !important;
-  box-shadow: 0 0 16px rgba(59, 130, 246, 0.65) !important;
+  box-shadow: 0 0 12px rgba(37, 99, 235, 0.5) !important;
 }
 
 [data-bs-theme="dark"] .stage-step-pill {
-  background: rgba(255, 255, 255, 0.08) !important;
-  color: #ffffff !important;
-  border-color: rgba(255, 255, 255, 0.2) !important;
+  background-color: #0b1120 !important;
+  color: #60a5fa !important;
+  border-color: rgba(96, 165, 250, 0.4) !important;
 }
 
 [data-bs-theme="dark"] .stage-card-hover:hover .stage-step-pill,
 [data-bs-theme="dark"] .stage-card-computing:hover .stage-step-pill {
-  background: linear-gradient(135deg, rgba(37, 99, 235, 0.9) 0%, rgba(59, 130, 246, 0.95) 100%) !important;
-  border-color: rgba(255, 255, 255, 0.5) !important;
+  background: linear-gradient(135deg, #2563eb 0%, #3b82f6 100%) !important;
+  border-color: #93c5fd !important;
   color: #ffffff !important;
-  box-shadow: 0 0 16px rgba(96, 165, 250, 0.8) !important;
+  box-shadow: 0 0 14px rgba(59, 130, 246, 0.7) !important;
 }
 
 /* Stage Path Stepper Connectors (Between stages on desktop) */
@@ -1043,28 +1087,40 @@ main {
   transform: translateY(-50%);
   width: 26px;
   height: 26px;
-  background: rgba(15, 23, 42, 0.85);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: #ffffff;
+  border: 1px solid #cbd5e1;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #e2e8f0;
+  color: #2563eb;
   font-size: 0.8rem;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 2px 6px rgba(15, 23, 42, 0.08);
   z-index: 10;
   pointer-events: none;
   transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .stage-card-wrapper:hover .stage-path-connector {
-  border-color: rgba(255, 255, 255, 0.45);
-  background: rgba(30, 41, 59, 0.95);
-  color: #93c5fd;
+  border-color: #2563eb;
+  background: #eff6ff;
+  color: #1d4ed8;
   transform: translateY(-50%) translateX(2px);
-  box-shadow: 0 0 16px rgba(96, 165, 250, 0.5);
+  box-shadow: 0 3px 8px rgba(37, 99, 235, 0.25);
+}
+
+[data-bs-theme="dark"] .stage-path-connector {
+  background: #0f172a;
+  border-color: #334155;
+  color: #60a5fa;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+}
+
+[data-bs-theme="dark"] .stage-card-wrapper:hover .stage-path-connector {
+  background: #1e293b;
+  border-color: #60a5fa;
+  color: #93c5fd;
+  box-shadow: 0 0 12px rgba(59, 130, 246, 0.5);
 }
 
 [data-bs-theme="dark"] .stage-path-connector {
