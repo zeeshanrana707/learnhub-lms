@@ -14,8 +14,8 @@ catalog_bp = Blueprint('catalog', __name__)
 ROADMAP_META = {
     'ai-engineer-roadmap': {
         'icon': 'bi-cpu-fill',
-        'color': '#6366f1',
-        'bg_gradient': 'linear-gradient(135deg, #4338ca 0%, #312e81 100%)',
+        'color': '#0ea5e9',
+        'bg_gradient': 'linear-gradient(135deg, #0369a1 0%, #0c4a6e 100%)',
         'badge': 'Hot Career Track',
         'tagline': 'Master Artificial Intelligence from Python & Math to Machine Learning, Deep Learning, and Generative AI / LLMs with LangChain.',
         'estimated_duration': '6 - 9 Months',

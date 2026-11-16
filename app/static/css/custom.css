@@ -864,12 +864,12 @@ main {
   box-shadow: 0 4px 14px rgba(99, 102, 241, 0.4) !important;
 }
 
-/* Outer Box Around the Cards: Rich Modern Teal Theme */
+/* Outer Box Around the Cards: Ocean Blue Theme (#0369a1 -> #0c4a6e) */
 .roadmap-stages-box {
-  background: #0f766e !important; /* Rich modern teal */
-  background: linear-gradient(135deg, #0f766e 0%, #115e59 100%) !important;
-  border: 1px solid rgba(20, 184, 166, 0.45) !important;
-  box-shadow: 0 12px 30px -5px rgba(15, 118, 110, 0.35) !important;
+  background: #0369a1 !important;
+  background: linear-gradient(135deg, #0369a1 0%, #0c4a6e 100%) !important; /* Ocean Blue Gradient */
+  border: 1px solid rgba(14, 165, 233, 0.45) !important;
+  box-shadow: 0 12px 30px -5px rgba(3, 105, 161, 0.35) !important;
 }
 
 .roadmap-stages-box .roadmap-stages-box-title {
@@ -878,12 +878,12 @@ main {
 }
 
 .roadmap-stages-box .roadmap-stages-box-title i {
-  color: #5eead4 !important; /* Vibrant aqua-cyan icon */
+  color: #38bdf8 !important; /* Vibrant sky-blue icon */
 }
 
 [data-bs-theme="dark"] .roadmap-stages-box {
-  background: linear-gradient(135deg, #134e4a 0%, #042f2e 100%) !important;
-  border-color: rgba(20, 184, 166, 0.3) !important;
+  background: linear-gradient(135deg, #075985 0%, #082f49 100%) !important;
+  border-color: rgba(14, 165, 233, 0.3) !important;
   box-shadow: 0 14px 35px -5px rgba(0, 0, 0, 0.5) !important;
 }
 
