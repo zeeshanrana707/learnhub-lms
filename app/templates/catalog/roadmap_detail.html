@@ -44,29 +44,6 @@
           {% endfor %}
         </div>
 
-        <!-- Master Actions & Roadmap Progress -->
-        <div class="d-flex flex-wrap align-items-center gap-3 mt-4 pt-2">
-          {% if current_user.is_authenticated %}
-            <form action="{{ url_for('learning.enroll_all_roadmap', slug=category.slug) }}" method="POST" class="d-inline m-0">
-              <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-              <button type="submit" class="btn btn-warning btn-roadmap-master-enroll px-3.5 py-2 rounded-pill fw-bold d-inline-flex align-items-center gap-2 btn-shimmer">
-                <i class="bi bi-lightning-charge-fill"></i>
-                <span>Enroll in Entire Roadmap (All Stages)</span>
-              </button>
-            </form>
-          {% else %}
-            <a href="{{ url_for('auth.login', next=request.path) }}" class="btn btn-warning btn-roadmap-master-enroll px-3.5 py-2 rounded-pill fw-bold d-inline-flex align-items-center gap-2 btn-shimmer">
-              <i class="bi bi-lightning-charge-fill"></i>
-              <span>Enroll in Entire Roadmap (All Stages)</span>
-            </a>
-          {% endif %}
-
-          <button type="button" class="btn btn-outline-light px-3 py-2 rounded-pill fw-semibold d-inline-flex align-items-center gap-2" onclick="shareRoadmap('{{ category.name }}')">
-            <i class="bi bi-share-fill"></i>
-            <span>Share Roadmap</span>
-          </button>
-        </div>
-
         {% if current_user.is_authenticated and enrolled_stages_count > 0 %}
           <div class="mt-4 p-3 rounded-3" style="background: rgba(0, 0, 0, 0.3); border: 1px solid rgba(255, 255, 255, 0.2); max-width: 580px;">
             <div class="d-flex justify-content-between align-items-center mb-1.5 small text-white">
