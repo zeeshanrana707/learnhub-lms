@@ -3,10 +3,10 @@
 
 {% block content %}
 <!-- Roadmap Header Banner -->
-<div class="py-5 text-white mb-5 position-relative" style="background: {{ meta.bg_gradient }};">
-  <div class="container py-2">
+<div class="pt-3.5 pb-4 text-white mb-4 position-relative" style="background: {{ meta.bg_gradient }};">
+  <div class="container">
     <!-- Breadcrumb -->
-    <nav aria-label="breadcrumb" class="mb-3">
+    <nav aria-label="breadcrumb" class="mb-2">
       <ol class="breadcrumb small mb-0">
         <li class="breadcrumb-item"><a href="{{ url_for('catalog.home') }}{{ preview_qs }}" class="text-white opacity-75 text-decoration-none">Home</a></li>
         <li class="breadcrumb-item"><a href="{{ url_for('catalog.roadmaps') }}{{ preview_qs }}" class="text-white opacity-75 text-decoration-none">Career Roadmaps</a></li>
@@ -16,15 +16,15 @@
 
     <div class="row align-items-center">
       <div class="col-lg-8">
-        <div class="d-flex align-items-center gap-2 mb-2">
-          <span class="badge bg-white text-dark px-3 py-1 rounded-pill fw-semibold">{{ meta.badge }}</span>
-          <span class="badge bg-black bg-opacity-30"><i class="bi bi-clock me-1"></i> {{ meta.estimated_duration }}</span>
-          <span class="badge bg-danger"><i class="bi bi-youtube me-1"></i> Topic-by-Topic Video Series</span>
+        <div class="d-flex align-items-center gap-2 mb-1.5">
+          <span class="badge bg-white text-dark px-2.5 py-1 rounded-pill fw-semibold" style="font-size: 0.75rem;">{{ meta.badge }}</span>
+          <span class="badge bg-black bg-opacity-30" style="font-size: 0.75rem;"><i class="bi bi-clock me-1"></i> {{ meta.estimated_duration }}</span>
+          <span class="badge bg-danger" style="font-size: 0.75rem;"><i class="bi bi-youtube me-1"></i> Topic-by-Topic Video Series</span>
         </div>
-        <h1 class="display-4 fw-bold mb-3 text-white">{{ category.name }}</h1>
-        <p class="lead opacity-90 mb-4">{{ meta.tagline }}</p>
+        <h1 class="fw-bold mb-2 text-white" style="font-size: 2.25rem; line-height: 1.18; letter-spacing: -0.02em;">{{ category.name }}</h1>
+        <p class="opacity-90 mb-2.5" style="font-size: 0.96rem; max-width: 680px; line-height: 1.45;">{{ meta.tagline }}</p>
 
-        <div class="d-flex flex-wrap gap-3 align-items-center text-light small opacity-85 mb-3">
+        <div class="d-flex flex-wrap gap-2.5 align-items-center text-light small opacity-85 mb-2.5" style="font-size: 0.82rem;">
           <span><i class="bi bi-layers-fill text-warning me-1"></i> <strong>{{ courses|length }}</strong> Sequential Stages (Beginner to Advanced)</span>
           <span>•</span>
           <span><i class="bi bi-play-circle-fill text-danger me-1"></i> <strong>{{ sum_lessons or courses|map(attribute='total_lessons')|sum }}</strong> Topic Video Lectures</span>
@@ -32,12 +32,12 @@
           <span><i class="bi bi-clock-history text-info me-1"></i> ~<strong>{{ total_hours }}</strong> Video Study Hours</span>
         </div>
 
-        <div class="d-flex flex-wrap gap-2 align-items-center mt-3">
-          <span class="badge px-3 py-2 rounded-pill text-white fw-bold shadow-sm key-skills-label-badge" style="background: rgba(0, 0, 0, 0.4); border: 1px solid rgba(255, 255, 255, 0.3); font-size: 0.85rem;">
+        <div class="d-flex flex-wrap gap-1.5 align-items-center mt-1">
+          <span class="badge px-2.5 py-1.5 rounded-pill text-white fw-bold shadow-sm key-skills-label-badge" style="background: rgba(0, 0, 0, 0.4); border: 1px solid rgba(255, 255, 255, 0.3); font-size: 0.78rem;">
             <i class="bi bi-tools text-warning me-1"></i>Key Skills:
           </span>
           {% for sk in meta.skills %}
-            <span class="skill-pill shadow-sm">
+            <span class="skill-pill shadow-sm" style="font-size: 0.76rem; padding: 0.22rem 0.65rem;">
               <i class="bi bi-patch-check-fill"></i>
               <span class="skill-pill-text">{{ sk }}</span>
             </span>
@@ -45,12 +45,12 @@
         </div>
 
         {% if current_user.is_authenticated and enrolled_stages_count > 0 %}
-          <div class="mt-4 p-3 rounded-3" style="background: rgba(0, 0, 0, 0.3); border: 1px solid rgba(255, 255, 255, 0.2); max-width: 580px;">
-            <div class="d-flex justify-content-between align-items-center mb-1.5 small text-white">
+          <div class="mt-2.5 p-2 px-3 rounded-3" style="background: rgba(0, 0, 0, 0.3); border: 1px solid rgba(255, 255, 255, 0.2); max-width: 520px;">
+            <div class="d-flex justify-content-between align-items-center mb-1 small text-white" style="font-size: 0.75rem;">
               <span class="fw-semibold"><i class="bi bi-trophy-fill text-warning me-1.5"></i>Your Roadmap Journey</span>
               <span class="fw-bold">{{ completed_stages_count }} of {{ courses|length }} stages completed ({{ roadmap_progress_pct }}%)</span>
             </div>
-            <div class="progress" style="height: 8px; border-radius: 999px; background-color: rgba(255, 255, 255, 0.2);">
+            <div class="progress" style="height: 6px; border-radius: 999px; background-color: rgba(255, 255, 255, 0.2);">
               <div class="progress-bar {% if all_stages_completed %}bg-success{% else %}bg-warning{% endif %} progress-bar-striped progress-bar-animated" role="progressbar" style="width: {{ roadmap_progress_pct }}%"></div>
             </div>
           </div>
@@ -58,34 +58,34 @@
       </div>
 
       <!-- Quick Summary Box -->
-      <div class="col-lg-4 text-center mt-4 mt-lg-0">
-        <div class="card p-4 shadow border-0 text-dark text-start roadmap-summary-card">
-          <div class="d-flex align-items-center gap-2 mb-2.5">
+      <div class="col-lg-4 text-center mt-3 mt-lg-0">
+        <div class="card p-3 shadow border-0 text-dark text-start roadmap-summary-card">
+          <div class="d-flex align-items-center gap-2 mb-2">
             <i class="bi bi-briefcase-fill text-primary fs-6"></i>
-            <h6 class="fw-bold text-uppercase text-secondary small mb-0" style="letter-spacing: 0.05em; font-size: 0.76rem;">Target Job Outcomes</h6>
+            <h6 class="fw-bold text-uppercase text-secondary small mb-0" style="letter-spacing: 0.05em; font-size: 0.74rem;">Target Job Outcomes</h6>
           </div>
-          <div class="d-flex flex-column gap-2 mb-3">
+          <div class="d-flex flex-column gap-1.5 mb-2.5">
             {% for r in meta.target_roles %}
-              <div class="d-flex align-items-center gap-2 p-1.5 px-2.5 rounded-3 job-outcome-item">
+              <div class="d-flex align-items-center gap-2 p-1 px-2.5 rounded-3 job-outcome-item">
                 <i class="bi bi-check-circle-fill text-success fs-6 flex-shrink-0"></i>
-                <span class="fw-semibold job-outcome-title" style="font-size: 0.88rem;">{{ r }}</span>
+                <span class="fw-semibold job-outcome-title" style="font-size: 0.82rem;">{{ r }}</span>
               </div>
             {% endfor %}
           </div>
-          <div class="roadmap-summary-divider my-2.5"></div>
-          <div class="d-flex align-items-center gap-2 mb-2.5">
+          <div class="roadmap-summary-divider my-2"></div>
+          <div class="d-flex align-items-center gap-2 mb-2">
             <i class="bi bi-stars text-primary fs-6"></i>
-            <h6 class="fw-bold text-uppercase text-secondary small mb-0" style="letter-spacing: 0.05em; font-size: 0.76rem;">Skills You'll Master</h6>
+            <h6 class="fw-bold text-uppercase text-secondary small mb-0" style="letter-spacing: 0.05em; font-size: 0.74rem;">Skills You'll Master</h6>
           </div>
-          <div class="d-flex flex-wrap gap-1.5 mb-3">
+          <div class="d-flex flex-wrap gap-1 mb-2.5">
             {% for sk in meta.skills %}
-              <span class="skill-tag-pill">
+              <span class="skill-tag-pill" style="font-size: 0.72rem; padding: 0.18rem 0.55rem;">
                 <i class="bi bi-check2 text-primary"></i>{{ sk }}
               </span>
             {% endfor %}
           </div>
-          <div class="roadmap-summary-divider my-2.5"></div>
-          <div class="roadmap-guide-tip p-2.5 mb-3">
+          <div class="roadmap-summary-divider my-2"></div>
+          <div class="roadmap-guide-tip p-2 mb-2.5" style="font-size: 0.75rem;">
             <i class="bi bi-info-circle-fill text-primary me-1.5"></i>
             Follow this roadmap in order. Complete each stage's topic videos and quizzes to unlock the next level!
           </div>
