@@ -179,22 +179,22 @@
                           data-course-id="{{ course.id }}"
                           onclick="toggleCourseStar(this, {{ course.id }})" 
                           title="{% if st.get('is_wishlisted') %}Starred course (click to unstar){% else %}Star this course{% endif %}">
-                    <i class="bi {% if st.get('is_wishlisted') %}bi-star-fill text-warning{% else %}bi-star text-secondary opacity-50{% endif %} fs-5"></i>
+                    <i class="bi {% if st.get('is_wishlisted') %}bi-star-fill text-warning{% else %}bi-star text-light opacity-60{% endif %} fs-5"></i>
                   </button>
                 {% else %}
                   <a href="{{ url_for('auth.login', next=request.path) }}"
                      class="btn btn-sm btn-link p-0 text-decoration-none" 
                      title="Log in to star course">
-                    <i class="bi bi-star text-secondary opacity-50 fs-5"></i>
+                    <i class="bi bi-star text-light opacity-60 fs-5"></i>
                   </a>
                 {% endif %}
               </div>
             </div>
 
             <div class="mb-3">
-              <h6 class="fw-bold text-dark mb-1 stage-course-title">{{ course.title }}</h6>
-              <div class="text-muted small stage-course-instructor"><i class="bi bi-person-fill text-primary me-1"></i>{{ course.instructor_name }}</div>
-              <div class="text-muted small stage-course-stats"><i class="bi bi-people-fill text-info me-1"></i>{{ course.total_enrolled_students }} {{ 'student' if course.total_enrolled_students == 1 else 'students' }} • {{ course.total_lessons }} topics</div>
+              <h6 class="fw-bold mb-1 stage-course-title">{{ course.title }}</h6>
+              <div class="small stage-course-instructor"><i class="bi bi-person-fill text-primary me-1"></i>{{ course.instructor_name }}</div>
+              <div class="small stage-course-stats"><i class="bi bi-people-fill text-info me-1"></i>{{ course.total_enrolled_students }} {{ 'student' if course.total_enrolled_students == 1 else 'students' }} • {{ course.total_lessons }} topics</div>
 
               <!-- Metadata Pills: Level & Duration -->
               <div class="d-flex flex-wrap align-items-center justify-content-center gap-1 mt-2 pt-2 border-top border-light-subtle">
@@ -252,7 +252,7 @@
               {% endif %}
 
               <!-- Preview Syllabus Modal Trigger -->
-              <button type="button" class="btn btn-link btn-sm text-decoration-none text-muted py-0 mt-1 w-100" style="font-size: 0.74rem;" data-bs-toggle="modal" data-bs-target="#syllabusModal{{ course.id }}">
+              <button type="button" class="btn btn-link btn-sm text-decoration-none stage-syllabus-link py-0 mt-1 w-100" style="font-size: 0.74rem;" data-bs-toggle="modal" data-bs-target="#syllabusModal{{ course.id }}">
                 <i class="bi bi-list-check me-1"></i>Preview Syllabus
               </button>
             </div>
